@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+  <head>
+    <title><%= content_for(:title) || "Deep Space D6 — The Long Way Home" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+    <%= yield :head %>
+  </head>
+  <body class="min-h-full bg-space-950 text-space-100 font-sans antialiased">
+    <% if user_signed_in? %>
+      <header class="border-b border-space-800/80 bg-space-950/90 backdrop-blur sticky top-0 z-40">
+        <div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6">
+          <%= link_to root_path, class: "font-display text-lg font-semibold tracking-wide text-cyan-300" do %>
+            Deep Space D6
+          <% end %>
+          <div class="flex items-center gap-4 text-sm">
+            <% if current_user.avatar_url.present? %>
+              <img src="<%= current_user.avatar_url %>" alt="" class="h-8 w-8 rounded-full ring-1 ring-space-700">
+            <% end %>
+            <span class="hidden sm:inline text-space-400"><%= current_user.name || current_user.email %></span>
+            <%= button_to "Sign out", destroy_user_session_path, method: :delete, class: "text-space-400 hover:text-cyan-300 transition" %>
+          </div>
+        </div>
+      </header>
+    <% end %>
+    <%= yield %>
+  </body>
+</html>

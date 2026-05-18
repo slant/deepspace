@@ -1,0 +1,19 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  character: one
+  name: MyString
+  title: 1
+  specialty: MyString
+  attribute_a: MyString
+  attribute_b: MyString
+  position: 1
+
+two:
+  character: two
+  name: MyString
+  title: 1
+  specialty: MyString
+  attribute_a: MyString
+  attribute_b: MyString
+  position: 1

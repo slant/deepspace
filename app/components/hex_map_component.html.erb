@@ -1,0 +1,45 @@
+<div class="hex-map-panel" data-controller="hex-map" data-hex-map-campaign-id-value="<%= campaign.id %>">
+  <div class="hex-map-scroll" data-hex-map-target="scroll">
+    <svg class="hex-map-svg"
+         viewBox="0 0 <%= width %> <%= height %>"
+         role="img"
+         aria-label="Starmap"
+         data-hex-map-target="svg">
+      <g class="hex-edges">
+        <% edges.each do |edge| %>
+          <line x1="<%= edge[:a][0] %>" y1="<%= edge[:a][1] %>"
+                x2="<%= edge[:b][0] %>" y2="<%= edge[:b][1] %>"
+                class="edge <%= 'boundary' if edge[:type] == 'boundary' %>" />
+        <% end %>
+      </g>
+
+      <g class="hex-cells">
+        <% hexes.each do |hex| %>
+          <% verts = vertices_for(hex["q"], hex["r"]) %>
+          <% cx, cy = pixel_for(hex["q"], hex["r"]) %>
+          <g class="hex-cell <%= 'hex-blank' if hex['blank'] %> <%= 'hex-current' if ship_here?(hex) %> <%= 'hex-adjacent' if adjacent?(hex) %> <%= 'hex-resolved' if resolved?(hex) %>"
+             data-q="<%= hex['q'] %>"
+             data-r="<%= hex['r'] %>"
+             data-label="<%= hex['label'] %>"
+             data-action="click->hex-map#selectHex">
+            <polygon points="<%= points_string(verts) %>" class="hex-polygon" />
+            <% if hex["label"].present? %>
+              <text x="<%= cx %>" y="<%= cy - size * 0.55 %>" class="hex-label"><%= hex["label"] %></text>
+            <% end %>
+            <% if hex["note"].present? %>
+              <text x="<%= cx %>" y="<%= cy + size * 0.35 %>" class="hex-note"><%= hex["note"] %></text>
+            <% end %>
+            <% if hex["icon"].present? %>
+              <%= render HexIconComponent.new(icon: hex["icon"], cx: cx, cy: cy, size: size) %>
+            <% end %>
+            <% if ship_here?(hex) %>
+              <g class="ship-token" transform="translate(<%= cx %>, <%= cy %>)">
+                <polygon points="0,-<%= size * 0.35 %> <%= size * 0.25 %>,<%= size * 0.2 %> 0,<%= size * 0.1 %> -<%= size * 0.25 %>,<%= size * 0.2 %>" />
+              </g>
+            <% end %>
+          </g>
+        <% end %>
+      </g>
+    </svg>
+  </div>
+</div>

@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>YAML Hex Map</title>
+
+  <link rel="stylesheet" href="./style.css">
+  <script src="./script.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/js-yaml@4/dist/js-yaml.min.js"></script>  
+</head>
+
+<body>
+
+<h1>YAML Hex Map</h1>
+
+<svg id="map" width="1200" height="1200"></svg>
+
+<script>
+const yamlText = `
+grid:
+  orientation: flat-top
+  hex_size: 50
+
+hexes:
+  - q: 2
+    r: 0
+    region: tau
+    label: "19-A"
+    icon: home
+
+  - q: 2
+    r: -1
+    region: tau
+    label: "20-C"
+    icon: square
+
+  - q: 2
+    r: 2
+    region: tau
+    label: "14-A"
+    icon: circle
+
+  - q: 3
+    r: 2
+    region: tau
+    label: "15-D"
+    icon: jump
+
+  - q: 1
+    r: 0
+    region: tau
+    label: "13-B"
+    icon: jump
+`;
+
+const mapData = jsyaml.load(yamlText);
+
+const HEX_SIZE = mapData.grid.hex_size;
+
+function hexToPixel(q, r) {
+  const size = HEX_SIZE;
+  const orient = mapData.grid.orientation;
+
+  let x, y;
+
+  if (orient === "pointy-top") {
+    // axial pointy-top
+    x = size * Math.sqrt(3) * (q + r / 2);
+    y = size * 1.5 * r;
+  } 
+  else if (orient === "flat-top") {
+    // axial flat-top
+    x = size * 1.5 * q;
+    y = size * Math.sqrt(3) * (r + q / 2);
+  }
+
+  return {
+    x: x + 150,
+    y: y + 150
+  };
+}
+
+function hexVertices(cx, cy, size) {
+  const orient = mapData.grid.orientation;
+  const points = [];
+
+  const startAngle = (orient === "pointy-top") ? -30 : 0;
+
+  for (let i = 0; i < 6; i++) {
+    const angle = (Math.PI / 180) * (startAngle + 60 * i);
+
+    points.push({
+      x: cx + size * Math.cos(angle),
+      y: cy + size * Math.sin(angle)
+    });
+  }
+
+  return points;
+}
+
+function buildHexMap(hexes) {
+  const map = new Map();
+
+  hexes.forEach(h => {
+    map.set(`${h.q},${h.r}`, h);
+  });
+
+  return map;
+}
+
+const directions = [
+  [ 1, 0], [ 1,-1], [ 0,-1],
+  [-1, 0], [-1, 1], [ 0, 1]
+];
+
+function getNeighbor(q, r, dir) {
+  const [dq, dr] = directions[dir];
+  return `${q + dq},${r + dr}`;
+}
+
+// Axial neighbor direction 0–5 maps to vertex edge index 0–5 (flat-top and
+// pointy-top with our vertex winding). Inverse is the same: edge i faces dir i.
+function neighborDirToEdgeIndex(dir) {
+  return (6 - dir) % 6;
+}
+
+function edgeKey(a, b) {
+  // normalize so direction does not matter
+  const aKey = `${a.x.toFixed(2)},${a.y.toFixed(2)}`;
+  const bKey = `${b.x.toFixed(2)},${b.y.toFixed(2)}`;
+
+  return (aKey < bKey)
+    ? `${aKey}-${bKey}`
+    : `${bKey}-${aKey}`;
+}
+
+function buildRegionEdges(hexes) {
+  const hexMap = buildHexMap(hexes);
+  const edges = new Map();
+
+  hexes.forEach(hex => {
+    const { q, r } = hex;
+    const regionA = hex.region || "default";
+
+    const center = hexToPixel(q, r);
+    const verts = hexVertices(center.x, center.y, HEX_SIZE);
+
+    for (let dir = 0; dir < 6; dir++) {
+      const neighborKey = getNeighbor(q, r, dir);
+      const neighbor = hexMap.get(neighborKey);
+      const regionB = neighbor?.region || "default";
+
+      const edgeIndex = neighborDirToEdgeIndex(dir);
+      const a = verts[edgeIndex];
+      const b = verts[(edgeIndex + 1) % 6];
+
+      let type = "internal";
+      if (!neighbor || regionA !== regionB) {
+        type = "boundary";
+      }
+
+      const key = edgeKey(a, b);
+      const existing = edges.get(key);
+
+      if (!existing) {
+        edges.set(key, { a, b, type });
+      } else if (type === "internal" || existing.type === "internal") {
+        existing.type = "internal";
+      }
+    }
+  });
+
+  return edges;
+}
+
+const svg = document.getElementById("map");
+const edges = buildRegionEdges(mapData.hexes);
+
+edges.forEach(e => {
+  const line = createSvgElement("line");
+
+  line.setAttribute("x1", e.a.x);
+  line.setAttribute("y1", e.a.y);
+  line.setAttribute("x2", e.b.x);
+  line.setAttribute("y2", e.b.y);
+
+  line.setAttribute("class", "edge");
+
+  if (e.type === "boundary") {
+    line.classList.add("boundary");
+  }
+
+  svg.appendChild(line);
+});
+
+function createSvgElement(name) {
+  return document.createElementNS(
+    "http://www.w3.org/2000/svg",
+    name
+  );
+}
+
+function drawIcon(svg, icon, x, y) {
+  if (icon === "circle") {
+    const circle = createSvgElement("circle");
+
+    circle.setAttribute("cx", x);
+    circle.setAttribute("cy", y);
+    circle.setAttribute("r", 14);
+    circle.setAttribute("fill", "none");
+    circle.setAttribute("stroke", "#555");
+    circle.setAttribute("stroke-width", 2);
+
+    svg.appendChild(circle);
+  }
+
+  if (icon === "square") {
+    const rect = createSvgElement("rect");
+
+    rect.setAttribute("x", x - 14);
+    rect.setAttribute("y", y - 14);
+    rect.setAttribute("width", 28);
+    rect.setAttribute("height", 28);
+    rect.setAttribute("fill", "none");
+    rect.setAttribute("stroke", "#555");
+    rect.setAttribute("stroke-width", 2);
+
+    svg.appendChild(rect);
+  }
+
+  if (icon === "home") {
+    const circle = createSvgElement("circle");
+
+    circle.setAttribute("cx", x);
+    circle.setAttribute("cy", y);
+    circle.setAttribute("r", 18);
+    circle.setAttribute("fill", "#777");
+
+    svg.appendChild(circle);
+  }
+
+  if (icon === "jump") {
+    const circle = createSvgElement("circle");
+
+    circle.setAttribute("cx", x);
+    circle.setAttribute("cy", y);
+    circle.setAttribute("r", 18);
+    circle.setAttribute("fill", "#777");
+
+    svg.appendChild(circle);
+  }
+}
+
+mapData.hexes.forEach(hex => {
+  const { x, y } = hexToPixel(hex.q, hex.r);
+
+  if (hex.label) {
+    const text = createSvgElement("text");
+
+    text.setAttribute("x", x);
+    text.setAttribute("y", y - 25);
+    text.setAttribute("class", "label");
+
+    text.textContent = hex.label;
+
+    svg.appendChild(text);
+  }
+
+  if (hex.icon) {
+    drawIcon(svg, hex.icon, x, y);
+  }
+});
+</script>
+
+</body>
+</html>

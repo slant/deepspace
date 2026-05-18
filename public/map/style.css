@@ -1,0 +1,26 @@
+body {
+    background: #e8e8e8;
+    font-family: sans-serif;
+    padding: 20px;
+  }
+  
+  svg {
+    background: #efefef;
+    border: 1px solid #ccc;
+  }
+  
+  .edge {
+    stroke: #666;
+    stroke-width: 1;
+    stroke-dasharray: 7 7;
+  }
+  
+  .edge.boundary {
+    stroke-width: 4;
+  }
+  
+  .label {
+    fill: #444;
+    font-size: 18px;
+    text-anchor: middle;
+  }

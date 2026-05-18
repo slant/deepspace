@@ -1,0 +1,37 @@
+# Sample events — add full rulebook text here over time.
+"10-A":
+  title: "Oxygen Leak"
+  body: |
+    The unhospitable planet Notus where the oxygen farms are being threatened. One day the farms stopped functioning properly.
+    Your chief engineer lays out possible plans of action.
+  choices:
+    - label: "Buy replacement parts → 41-A"
+      action: "note"
+      metadata: { goto: "41-A" }
+    - label: "Solve the power problem → 29-A"
+      action: "note"
+      metadata: { goto: "29-A" }
+    - label: "Stay and monitor → 30-B"
+      action: "note"
+      metadata: { goto: "30-B" }
+    - label: "Return to Orbit"
+      action: "orbit"
+  resolvable: true
+
+"17-D":
+  title: "Starting Zone"
+  body: |
+    You begin your long journey home from Sector Alpha. Consume fuel to move to adjacent hexes.
+    Beacons (circles) and stores (squares) can be visited once each.
+  choices:
+    - label: "Return to Orbit"
+      action: "orbit"
+  resolvable: false
+
+"19-A":
+  title: "UEF Homeworld"
+  body: "You have reached home. The Long Way Home is complete!"
+  choices:
+    - label: "Victory!"
+      action: "complete"
+  resolvable: true

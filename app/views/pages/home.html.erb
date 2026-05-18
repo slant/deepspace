@@ -1,0 +1,30 @@
+<% content_for :title, "Deep Space D6 — The Long Way Home" %>
+
+<div class="relative min-h-screen overflow-hidden">
+  <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,_#1a2744_0%,_transparent_50%)]" aria-hidden="true"></div>
+
+  <div class="relative mx-auto max-w-3xl px-6 py-20 text-center sm:py-28">
+    <p class="font-mono text-sm uppercase tracking-[0.3em] text-cyan-400/80">Digital Companion</p>
+    <h1 class="mt-4 font-display text-4xl font-bold leading-tight text-space-100 sm:text-5xl">
+      Deep Space D6<br>
+      <span class="text-cyan-300">The Long Way Home</span>
+    </h1>
+    <p class="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-space-400">
+      A solo RPG companion for the official adventure. Command your crew, navigate the starmap,
+      and chart your path home — with your campaign saved automatically after every move.
+    </p>
+    <div class="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
+      <% if user_signed_in? %>
+        <%= link_to "Start Playing", campaigns_path, class: "btn-primary text-base px-8 py-3" %>
+      <% else %>
+        <%= link_to "Start Playing", user_google_oauth2_omniauth_authorize_path, data: { turbo: false }, class: "btn-primary text-base px-8 py-3" %>
+      <% end %>
+    </div>
+    <p class="mt-8 text-sm text-space-400">
+      Requires a copy of Deep Space D6. Sign in with Google to save campaigns.
+    </p>
+    <p class="mt-4">
+      <%= link_to "Rulebook PDF", "/Deep%20Space%20D6%20-%20The%20Long%20Way%20Home%20RPG%20v1.43.pdf", class: "text-sm text-cyan-400/80 hover:text-cyan-300", target: "_blank", rel: "noopener" %>
+    </p>
+  </div>
+</div>

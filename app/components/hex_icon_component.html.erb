@@ -1,0 +1,11 @@
+<% case icon %>
+<% when "circle" %>
+  <circle cx="<%= cx %>" cy="<%= cy %>" r="<%= r %>" class="hex-icon hex-icon-circle" />
+<% when "square" %>
+  <rect x="<%= cx - r %>" y="<%= cy - r %>" width="<%= r * 2 %>" height="<%= r * 2 %>" class="hex-icon hex-icon-square" />
+<% when "home" %>
+  <circle cx="<%= cx %>" cy="<%= cy %>" r="<%= r * 1.1 %>" class="hex-icon hex-icon-home" />
+<% when "jump" %>
+  <circle cx="<%= cx %>" cy="<%= cy %>" r="<%= r * 1.1 %>" class="hex-icon hex-icon-jump" />
+  <text x="<%= cx %>" y="<%= cy + 4 %>" class="hex-icon-jump-label">⇄</text>
+<% end %>

@@ -1,0 +1,146 @@
+/* Hex map styles adapted from public/map/style.css */
+
+.hex-map-panel {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.hex-map-scroll {
+  overflow: auto;
+  flex: 1;
+  border: 1px solid rgb(36 48 73 / 0.8);
+  border-radius: 0.75rem;
+  background: rgb(12 18 32 / 0.6);
+}
+
+.hex-map-svg {
+  display: block;
+  min-width: 100%;
+  height: auto;
+}
+
+.edge {
+  stroke: #4a5d7a;
+  stroke-width: 1;
+  stroke-dasharray: 7 7;
+}
+
+.edge.boundary {
+  stroke: #7dd3fc;
+  stroke-width: 3;
+  stroke-dasharray: none;
+  opacity: 0.5;
+}
+
+.hex-polygon {
+  fill: rgb(21 29 48 / 0.5);
+  stroke: rgb(74 93 122 / 0.6);
+  stroke-width: 1;
+  cursor: pointer;
+  transition: fill 0.15s, stroke 0.15s;
+}
+
+.hex-cell:hover .hex-polygon {
+  fill: rgb(45 212 191 / 0.12);
+  stroke: rgb(94 234 212 / 0.5);
+}
+
+.hex-adjacent .hex-polygon {
+  fill: rgb(45 212 191 / 0.08);
+  stroke: rgb(94 234 212 / 0.35);
+}
+
+.hex-current .hex-polygon {
+  fill: rgb(251 191 36 / 0.15);
+  stroke: rgb(251 191 36 / 0.7);
+}
+
+.hex-resolved .hex-polygon {
+  opacity: 0.55;
+}
+
+.hex-blank .hex-label,
+.hex-blank .hex-note {
+  display: none;
+}
+
+.hex-label {
+  fill: #c8d6ea;
+  font-size: 13px;
+  font-family: var(--font-mono, monospace);
+  text-anchor: middle;
+  pointer-events: none;
+}
+
+.hex-note {
+  fill: #8b9cb8;
+  font-size: 11px;
+  font-family: var(--font-mono, monospace);
+  text-anchor: middle;
+  pointer-events: none;
+}
+
+.hex-icon {
+  fill: none;
+  stroke: #8b9cb8;
+  stroke-width: 2;
+  pointer-events: none;
+}
+
+.hex-icon-home,
+.hex-icon-jump {
+  fill: #4a5d7a;
+  stroke: #94a3b8;
+}
+
+.hex-icon-jump-label {
+  fill: #e8eef8;
+  font-size: 14px;
+  text-anchor: middle;
+  pointer-events: none;
+}
+
+.ship-token polygon {
+  fill: #fbbf24;
+  stroke: #fef3c7;
+  stroke-width: 1.5;
+}
+
+/* Event modal */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgb(0 0 0 / 0.65);
+  z-index: 50;
+}
+
+.event-modal {
+  position: fixed;
+  z-index: 51;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 0;
+  width: 100%;
+  max-width: 32rem;
+  max-height: 85vh;
+  overflow-y: auto;
+  border-radius: 1rem 1rem 0 0;
+  background: rgb(12 18 32);
+  border: 1px solid rgb(36 48 73);
+  padding: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .event-modal {
+    bottom: auto;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 1rem;
+  }
+}
+
+body.modal-open {
+  overflow: hidden;
+}

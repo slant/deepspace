@@ -1,0 +1,70 @@
+<% content_for :title, "New Campaign — Step #{@step}" %>
+
+<div class="mx-auto max-w-2xl px-4 py-10 sm:px-6">
+  <div class="mb-8">
+    <p class="font-mono text-sm text-cyan-400/80">Step <%= @step %> of 2</p>
+    <h1 class="mt-2 font-display text-2xl font-bold text-space-100">
+      <%= @step == 1 ? "Captain & Ship" : "Officers" %>
+    </h1>
+    <div class="mt-4 flex gap-2">
+      <span class="h-1 flex-1 rounded <%= @step >= 1 ? 'bg-cyan-500' : 'bg-space-800' %>"></span>
+      <span class="h-1 flex-1 rounded <%= @step >= 2 ? 'bg-cyan-500' : 'bg-space-800' %>"></span>
+    </div>
+  </div>
+
+  <% if @step == 1 %>
+    <%= form_with model: @character, url: campaign_character_path(@campaign), method: :patch, class: "card space-y-5" do |f| %>
+      <%= hidden_field_tag :step, 1 %>
+      <div>
+        <%= f.label :name, "Captain name", class: "label" %>
+        <%= f.text_field :name, class: "input", required: true, autofocus: true %>
+      </div>
+      <div>
+        <%= f.label :ship_name, "Ship name", class: "label" %>
+        <%= f.text_field :ship_name, class: "input", required: true %>
+      </div>
+      <div>
+        <%= f.label :ship_type, "Ship type", class: "label" %>
+        <%= f.select :ship_type, CrewOptions::SHIP_LABELS.map { |k, v| [v, k] }, {}, class: "input" %>
+      </div>
+      <%= f.submit "Continue to officers", class: "btn-primary w-full" %>
+    <% end %>
+  <% else %>
+    <%= form_with model: @character, url: campaign_character_path(@campaign), method: :patch, class: "space-y-6" do |f| %>
+      <%= hidden_field_tag :step, 2 %>
+      <%= f.fields_for :officers do |of| %>
+        <div class="card">
+          <h2 class="font-semibold text-cyan-300">Officer <%= of.object.position + 1 %></h2>
+          <%= of.hidden_field :position %>
+          <%= of.hidden_field :id if of.object.persisted? %>
+          <div class="mt-4 grid gap-4 sm:grid-cols-2">
+            <div class="sm:col-span-2">
+              <%= of.label :name, class: "label" %>
+              <%= of.text_field :name, class: "input", required: true %>
+            </div>
+            <div>
+              <%= of.label :title, class: "label" %>
+              <%= of.select :title, Officer::TITLES.keys.map { |t| [t.to_s.humanize, t] }, {}, class: "input" %>
+            </div>
+            <div>
+              <%= of.label :specialty, class: "label" %>
+              <%= of.select :specialty, CrewOptions::SPECIALTIES, { include_blank: "Select…" }, class: "input", required: true %>
+            </div>
+            <div>
+              <%= of.label :attribute_a, "Attribute A", class: "label" %>
+              <%= of.select :attribute_a, CrewOptions::ATTRIBUTES_A, { include_blank: "Select…" }, class: "input", required: true %>
+            </div>
+            <div>
+              <%= of.label :attribute_b, "Attribute B", class: "label" %>
+              <%= of.select :attribute_b, CrewOptions::ATTRIBUTES_B, { include_blank: "Select…" }, class: "input", required: true %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+      <div class="flex gap-3">
+        <%= link_to "Back", edit_campaign_character_path(@campaign, step: 1), class: "btn-secondary flex-1" %>
+        <%= f.submit "Launch campaign", class: "btn-primary flex-1" %>
+      </div>
+    <% end %>
+  <% end %>
+</div>
