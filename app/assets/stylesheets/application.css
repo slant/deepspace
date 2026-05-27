@@ -25,36 +25,32 @@
   stroke: #4a5d7a;
   stroke-width: 1;
   stroke-dasharray: 7 7;
+  pointer-events: none;
 }
 
 .edge.boundary {
   stroke: #7dd3fc;
-  stroke-width: 3;
-  stroke-dasharray: none;
-  opacity: 0.5;
+  stroke-width: 4;
+  opacity: 0.6;
 }
 
 .hex-polygon {
-  fill: rgb(21 29 48 / 0.5);
-  stroke: rgb(74 93 122 / 0.6);
-  stroke-width: 1;
+  fill: transparent;
+  stroke: none;
   cursor: pointer;
-  transition: fill 0.15s, stroke 0.15s;
+  transition: fill 0.15s;
 }
 
 .hex-cell:hover .hex-polygon {
   fill: rgb(45 212 191 / 0.12);
-  stroke: rgb(94 234 212 / 0.5);
 }
 
 .hex-adjacent .hex-polygon {
   fill: rgb(45 212 191 / 0.08);
-  stroke: rgb(94 234 212 / 0.35);
 }
 
 .hex-current .hex-polygon {
   fill: rgb(251 191 36 / 0.15);
-  stroke: rgb(251 191 36 / 0.7);
 }
 
 .hex-resolved .hex-polygon {

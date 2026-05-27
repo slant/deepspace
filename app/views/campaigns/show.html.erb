@@ -42,7 +42,7 @@
   </aside>
 
   <div class="flex flex-1 flex-col p-4 min-h-0">
-    <%= turbo_frame_tag "campaign_map" do %>
+    <%= turbo_frame_tag "campaign_map", class: "flex flex-1 flex-col min-h-0" do %>
       <%= render HexMapComponent.new(campaign: @campaign) %>
     <% end %>
   </div>

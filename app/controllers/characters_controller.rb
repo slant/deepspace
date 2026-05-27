@@ -33,7 +33,6 @@ class CharactersController < ApplicationController
       @character.officers.find { |o| o.position == i } ||
         @character.officers.build(position: i, title: Officer::TITLES.keys[i])
     end
-    @character.officers.sort_by!(&:position)
   end
 
   def save_step_one
@@ -49,7 +48,7 @@ class CharactersController < ApplicationController
   end
 
   def save_step_two
-    build_character_wizard
+    @character = @campaign.character || @campaign.build_character
     if @character.update(character_step_two_params)
       @character.lock!
       @campaign.update!(character: @character, draft_step: 2)

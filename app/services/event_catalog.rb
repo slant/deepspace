@@ -62,7 +62,7 @@ class EventCatalog
              end
       {
         title: label,
-        body: "Sector #{hex['region']&.titleize}: #{kind.titleize} at #{label}. " \
+        body: "Sector #{hex['sector']&.titleize}: #{kind.titleize} at #{label}. " \
               "See event #{label} in the rulebook (PDF in /public).",
         choices: [
           { "label" => "Mark resolved & return to orbit", "action" => "resolve" },

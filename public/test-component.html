@@ -1,0 +1,1048 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { background: #0c1220; margin: 0; padding: 20px; }
+    /* Hex map styles adapted from public/map/style.css */
+
+.hex-map-panel {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.hex-map-scroll {
+  overflow: auto;
+  flex: 1;
+  border: 1px solid rgb(36 48 73 / 0.8);
+  border-radius: 0.75rem;
+  background: rgb(12 18 32 / 0.6);
+}
+
+.hex-map-svg {
+  display: block;
+  min-width: 100%;
+  height: auto;
+}
+
+.edge {
+  stroke: #4a5d7a;
+  stroke-width: 1;
+  stroke-dasharray: 7 7;
+  pointer-events: none;
+}
+
+.edge.boundary {
+  stroke: #7dd3fc;
+  stroke-width: 4;
+  opacity: 0.6;
+}
+
+.hex-polygon {
+  fill: transparent;
+  stroke: none;
+  cursor: pointer;
+  transition: fill 0.15s;
+}
+
+.hex-cell:hover .hex-polygon {
+  fill: rgb(45 212 191 / 0.12);
+}
+
+.hex-adjacent .hex-polygon {
+  fill: rgb(45 212 191 / 0.08);
+}
+
+.hex-current .hex-polygon {
+  fill: rgb(251 191 36 / 0.15);
+}
+
+.hex-resolved .hex-polygon {
+  opacity: 0.55;
+}
+
+.hex-blank .hex-label,
+.hex-blank .hex-note {
+  display: none;
+}
+
+.hex-label {
+  fill: #c8d6ea;
+  font-size: 13px;
+  font-family: var(--font-mono, monospace);
+  text-anchor: middle;
+  pointer-events: none;
+}
+
+.hex-note {
+  fill: #8b9cb8;
+  font-size: 11px;
+  font-family: var(--font-mono, monospace);
+  text-anchor: middle;
+  pointer-events: none;
+}
+
+.hex-icon {
+  fill: none;
+  stroke: #8b9cb8;
+  stroke-width: 2;
+  pointer-events: none;
+}
+
+.hex-icon-home,
+.hex-icon-jump {
+  fill: #4a5d7a;
+  stroke: #94a3b8;
+}
+
+.hex-icon-jump-label {
+  fill: #e8eef8;
+  font-size: 14px;
+  text-anchor: middle;
+  pointer-events: none;
+}
+
+.ship-token polygon {
+  fill: #fbbf24;
+  stroke: #fef3c7;
+  stroke-width: 1.5;
+}
+
+/* Event modal */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgb(0 0 0 / 0.65);
+  z-index: 50;
+}
+
+.event-modal {
+  position: fixed;
+  z-index: 51;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 0;
+  width: 100%;
+  max-width: 32rem;
+  max-height: 85vh;
+  overflow-y: auto;
+  border-radius: 1rem 1rem 0 0;
+  background: rgb(12 18 32);
+  border: 1px solid rgb(36 48 73);
+  padding: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .event-modal {
+    bottom: auto;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 1rem;
+  }
+}
+
+body.modal-open {
+  overflow: hidden;
+}
+
+  </style>
+</head>
+<body style="display:flex;justify-content:center;">
+  <!-- BEGIN app/components/hex_map_component.html.erb
+--><div class="hex-map-panel" data-controller="hex-map" data-hex-map-campaign-id-value="2">
+  <div class="hex-map-scroll" data-hex-map-target="scroll">
+    <svg class="hex-map-svg"
+         viewBox="0 0 900.0 1191.3843876330611"
+         role="img"
+         aria-label="Starmap"
+         data-hex-map-target="svg">
+      <g class="hex-cells">
+          <g class="hex-cell   hex-adjacent "
+             data-q="-1"
+             data-r="2"
+             data-label=""
+             data-action="click->hex-map#selectHex">
+            <polygon points="240.0,335.88457268119896 210.0,387.8460969082653 150.0,387.8460969082653 120.0,335.88457268119896 149.99999999999997,283.92304845413264 210.0,283.92304845413264" class="hex-polygon" />
+          </g>
+          <g class="hex-cell   hex-adjacent "
+             data-q="-1"
+             data-r="3"
+             data-label=""
+             data-action="click->hex-map#selectHex">
+            <polygon points="240.0,439.80762113533154 210.0,491.76914536239786 150.0,491.76914536239786 120.0,439.80762113533154 149.99999999999997,387.8460969082652 210.0,387.8460969082652" class="hex-polygon" />
+          </g>
+          <g class="hex-cell    "
+             data-q="-1"
+             data-r="4"
+             data-label=""
+             data-action="click->hex-map#selectHex">
+            <polygon points="240.0,543.7306695894642 210.0,595.6921938165306 150.0,595.6921938165306 120.0,543.7306695894642 149.99999999999997,491.7691453623979 210.0,491.7691453623979" class="hex-polygon" />
+          </g>
+          <g class="hex-cell    "
+             data-q="-1"
+             data-r="5"
+             data-label=""
+             data-action="click->hex-map#selectHex">
+            <polygon points="240.0,647.6537180435969 210.0,699.6152422706632 150.0,699.6152422706632 120.0,647.6537180435969 149.99999999999997,595.6921938165306 210.0,595.6921938165306" class="hex-polygon" />
+          </g>
+          <g class="hex-cell    "
+             data-q="-1"
+             data-r="6"
+             data-label=""
+             data-action="click->hex-map#selectHex">
+            <polygon points="240.0,751.5767664977294 210.0,803.5382907247957 150.0,803.5382907247957 120.0,751.5767664977294 149.99999999999997,699.6152422706631 210.0,699.6152422706631" class="hex-polygon" />
+          </g>
+          <g class="hex-cell    "
+             data-q="-1"
+             data-r="7"
+             data-label=""
+             data-action="click->hex-map#selectHex">
+            <polygon points="240.0,855.499814951862 210.0,907.4613391789284 150.0,907.4613391789284 120.0,855.499814951862 149.99999999999997,803.5382907247957 210.0,803.5382907247957" class="hex-polygon" />
+          </g>
+          <g class="hex-cell   hex-adjacent "
+             data-q="0"
+             data-r="1"
+             data-label=""
+             data-action="click->hex-map#selectHex">
+            <polygon points="330.0,283.92304845413264 300.0,335.88457268119896 240.0,335.88457268119896 210.0,283.92304845413264 239.99999999999997,231.96152422706632 300.0,231.96152422706632" class="hex-polygon" />
+          </g>
+          <g class="hex-cell  hex-current  "
+             data-q="0"
+             data-r="2"
+             data-label=""
+             data-action="click->hex-map#selectHex">
+            <polygon points="330.0,387.8460969082653 300.0,439.8076211353316 240.0,439.8076211353316 210.0,387.8460969082653 239.99999999999997,335.88457268119896 300.0,335.88457268119896" class="hex-polygon" />
+              <g class="ship-token" transform="translate(270.0, 387.8460969082653)">
+                <polygon points="0,-21.0 15.0,12.0 0,6.0 -15.0,12.0" />
+              </g>
+          </g>
+          <g class="hex-cell   hex-adjacent "
+             data-q="0"
+             data-r="3"
+             data-label=""
+             data-action="click->hex-map#selectHex">
+            <polygon points="330.0,491.76914536239786 300.0,543.7306695894641 240.0,543.7306695894642 210.0,491.76914536239786 239.99999999999997,439.80762113533154 300.0,439.80762113533154" class="hex-polygon" />
+          </g>
+          <g class="hex-cell    "
+             data-q="0"
+             data-r="4"
+             data-label=""
+             data-action="click->hex-map#selectHex">
+            <polygon points="330.0,595.6921938165306 300.0,647.6537180435969 240.0,647.6537180435969 210.0,595.6921938165306 239.99999999999997,543.7306695894642 300.0,543.7306695894642" class="hex-polygon" />
+          </g>
+          <g class="hex-cell    "
+             data-q="0"
+             data-r="5"
+             data-label=""
+             data-action="click->hex-map#selectHex">
+            <polygon points="330.0,699.6152422706631 300.0,751.5767664977294 240.0,751.5767664977294 210.0,699.6152422706631 239.99999999999997,647.6537180435968 300.0,647.6537180435968" class="hex-polygon" />
+          </g>
+          <g class="hex-cell    "
+             data-q="0"
+             data-r="6"
+             data-label=""
+             data-action="click->hex-map#selectHex">
+            <polygon points="330.0,803.5382907247957 300.0,855.499814951862 240.0,855.499814951862 210.0,803.5382907247957 239.99999999999997,751.5767664977294 300.0,751.5767664977294" class="hex-polygon" />
+          </g>
+          <g class="hex-cell    "
+             data-q="0"
+             data-r="7"
+             data-label=""
+             data-action="click->hex-map#selectHex">
+            <polygon points="330.0,907.4613391789284 300.0,959.4228634059947 240.0,959.4228634059947 210.0,907.4613391789284 239.99999999999997,855.499814951862 300.0,855.499814951862" class="hex-polygon" />
+          </g>
+          <g class="hex-cell    "
+             data-q="1"
+             data-r="0"
+             data-label=""
+             data-action="click->hex-map#selectHex">
+            <polygon points="420.0,231.96152422706632 390.0,283.92304845413264 330.0,283.92304845413264 300.0,231.96152422706632 330.0,180.0 390.0,180.0" class="hex-polygon" />
+          </g>
+          <g class="hex-cell   hex-adjacent "
+             data-q="1"
+             data-r="1"
+             data-label=""
+             data-action="click->hex-map#selectHex">
+            <polygon points="420.0,335.88457268119896 390.0,387.8460969082653 330.0,387.8460969082653 300.0,335.88457268119896 330.0,283.92304845413264 390.0,283.92304845413264" class="hex-polygon" />
+          </g>
+          <g class="hex-cell   hex-adjacent "
+             data-q="1"
+             data-r="2"
+             data-label=""
+             data-action="click->hex-map#selectHex">
+            <polygon points="420.0,439.80762113533154 390.0,491.76914536239786 330.0,491.76914536239786 300.0,439.80762113533154 330.0,387.8460969082652 390.0,387.8460969082652" class="hex-polygon" />
+          </g>
+          <g class="hex-cell    "
+             data-q="1"
+             data-r="3"
+             data-label=""
+             data-action="click->hex-map#selectHex">
+            <polygon points="420.0,543.7306695894642 390.0,595.6921938165306 330.0,595.6921938165306 300.0,543.7306695894642 330.0,491.7691453623979 390.0,491.7691453623979" class="hex-polygon" />
+          </g>
+          <g class="hex-cell    "
+             data-q="1"
+             data-r="4"
+             data-label=""
+             data-action="click->hex-map#selectHex">
+            <polygon points="420.0,647.6537180435969 390.0,699.6152422706632 330.0,699.6152422706632 300.0,647.6537180435969 330.0,595.6921938165306 390.0,595.6921938165306" class="hex-polygon" />
+          </g>
+          <g class="hex-cell    "
+             data-q="1"
+             data-r="5"
+             data-label=""
+             data-action="click->hex-map#selectHex">
+            <polygon points="420.0,751.5767664977294 390.0,803.5382907247957 330.0,803.5382907247957 300.0,751.5767664977294 330.0,699.6152422706631 390.0,699.6152422706631" class="hex-polygon" />
+          </g>
+          <g class="hex-cell    "
+             data-q="1"
+             data-r="6"
+             data-label=""
+             data-action="click->hex-map#selectHex">
+            <polygon points="420.0,855.499814951862 390.0,907.4613391789284 330.0,907.4613391789284 300.0,855.499814951862 330.0,803.5382907247957 390.0,803.5382907247957" class="hex-polygon" />
+          </g>
+          <g class="hex-cell    "
+             data-q="1"
+             data-r="7"
+             data-label=""
+             data-action="click->hex-map#selectHex">
+            <polygon points="420.0,959.4228634059947 390.0,1011.384387633061 330.0,1011.384387633061 300.0,959.4228634059947 330.0,907.4613391789284 390.0,907.4613391789284" class="hex-polygon" />
+          </g>
+          <g class="hex-cell    "
+             data-q="2"
+             data-r="-1"
+             data-label=""
+             data-action="click->hex-map#selectHex">
+            <polygon points="510.0,180.0 480.0,231.96152422706632 420.0,231.96152422706632 390.0,180.0 420.0,128.03847577293368 480.0,128.03847577293368" class="hex-polygon" />
+          </g>
+          <g class="hex-cell    "
+             data-q="2"
+             data-r="0"
+             data-label=""
+             data-action="click->hex-map#selectHex">
+            <polygon points="510.0,283.92304845413264 480.0,335.88457268119896 420.0,335.88457268119896 390.0,283.92304845413264 420.0,231.96152422706632 480.0,231.96152422706632" class="hex-polygon" />
+          </g>
+          <g class="hex-cell    "
+             data-q="2"
+             data-r="1"
+             data-label=""
+             data-action="click->hex-map#selectHex">
+            <polygon points="510.0,387.8460969082653 480.0,439.8076211353316 420.0,439.8076211353316 390.0,387.8460969082653 420.0,335.88457268119896 480.0,335.88457268119896" class="hex-polygon" />
+          </g>
+          <g class="hex-cell    "
+             data-q="2"
+             data-r="2"
+             data-label=""
+             data-action="click->hex-map#selectHex">
+            <polygon points="510.0,491.76914536239786 480.0,543.7306695894641 420.0,543.7306695894642 390.0,491.76914536239786 420.0,439.80762113533154 480.0,439.80762113533154" class="hex-polygon" />
+          </g>
+          <g class="hex-cell    "
+             data-q="2"
+             data-r="3"
+             data-label=""
+             data-action="click->hex-map#selectHex">
+            <polygon points="510.0,595.6921938165306 480.0,647.6537180435969 420.0,647.6537180435969 390.0,595.6921938165306 420.0,543.7306695894642 480.0,543.7306695894642" class="hex-polygon" />
+          </g>
+          <g class="hex-cell    "
+             data-q="2"
+             data-r="4"
+             data-label=""
+             data-action="click->hex-map#selectHex">
+            <polygon points="510.0,699.6152422706631 480.0,751.5767664977294 420.0,751.5767664977294 390.0,699.6152422706631 420.0,647.6537180435968 480.0,647.6537180435968" class="hex-polygon" />
+          </g>
+          <g class="hex-cell    "
+             data-q="2"
+             data-r="5"
+             data-label=""
+             data-action="click->hex-map#selectHex">
+            <polygon points="510.0,803.5382907247957 480.0,855.499814951862 420.0,855.499814951862 390.0,803.5382907247957 420.0,751.5767664977294 480.0,751.5767664977294" class="hex-polygon" />
+          </g>
+          <g class="hex-cell    "
+             data-q="2"
+             data-r="6"
+             data-label=""
+             data-action="click->hex-map#selectHex">
+            <polygon points="510.0,907.4613391789284 480.0,959.4228634059947 420.0,959.4228634059947 390.0,907.4613391789284 420.0,855.499814951862 480.0,855.499814951862" class="hex-polygon" />
+          </g>
+          <g class="hex-cell    "
+             data-q="2"
+             data-r="7"
+             data-label=""
+             data-action="click->hex-map#selectHex">
+            <polygon points="510.0,1011.384387633061 480.0,1063.3459118601272 420.0,1063.3459118601272 390.0,1011.384387633061 420.0,959.4228634059947 480.0,959.4228634059947" class="hex-polygon" />
+          </g>
+          <g class="hex-cell    "
+             data-q="3"
+             data-r="-1"
+             data-label=""
+             data-action="click->hex-map#selectHex">
+            <polygon points="600.0,231.96152422706632 570.0,283.92304845413264 510.0,283.92304845413264 480.0,231.96152422706632 510.0,180.0 570.0,180.0" class="hex-polygon" />
+          </g>
+          <g class="hex-cell    "
+             data-q="3"
+             data-r="0"
+             data-label=""
+             data-action="click->hex-map#selectHex">
+            <polygon points="600.0,335.88457268119896 570.0,387.8460969082653 510.0,387.8460969082653 480.0,335.88457268119896 510.0,283.92304845413264 570.0,283.92304845413264" class="hex-polygon" />
+          </g>
+          <g class="hex-cell    "
+             data-q="3"
+             data-r="1"
+             data-label=""
+             data-action="click->hex-map#selectHex">
+            <polygon points="600.0,439.80762113533154 570.0,491.76914536239786 510.0,491.76914536239786 480.0,439.80762113533154 510.0,387.8460969082652 570.0,387.8460969082652" class="hex-polygon" />
+          </g>
+          <g class="hex-cell    "
+             data-q="3"
+             data-r="2"
+             data-label=""
+             data-action="click->hex-map#selectHex">
+            <polygon points="600.0,543.7306695894642 570.0,595.6921938165306 510.0,595.6921938165306 480.0,543.7306695894642 510.0,491.7691453623979 570.0,491.7691453623979" class="hex-polygon" />
+          </g>
+          <g class="hex-cell    "
+             data-q="3"
+             data-r="3"
+             data-label=""
+             data-action="click->hex-map#selectHex">
+            <polygon points="600.0,647.6537180435969 570.0,699.6152422706632 510.0,699.6152422706632 480.0,647.6537180435969 510.0,595.6921938165306 570.0,595.6921938165306" class="hex-polygon" />
+          </g>
+          <g class="hex-cell    "
+             data-q="3"
+             data-r="4"
+             data-label=""
+             data-action="click->hex-map#selectHex">
+            <polygon points="600.0,751.5767664977294 570.0,803.5382907247957 510.0,803.5382907247957 480.0,751.5767664977294 510.0,699.6152422706631 570.0,699.6152422706631" class="hex-polygon" />
+          </g>
+          <g class="hex-cell    "
+             data-q="3"
+             data-r="5"
+             data-label=""
+             data-action="click->hex-map#selectHex">
+            <polygon points="600.0,855.499814951862 570.0,907.4613391789284 510.0,907.4613391789284 480.0,855.499814951862 510.0,803.5382907247957 570.0,803.5382907247957" class="hex-polygon" />
+          </g>
+          <g class="hex-cell    "
+             data-q="3"
+             data-r="6"
+             data-label=""
+             data-action="click->hex-map#selectHex">
+            <polygon points="600.0,959.4228634059947 570.0,1011.384387633061 510.0,1011.384387633061 480.0,959.4228634059947 510.0,907.4613391789284 570.0,907.4613391789284" class="hex-polygon" />
+          </g>
+          <g class="hex-cell    "
+             data-q="4"
+             data-r="-1"
+             data-label=""
+             data-action="click->hex-map#selectHex">
+            <polygon points="690.0,283.92304845413264 660.0,335.88457268119896 600.0,335.88457268119896 570.0,283.92304845413264 600.0,231.96152422706632 660.0,231.96152422706632" class="hex-polygon" />
+          </g>
+          <g class="hex-cell    "
+             data-q="4"
+             data-r="0"
+             data-label=""
+             data-action="click->hex-map#selectHex">
+            <polygon points="690.0,387.8460969082653 660.0,439.8076211353316 600.0,439.8076211353316 570.0,387.8460969082653 600.0,335.88457268119896 660.0,335.88457268119896" class="hex-polygon" />
+          </g>
+          <g class="hex-cell    "
+             data-q="4"
+             data-r="1"
+             data-label=""
+             data-action="click->hex-map#selectHex">
+            <polygon points="690.0,491.76914536239786 660.0,543.7306695894641 600.0,543.7306695894642 570.0,491.76914536239786 600.0,439.80762113533154 660.0,439.80762113533154" class="hex-polygon" />
+          </g>
+          <g class="hex-cell    "
+             data-q="4"
+             data-r="2"
+             data-label=""
+             data-action="click->hex-map#selectHex">
+            <polygon points="690.0,595.6921938165306 660.0,647.6537180435969 600.0,647.6537180435969 570.0,595.6921938165306 600.0,543.7306695894642 660.0,543.7306695894642" class="hex-polygon" />
+          </g>
+          <g class="hex-cell    "
+             data-q="4"
+             data-r="3"
+             data-label=""
+             data-action="click->hex-map#selectHex">
+            <polygon points="690.0,699.6152422706631 660.0,751.5767664977294 600.0,751.5767664977294 570.0,699.6152422706631 600.0,647.6537180435968 660.0,647.6537180435968" class="hex-polygon" />
+          </g>
+          <g class="hex-cell    "
+             data-q="4"
+             data-r="4"
+             data-label=""
+             data-action="click->hex-map#selectHex">
+            <polygon points="690.0,803.5382907247957 660.0,855.499814951862 600.0,855.499814951862 570.0,803.5382907247957 600.0,751.5767664977294 660.0,751.5767664977294" class="hex-polygon" />
+          </g>
+          <g class="hex-cell    "
+             data-q="4"
+             data-r="5"
+             data-label=""
+             data-action="click->hex-map#selectHex">
+            <polygon points="690.0,907.4613391789284 660.0,959.4228634059947 600.0,959.4228634059947 570.0,907.4613391789284 600.0,855.499814951862 660.0,855.499814951862" class="hex-polygon" />
+          </g>
+          <g class="hex-cell    "
+             data-q="5"
+             data-r="-1"
+             data-label=""
+             data-action="click->hex-map#selectHex">
+            <polygon points="780.0,335.88457268119896 750.0,387.8460969082653 690.0,387.8460969082653 660.0,335.88457268119896 690.0,283.92304845413264 750.0,283.92304845413264" class="hex-polygon" />
+          </g>
+          <g class="hex-cell    "
+             data-q="5"
+             data-r="0"
+             data-label=""
+             data-action="click->hex-map#selectHex">
+            <polygon points="780.0,439.80762113533154 750.0,491.76914536239786 690.0,491.76914536239786 660.0,439.80762113533154 690.0,387.8460969082652 750.0,387.8460969082652" class="hex-polygon" />
+          </g>
+          <g class="hex-cell    "
+             data-q="5"
+             data-r="1"
+             data-label=""
+             data-action="click->hex-map#selectHex">
+            <polygon points="780.0,543.7306695894642 750.0,595.6921938165306 690.0,595.6921938165306 660.0,543.7306695894642 690.0,491.7691453623979 750.0,491.7691453623979" class="hex-polygon" />
+          </g>
+          <g class="hex-cell    "
+             data-q="5"
+             data-r="2"
+             data-label=""
+             data-action="click->hex-map#selectHex">
+            <polygon points="780.0,647.6537180435969 750.0,699.6152422706632 690.0,699.6152422706632 660.0,647.6537180435969 690.0,595.6921938165306 750.0,595.6921938165306" class="hex-polygon" />
+          </g>
+          <g class="hex-cell    "
+             data-q="5"
+             data-r="3"
+             data-label=""
+             data-action="click->hex-map#selectHex">
+            <polygon points="780.0,751.5767664977294 750.0,803.5382907247957 690.0,803.5382907247957 660.0,751.5767664977294 690.0,699.6152422706631 750.0,699.6152422706631" class="hex-polygon" />
+          </g>
+      </g>
+
+      <g class="hex-edges">
+          <line x1="240.0" y1="335.88457268119896"
+                x2="210.0" y2="387.8460969082653"
+                class="edge " />
+          <line x1="210.0" y1="283.92304845413264"
+                x2="240.0" y2="335.88457268119896"
+                class="edge " />
+          <line x1="149.99999999999997" y1="283.92304845413264"
+                x2="210.0" y2="283.92304845413264"
+                class="edge boundary" />
+          <line x1="120.0" y1="335.88457268119896"
+                x2="149.99999999999997" y2="283.92304845413264"
+                class="edge boundary" />
+          <line x1="150.0" y1="387.8460969082653"
+                x2="120.0" y2="335.88457268119896"
+                class="edge boundary" />
+          <line x1="210.0" y1="387.8460969082653"
+                x2="150.0" y2="387.8460969082653"
+                class="edge " />
+          <line x1="240.0" y1="439.80762113533154"
+                x2="210.0" y2="491.76914536239786"
+                class="edge " />
+          <line x1="210.0" y1="387.8460969082652"
+                x2="240.0" y2="439.80762113533154"
+                class="edge " />
+          <line x1="120.0" y1="439.80762113533154"
+                x2="149.99999999999997" y2="387.8460969082652"
+                class="edge boundary" />
+          <line x1="150.0" y1="491.76914536239786"
+                x2="120.0" y2="439.80762113533154"
+                class="edge boundary" />
+          <line x1="210.0" y1="491.76914536239786"
+                x2="150.0" y2="491.76914536239786"
+                class="edge " />
+          <line x1="240.0" y1="543.7306695894642"
+                x2="210.0" y2="595.6921938165306"
+                class="edge " />
+          <line x1="210.0" y1="491.7691453623979"
+                x2="240.0" y2="543.7306695894642"
+                class="edge " />
+          <line x1="120.0" y1="543.7306695894642"
+                x2="149.99999999999997" y2="491.7691453623979"
+                class="edge boundary" />
+          <line x1="150.0" y1="595.6921938165306"
+                x2="120.0" y2="543.7306695894642"
+                class="edge boundary" />
+          <line x1="210.0" y1="595.6921938165306"
+                x2="150.0" y2="595.6921938165306"
+                class="edge " />
+          <line x1="240.0" y1="647.6537180435969"
+                x2="210.0" y2="699.6152422706632"
+                class="edge " />
+          <line x1="210.0" y1="595.6921938165306"
+                x2="240.0" y2="647.6537180435969"
+                class="edge " />
+          <line x1="120.0" y1="647.6537180435969"
+                x2="149.99999999999997" y2="595.6921938165306"
+                class="edge boundary" />
+          <line x1="150.0" y1="699.6152422706632"
+                x2="120.0" y2="647.6537180435969"
+                class="edge boundary" />
+          <line x1="210.0" y1="699.6152422706632"
+                x2="150.0" y2="699.6152422706632"
+                class="edge " />
+          <line x1="240.0" y1="751.5767664977294"
+                x2="210.0" y2="803.5382907247957"
+                class="edge " />
+          <line x1="210.0" y1="699.6152422706631"
+                x2="240.0" y2="751.5767664977294"
+                class="edge " />
+          <line x1="120.0" y1="751.5767664977294"
+                x2="149.99999999999997" y2="699.6152422706631"
+                class="edge boundary" />
+          <line x1="150.0" y1="803.5382907247957"
+                x2="120.0" y2="751.5767664977294"
+                class="edge boundary" />
+          <line x1="210.0" y1="803.5382907247957"
+                x2="150.0" y2="803.5382907247957"
+                class="edge " />
+          <line x1="240.0" y1="855.499814951862"
+                x2="210.0" y2="907.4613391789284"
+                class="edge " />
+          <line x1="210.0" y1="803.5382907247957"
+                x2="240.0" y2="855.499814951862"
+                class="edge " />
+          <line x1="120.0" y1="855.499814951862"
+                x2="149.99999999999997" y2="803.5382907247957"
+                class="edge boundary" />
+          <line x1="150.0" y1="907.4613391789284"
+                x2="120.0" y2="855.499814951862"
+                class="edge boundary" />
+          <line x1="210.0" y1="907.4613391789284"
+                x2="150.0" y2="907.4613391789284"
+                class="edge boundary" />
+          <line x1="330.0" y1="283.92304845413264"
+                x2="300.0" y2="335.88457268119896"
+                class="edge " />
+          <line x1="300.0" y1="231.96152422706632"
+                x2="330.0" y2="283.92304845413264"
+                class="edge " />
+          <line x1="239.99999999999997" y1="231.96152422706632"
+                x2="300.0" y2="231.96152422706632"
+                class="edge boundary" />
+          <line x1="210.0" y1="283.92304845413264"
+                x2="239.99999999999997" y2="231.96152422706632"
+                class="edge boundary" />
+          <line x1="300.0" y1="335.88457268119896"
+                x2="240.0" y2="335.88457268119896"
+                class="edge " />
+          <line x1="330.0" y1="387.8460969082653"
+                x2="300.0" y2="439.8076211353316"
+                class="edge " />
+          <line x1="300.0" y1="335.88457268119896"
+                x2="330.0" y2="387.8460969082653"
+                class="edge " />
+          <line x1="300.0" y1="439.8076211353316"
+                x2="240.0" y2="439.8076211353316"
+                class="edge " />
+          <line x1="330.0" y1="491.76914536239786"
+                x2="300.0" y2="543.7306695894641"
+                class="edge " />
+          <line x1="300.0" y1="439.80762113533154"
+                x2="330.0" y2="491.76914536239786"
+                class="edge " />
+          <line x1="300.0" y1="543.7306695894641"
+                x2="240.0" y2="543.7306695894642"
+                class="edge " />
+          <line x1="330.0" y1="595.6921938165306"
+                x2="300.0" y2="647.6537180435969"
+                class="edge " />
+          <line x1="300.0" y1="543.7306695894642"
+                x2="330.0" y2="595.6921938165306"
+                class="edge " />
+          <line x1="300.0" y1="647.6537180435969"
+                x2="240.0" y2="647.6537180435969"
+                class="edge " />
+          <line x1="330.0" y1="699.6152422706631"
+                x2="300.0" y2="751.5767664977294"
+                class="edge " />
+          <line x1="300.0" y1="647.6537180435968"
+                x2="330.0" y2="699.6152422706631"
+                class="edge " />
+          <line x1="300.0" y1="751.5767664977294"
+                x2="240.0" y2="751.5767664977294"
+                class="edge " />
+          <line x1="330.0" y1="803.5382907247957"
+                x2="300.0" y2="855.499814951862"
+                class="edge " />
+          <line x1="300.0" y1="751.5767664977294"
+                x2="330.0" y2="803.5382907247957"
+                class="edge " />
+          <line x1="300.0" y1="855.499814951862"
+                x2="240.0" y2="855.499814951862"
+                class="edge " />
+          <line x1="330.0" y1="907.4613391789284"
+                x2="300.0" y2="959.4228634059947"
+                class="edge " />
+          <line x1="300.0" y1="855.499814951862"
+                x2="330.0" y2="907.4613391789284"
+                class="edge " />
+          <line x1="240.0" y1="959.4228634059947"
+                x2="210.0" y2="907.4613391789284"
+                class="edge boundary" />
+          <line x1="300.0" y1="959.4228634059947"
+                x2="240.0" y2="959.4228634059947"
+                class="edge boundary" />
+          <line x1="420.0" y1="231.96152422706632"
+                x2="390.0" y2="283.92304845413264"
+                class="edge " />
+          <line x1="390.0" y1="180.0"
+                x2="420.0" y2="231.96152422706632"
+                class="edge " />
+          <line x1="330.0" y1="180.0"
+                x2="390.0" y2="180.0"
+                class="edge boundary" />
+          <line x1="300.0" y1="231.96152422706632"
+                x2="330.0" y2="180.0"
+                class="edge boundary" />
+          <line x1="390.0" y1="283.92304845413264"
+                x2="330.0" y2="283.92304845413264"
+                class="edge " />
+          <line x1="420.0" y1="335.88457268119896"
+                x2="390.0" y2="387.8460969082653"
+                class="edge " />
+          <line x1="390.0" y1="283.92304845413264"
+                x2="420.0" y2="335.88457268119896"
+                class="edge " />
+          <line x1="390.0" y1="387.8460969082653"
+                x2="330.0" y2="387.8460969082653"
+                class="edge " />
+          <line x1="420.0" y1="439.80762113533154"
+                x2="390.0" y2="491.76914536239786"
+                class="edge " />
+          <line x1="390.0" y1="387.8460969082652"
+                x2="420.0" y2="439.80762113533154"
+                class="edge " />
+          <line x1="390.0" y1="491.76914536239786"
+                x2="330.0" y2="491.76914536239786"
+                class="edge " />
+          <line x1="420.0" y1="543.7306695894642"
+                x2="390.0" y2="595.6921938165306"
+                class="edge " />
+          <line x1="390.0" y1="491.7691453623979"
+                x2="420.0" y2="543.7306695894642"
+                class="edge " />
+          <line x1="390.0" y1="595.6921938165306"
+                x2="330.0" y2="595.6921938165306"
+                class="edge " />
+          <line x1="420.0" y1="647.6537180435969"
+                x2="390.0" y2="699.6152422706632"
+                class="edge " />
+          <line x1="390.0" y1="595.6921938165306"
+                x2="420.0" y2="647.6537180435969"
+                class="edge " />
+          <line x1="390.0" y1="699.6152422706632"
+                x2="330.0" y2="699.6152422706632"
+                class="edge " />
+          <line x1="420.0" y1="751.5767664977294"
+                x2="390.0" y2="803.5382907247957"
+                class="edge " />
+          <line x1="390.0" y1="699.6152422706631"
+                x2="420.0" y2="751.5767664977294"
+                class="edge " />
+          <line x1="390.0" y1="803.5382907247957"
+                x2="330.0" y2="803.5382907247957"
+                class="edge " />
+          <line x1="420.0" y1="855.499814951862"
+                x2="390.0" y2="907.4613391789284"
+                class="edge " />
+          <line x1="390.0" y1="803.5382907247957"
+                x2="420.0" y2="855.499814951862"
+                class="edge " />
+          <line x1="390.0" y1="907.4613391789284"
+                x2="330.0" y2="907.4613391789284"
+                class="edge " />
+          <line x1="420.0" y1="959.4228634059947"
+                x2="390.0" y2="1011.384387633061"
+                class="edge " />
+          <line x1="390.0" y1="907.4613391789284"
+                x2="420.0" y2="959.4228634059947"
+                class="edge " />
+          <line x1="330.0" y1="1011.384387633061"
+                x2="300.0" y2="959.4228634059947"
+                class="edge boundary" />
+          <line x1="390.0" y1="1011.384387633061"
+                x2="330.0" y2="1011.384387633061"
+                class="edge boundary" />
+          <line x1="510.0" y1="180.0"
+                x2="480.0" y2="231.96152422706632"
+                class="edge " />
+          <line x1="480.0" y1="128.03847577293368"
+                x2="510.0" y2="180.0"
+                class="edge boundary" />
+          <line x1="420.0" y1="128.03847577293368"
+                x2="480.0" y2="128.03847577293368"
+                class="edge boundary" />
+          <line x1="390.0" y1="180.0"
+                x2="420.0" y2="128.03847577293368"
+                class="edge boundary" />
+          <line x1="480.0" y1="231.96152422706632"
+                x2="420.0" y2="231.96152422706632"
+                class="edge " />
+          <line x1="510.0" y1="283.92304845413264"
+                x2="480.0" y2="335.88457268119896"
+                class="edge " />
+          <line x1="480.0" y1="231.96152422706632"
+                x2="510.0" y2="283.92304845413264"
+                class="edge " />
+          <line x1="480.0" y1="335.88457268119896"
+                x2="420.0" y2="335.88457268119896"
+                class="edge " />
+          <line x1="510.0" y1="387.8460969082653"
+                x2="480.0" y2="439.8076211353316"
+                class="edge " />
+          <line x1="480.0" y1="335.88457268119896"
+                x2="510.0" y2="387.8460969082653"
+                class="edge " />
+          <line x1="480.0" y1="439.8076211353316"
+                x2="420.0" y2="439.8076211353316"
+                class="edge " />
+          <line x1="510.0" y1="491.76914536239786"
+                x2="480.0" y2="543.7306695894641"
+                class="edge " />
+          <line x1="480.0" y1="439.80762113533154"
+                x2="510.0" y2="491.76914536239786"
+                class="edge " />
+          <line x1="480.0" y1="543.7306695894641"
+                x2="420.0" y2="543.7306695894642"
+                class="edge " />
+          <line x1="510.0" y1="595.6921938165306"
+                x2="480.0" y2="647.6537180435969"
+                class="edge " />
+          <line x1="480.0" y1="543.7306695894642"
+                x2="510.0" y2="595.6921938165306"
+                class="edge " />
+          <line x1="480.0" y1="647.6537180435969"
+                x2="420.0" y2="647.6537180435969"
+                class="edge " />
+          <line x1="510.0" y1="699.6152422706631"
+                x2="480.0" y2="751.5767664977294"
+                class="edge " />
+          <line x1="480.0" y1="647.6537180435968"
+                x2="510.0" y2="699.6152422706631"
+                class="edge " />
+          <line x1="480.0" y1="751.5767664977294"
+                x2="420.0" y2="751.5767664977294"
+                class="edge " />
+          <line x1="510.0" y1="803.5382907247957"
+                x2="480.0" y2="855.499814951862"
+                class="edge " />
+          <line x1="480.0" y1="751.5767664977294"
+                x2="510.0" y2="803.5382907247957"
+                class="edge " />
+          <line x1="480.0" y1="855.499814951862"
+                x2="420.0" y2="855.499814951862"
+                class="edge " />
+          <line x1="510.0" y1="907.4613391789284"
+                x2="480.0" y2="959.4228634059947"
+                class="edge " />
+          <line x1="480.0" y1="855.499814951862"
+                x2="510.0" y2="907.4613391789284"
+                class="edge " />
+          <line x1="480.0" y1="959.4228634059947"
+                x2="420.0" y2="959.4228634059947"
+                class="edge " />
+          <line x1="510.0" y1="1011.384387633061"
+                x2="480.0" y2="1063.3459118601272"
+                class="edge boundary" />
+          <line x1="480.0" y1="959.4228634059947"
+                x2="510.0" y2="1011.384387633061"
+                class="edge " />
+          <line x1="420.0" y1="1063.3459118601272"
+                x2="390.0" y2="1011.384387633061"
+                class="edge boundary" />
+          <line x1="480.0" y1="1063.3459118601272"
+                x2="420.0" y2="1063.3459118601272"
+                class="edge boundary" />
+          <line x1="600.0" y1="231.96152422706632"
+                x2="570.0" y2="283.92304845413264"
+                class="edge " />
+          <line x1="570.0" y1="180.0"
+                x2="600.0" y2="231.96152422706632"
+                class="edge boundary" />
+          <line x1="510.0" y1="180.0"
+                x2="570.0" y2="180.0"
+                class="edge boundary" />
+          <line x1="570.0" y1="283.92304845413264"
+                x2="510.0" y2="283.92304845413264"
+                class="edge " />
+          <line x1="600.0" y1="335.88457268119896"
+                x2="570.0" y2="387.8460969082653"
+                class="edge " />
+          <line x1="570.0" y1="283.92304845413264"
+                x2="600.0" y2="335.88457268119896"
+                class="edge " />
+          <line x1="570.0" y1="387.8460969082653"
+                x2="510.0" y2="387.8460969082653"
+                class="edge " />
+          <line x1="600.0" y1="439.80762113533154"
+                x2="570.0" y2="491.76914536239786"
+                class="edge " />
+          <line x1="570.0" y1="387.8460969082652"
+                x2="600.0" y2="439.80762113533154"
+                class="edge " />
+          <line x1="570.0" y1="491.76914536239786"
+                x2="510.0" y2="491.76914536239786"
+                class="edge " />
+          <line x1="600.0" y1="543.7306695894642"
+                x2="570.0" y2="595.6921938165306"
+                class="edge " />
+          <line x1="570.0" y1="491.7691453623979"
+                x2="600.0" y2="543.7306695894642"
+                class="edge " />
+          <line x1="570.0" y1="595.6921938165306"
+                x2="510.0" y2="595.6921938165306"
+                class="edge " />
+          <line x1="600.0" y1="647.6537180435969"
+                x2="570.0" y2="699.6152422706632"
+                class="edge " />
+          <line x1="570.0" y1="595.6921938165306"
+                x2="600.0" y2="647.6537180435969"
+                class="edge " />
+          <line x1="570.0" y1="699.6152422706632"
+                x2="510.0" y2="699.6152422706632"
+                class="edge " />
+          <line x1="600.0" y1="751.5767664977294"
+                x2="570.0" y2="803.5382907247957"
+                class="edge " />
+          <line x1="570.0" y1="699.6152422706631"
+                x2="600.0" y2="751.5767664977294"
+                class="edge " />
+          <line x1="570.0" y1="803.5382907247957"
+                x2="510.0" y2="803.5382907247957"
+                class="edge " />
+          <line x1="600.0" y1="855.499814951862"
+                x2="570.0" y2="907.4613391789284"
+                class="edge " />
+          <line x1="570.0" y1="803.5382907247957"
+                x2="600.0" y2="855.499814951862"
+                class="edge " />
+          <line x1="570.0" y1="907.4613391789284"
+                x2="510.0" y2="907.4613391789284"
+                class="edge " />
+          <line x1="600.0" y1="959.4228634059947"
+                x2="570.0" y2="1011.384387633061"
+                class="edge boundary" />
+          <line x1="570.0" y1="907.4613391789284"
+                x2="600.0" y2="959.4228634059947"
+                class="edge " />
+          <line x1="570.0" y1="1011.384387633061"
+                x2="510.0" y2="1011.384387633061"
+                class="edge boundary" />
+          <line x1="690.0" y1="283.92304845413264"
+                x2="660.0" y2="335.88457268119896"
+                class="edge " />
+          <line x1="660.0" y1="231.96152422706632"
+                x2="690.0" y2="283.92304845413264"
+                class="edge boundary" />
+          <line x1="600.0" y1="231.96152422706632"
+                x2="660.0" y2="231.96152422706632"
+                class="edge boundary" />
+          <line x1="660.0" y1="335.88457268119896"
+                x2="600.0" y2="335.88457268119896"
+                class="edge " />
+          <line x1="690.0" y1="387.8460969082653"
+                x2="660.0" y2="439.8076211353316"
+                class="edge " />
+          <line x1="660.0" y1="335.88457268119896"
+                x2="690.0" y2="387.8460969082653"
+                class="edge " />
+          <line x1="660.0" y1="439.8076211353316"
+                x2="600.0" y2="439.8076211353316"
+                class="edge " />
+          <line x1="690.0" y1="491.76914536239786"
+                x2="660.0" y2="543.7306695894641"
+                class="edge " />
+          <line x1="660.0" y1="439.80762113533154"
+                x2="690.0" y2="491.76914536239786"
+                class="edge " />
+          <line x1="660.0" y1="543.7306695894641"
+                x2="600.0" y2="543.7306695894642"
+                class="edge " />
+          <line x1="690.0" y1="595.6921938165306"
+                x2="660.0" y2="647.6537180435969"
+                class="edge " />
+          <line x1="660.0" y1="543.7306695894642"
+                x2="690.0" y2="595.6921938165306"
+                class="edge " />
+          <line x1="660.0" y1="647.6537180435969"
+                x2="600.0" y2="647.6537180435969"
+                class="edge " />
+          <line x1="690.0" y1="699.6152422706631"
+                x2="660.0" y2="751.5767664977294"
+                class="edge " />
+          <line x1="660.0" y1="647.6537180435968"
+                x2="690.0" y2="699.6152422706631"
+                class="edge " />
+          <line x1="660.0" y1="751.5767664977294"
+                x2="600.0" y2="751.5767664977294"
+                class="edge " />
+          <line x1="690.0" y1="803.5382907247957"
+                x2="660.0" y2="855.499814951862"
+                class="edge boundary" />
+          <line x1="660.0" y1="751.5767664977294"
+                x2="690.0" y2="803.5382907247957"
+                class="edge " />
+          <line x1="660.0" y1="855.499814951862"
+                x2="600.0" y2="855.499814951862"
+                class="edge " />
+          <line x1="690.0" y1="907.4613391789284"
+                x2="660.0" y2="959.4228634059947"
+                class="edge boundary" />
+          <line x1="660.0" y1="855.499814951862"
+                x2="690.0" y2="907.4613391789284"
+                class="edge boundary" />
+          <line x1="660.0" y1="959.4228634059947"
+                x2="600.0" y2="959.4228634059947"
+                class="edge boundary" />
+          <line x1="780.0" y1="335.88457268119896"
+                x2="750.0" y2="387.8460969082653"
+                class="edge boundary" />
+          <line x1="750.0" y1="283.92304845413264"
+                x2="780.0" y2="335.88457268119896"
+                class="edge boundary" />
+          <line x1="690.0" y1="283.92304845413264"
+                x2="750.0" y2="283.92304845413264"
+                class="edge boundary" />
+          <line x1="750.0" y1="387.8460969082653"
+                x2="690.0" y2="387.8460969082653"
+                class="edge " />
+          <line x1="780.0" y1="439.80762113533154"
+                x2="750.0" y2="491.76914536239786"
+                class="edge boundary" />
+          <line x1="750.0" y1="387.8460969082652"
+                x2="780.0" y2="439.80762113533154"
+                class="edge boundary" />
+          <line x1="750.0" y1="491.76914536239786"
+                x2="690.0" y2="491.76914536239786"
+                class="edge " />
+          <line x1="780.0" y1="543.7306695894642"
+                x2="750.0" y2="595.6921938165306"
+                class="edge boundary" />
+          <line x1="750.0" y1="491.7691453623979"
+                x2="780.0" y2="543.7306695894642"
+                class="edge boundary" />
+          <line x1="750.0" y1="595.6921938165306"
+                x2="690.0" y2="595.6921938165306"
+                class="edge " />
+          <line x1="780.0" y1="647.6537180435969"
+                x2="750.0" y2="699.6152422706632"
+                class="edge boundary" />
+          <line x1="750.0" y1="595.6921938165306"
+                x2="780.0" y2="647.6537180435969"
+                class="edge boundary" />
+          <line x1="750.0" y1="699.6152422706632"
+                x2="690.0" y2="699.6152422706632"
+                class="edge " />
+          <line x1="780.0" y1="751.5767664977294"
+                x2="750.0" y2="803.5382907247957"
+                class="edge boundary" />
+          <line x1="750.0" y1="699.6152422706631"
+                x2="780.0" y2="751.5767664977294"
+                class="edge boundary" />
+          <line x1="750.0" y1="803.5382907247957"
+                x2="690.0" y2="803.5382907247957"
+                class="edge boundary" />
+      </g>
+    </svg>
+  </div>
+</div>
+<!-- END app/components/hex_map_component.html.erb -->
+</body>
+</html>

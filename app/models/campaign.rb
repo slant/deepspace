@@ -2,7 +2,7 @@
 
 class Campaign < ApplicationRecord
   DEFAULT_CARGO = "000-2-134711-182947-76123199-322521-8431364-L-M-Z".freeze
-  START_HEX = { q: -2, r: 2, label: "17-D" }.freeze
+  START_HEX = { q: 2, r: 7 }.freeze
 
   belongs_to :user
   belongs_to :character, optional: true
@@ -83,7 +83,7 @@ class Campaign < ApplicationRecord
       cargo_sequence: DEFAULT_CARGO,
       name: "#{character.name} — #{character.ship_name}"
     )
-    discover_sector!(MapLoader.hex_at(ship_q, ship_r)["region"]) if MapLoader.hex_at(ship_q, ship_r)
+    discover_sector!(MapLoader.hex_at(ship_q, ship_r)["sector"]) if MapLoader.hex_at(ship_q, ship_r)
     log!("Campaign begun. Good luck, Captain #{character.name}.", entry_type: "milestone")
   end
 

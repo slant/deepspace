@@ -8,9 +8,10 @@ class HexMapComponent < ApplicationComponent
     @size = MapLoader.hex_size
     @orientation = MapLoader.orientation
     @bounds = MapLoader.bounds
-    @edges = HexGrid.build_region_edges(@hexes, size: @size, orientation: @orientation)
     @offset_x = -@bounds[:min_x] + @size
     @offset_y = -@bounds[:min_y] + @size
+    @edges = HexGrid.build_region_edges(@hexes, size: @size, orientation: @orientation,
+                                        offset_x: @offset_x, offset_y: @offset_y)
     @width = @bounds[:max_x] - @bounds[:min_x] + @size * 2
     @height = @bounds[:max_y] - @bounds[:min_y] + @size * 2
   end

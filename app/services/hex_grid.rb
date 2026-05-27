@@ -37,20 +37,20 @@ class HexGrid
       (6 - dir) % 6
     end
 
-    def build_region_edges(hexes, size:, orientation:)
+    def build_region_edges(hexes, size:, orientation:, offset_x: 0, offset_y: 0)
       hex_map = hexes.index_by { |h| [ h["q"], h["r"] ] }
       edges = {}
 
       hexes.each do |hex|
         q, r = hex["q"], hex["r"]
-        region_a = hex["region"] || "default"
-        cx, cy = axial_to_pixel(q, r, size: size, orientation: orientation)
+        region_a = hex["sector"] || "default"
+        cx, cy = axial_to_pixel(q, r, size: size, orientation: orientation, offset_x: offset_x, offset_y: offset_y)
         verts = hex_vertices(cx, cy, size, orientation: orientation)
 
         6.times do |dir|
           nq, nr = neighbor(q, r, dir)
           neighbor_hex = hex_map[[ nq, nr ]]
-          region_b = neighbor_hex&.dig("region") || "default"
+          region_b = neighbor_hex&.dig("sector") || "default"
           edge_index = neighbor_dir_to_edge_index(dir)
           a = verts[edge_index]
           b = verts[(edge_index + 1) % 6]

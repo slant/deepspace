@@ -13,13 +13,13 @@ class HexEventsController < ApplicationController
 
     if @campaign.can_move_to?(hex["q"], hex["r"])
       @campaign.move_to!(hex["q"], hex["r"])
-      region = hex["region"]
+      region = hex["sector"]
       @campaign.discover_sector!(region) if region.present?
     end
 
     event = EventCatalog.for_hex(hex, campaign: @campaign)
     render json: event.merge(
-      hex: hex.slice("q", "r", "label", "icon", "note", "region"),
+      hex: hex.slice("q", "r", "label", "icon", "note", "sector"),
       campaign: {
         ship_q: @campaign.ship_q,
         ship_r: @campaign.ship_r,

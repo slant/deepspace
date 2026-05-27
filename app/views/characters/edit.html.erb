@@ -32,7 +32,7 @@
   <% else %>
     <%= form_with model: @character, url: campaign_character_path(@campaign), method: :patch, class: "space-y-6" do |f| %>
       <%= hidden_field_tag :step, 2 %>
-      <%= f.fields_for :officers do |of| %>
+      <%= f.fields_for :officers, @character.officers.sort_by(&:position) do |of| %>
         <div class="card">
           <h2 class="font-semibold text-cyan-300">Officer <%= of.object.position + 1 %></h2>
           <%= of.hidden_field :position %>
