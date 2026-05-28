@@ -40,7 +40,7 @@ class CampaignsController < ApplicationController
   private
 
   def set_campaign
-    @campaign = current_user.campaigns.find(params[:id])
+    @campaign = current_user.campaigns.find_by!(public_id: params[:id])
   end
 
   def campaign_params
@@ -53,7 +53,6 @@ class CampaignsController < ApplicationController
 
   def campaign_json(campaign)
     {
-      id: campaign.id,
       fuel: campaign.fuel,
       scrap: campaign.scrap,
       ship_q: campaign.ship_q,

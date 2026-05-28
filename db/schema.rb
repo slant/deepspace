@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_18_011403) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_27_230951) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -22,6 +22,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_18_011403) do
     t.integer "draft_step", default: 1, null: false
     t.integer "fuel", default: 10, null: false
     t.string "name"
+    t.string "public_id", null: false
     t.json "researched_upgrades", default: {}, null: false
     t.json "resolved_events", default: [], null: false
     t.integer "scrap", default: 0, null: false
@@ -31,6 +32,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_18_011403) do
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
     t.index ["character_id"], name: "index_campaigns_on_character_id"
+    t.index ["public_id"], name: "index_campaigns_on_public_id", unique: true
     t.index ["user_id"], name: "index_campaigns_on_user_id"
   end
 

@@ -23,7 +23,7 @@ class CharactersController < ApplicationController
   private
 
   def set_campaign
-    @campaign = current_user.campaigns.find(params[:campaign_id])
+    @campaign = current_user.campaigns.find_by!(public_id: params[:campaign_id])
     redirect_to campaign_path(@campaign) unless @campaign.draft?
   end
 

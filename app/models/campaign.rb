@@ -12,7 +12,12 @@ class Campaign < ApplicationRecord
 
   validates :name, presence: true, if: :active?
 
+  before_create :assign_public_id
   before_validation :ensure_defaults, on: :create
+
+  def to_param
+    public_id
+  end
 
   def progress_summary
     return "Character creation" if draft?
@@ -92,6 +97,13 @@ class Campaign < ApplicationRecord
   end
 
   private
+
+  def assign_public_id
+    loop do
+      self.public_id = SecureRandom.alphanumeric(4)
+      break unless Campaign.exists?(public_id: public_id)
+    end
+  end
 
   def ensure_defaults
     self.discovered_sectors ||= []
