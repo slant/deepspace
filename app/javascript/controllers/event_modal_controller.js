@@ -2,7 +2,7 @@ import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
   static targets = ["dialog", "title", "body", "choices", "backdrop"]
-  static values = { campaignId: Number }
+  static values = { campaignId: String }
 
   connect() {
     this.onHexSelected = this.openHex.bind(this)

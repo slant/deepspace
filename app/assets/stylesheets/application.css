@@ -85,7 +85,14 @@
   pointer-events: none;
 }
 
-.hex-icon-home,
+.hex-icon-home path {
+  fill: #4a5d7a;
+  stroke: #94a3b8;
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+  pointer-events: none;
+}
+
 .hex-icon-jump {
   fill: #4a5d7a;
   stroke: #94a3b8;

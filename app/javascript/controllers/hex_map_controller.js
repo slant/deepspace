@@ -2,7 +2,7 @@ import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
   static targets = ["svg", "scroll"]
-  static values = { campaignId: Number }
+  static values = { campaignId: String }
 
   selectHex(event) {
     event.stopPropagation()

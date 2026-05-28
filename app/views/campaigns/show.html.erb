@@ -2,7 +2,7 @@
 
 <div class="flex h-[calc(100vh-3.5rem)] flex-col lg:flex-row overflow-hidden"
      data-controller="event-modal"
-     data-event-modal-campaign-id-value="<%= @campaign.id %>">
+     data-event-modal-campaign-id-value="<%= @campaign.public_id %>">
   <aside class="border-b border-space-800 bg-space-900/50 p-4 lg:w-80 lg:border-b-0 lg:border-r"
          data-controller="campaign-hud"
          data-campaign-hud-update-url-value="<%= campaign_path(@campaign, format: :json) %>">

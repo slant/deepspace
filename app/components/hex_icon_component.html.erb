@@ -4,7 +4,9 @@
 <% when "square" %>
   <rect x="<%= cx - r %>" y="<%= cy - r %>" width="<%= r * 2 %>" height="<%= r * 2 %>" class="hex-icon hex-icon-square" />
 <% when "home" %>
-  <circle cx="<%= cx %>" cy="<%= cy %>" r="<%= r * 1.1 %>" class="hex-icon hex-icon-home" />
+  <g transform="translate(<%= cx %>, <%= cy %>) scale(<%= (r / 12.0).round(4) %>) translate(-12, -12)" class="hex-icon-home">
+    <path d="M5 10.5L12 4L19 10.5V20H15V15H9V20H5V10.5Z" />
+  </g>
 <% when "jump" %>
   <circle cx="<%= cx %>" cy="<%= cy %>" r="<%= r * 1.1 %>" class="hex-icon hex-icon-jump" />
   <text x="<%= cx %>" y="<%= cy + 4 %>" class="hex-icon-jump-label">⇄</text>
