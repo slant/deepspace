@@ -33,14 +33,25 @@
     <%= form_with model: @character, url: campaign_character_path(@campaign), method: :patch, class: "space-y-6" do |f| %>
       <%= hidden_field_tag :step, 2 %>
       <%= f.fields_for :officers, @character.officers.sort_by(&:position) do |of| %>
-        <div class="card">
-          <h2 class="font-semibold text-cyan-300">Officer <%= of.object.position + 1 %></h2>
+        <div class="card"
+             data-controller="officer-randomize"
+             data-officer-randomize-first-names-value="<%= OfficerNameCatalog.first_names.to_json %>"
+             data-officer-randomize-last-names-value="<%= OfficerNameCatalog.last_names.to_json %>"
+             data-officer-randomize-specialties-value="<%= CrewOptions::SPECIALTIES.to_json %>"
+             data-officer-randomize-attributes-a-value="<%= CrewOptions::ATTRIBUTES_A.to_json %>"
+             data-officer-randomize-attributes-b-value="<%= CrewOptions::ATTRIBUTES_B.to_json %>">
+          <div class="flex items-center justify-between">
+            <h2 class="font-semibold text-cyan-300">Officer <%= of.object.position + 1 %></h2>
+            <button type="button" class="btn-secondary py-1 px-3 text-xs"
+                    data-action="officer-randomize#randomize">Randomize</button>
+          </div>
           <%= of.hidden_field :position %>
           <%= of.hidden_field :id if of.object.persisted? %>
           <div class="mt-4 grid gap-4 sm:grid-cols-2">
             <div class="sm:col-span-2">
               <%= of.label :name, class: "label" %>
-              <%= of.text_field :name, class: "input", required: true %>
+              <%= of.text_field :name, class: "input", required: true,
+                    data: { "officer-randomize-target": "name" } %>
             </div>
             <div>
               <%= of.label :title, class: "label" %>
@@ -48,15 +59,18 @@
             </div>
             <div>
               <%= of.label :specialty, class: "label" %>
-              <%= of.select :specialty, CrewOptions::SPECIALTIES, { include_blank: "Select…" }, class: "input", required: true %>
+              <%= of.select :specialty, CrewOptions::SPECIALTIES, { include_blank: "Select…" }, class: "input", required: true,
+                    data: { "officer-randomize-target": "specialty" } %>
             </div>
             <div>
               <%= of.label :attribute_a, "Attribute A", class: "label" %>
-              <%= of.select :attribute_a, CrewOptions::ATTRIBUTES_A, { include_blank: "Select…" }, class: "input", required: true %>
+              <%= of.select :attribute_a, CrewOptions::ATTRIBUTES_A, { include_blank: "Select…" }, class: "input", required: true,
+                    data: { "officer-randomize-target": "attributeA" } %>
             </div>
             <div>
               <%= of.label :attribute_b, "Attribute B", class: "label" %>
-              <%= of.select :attribute_b, CrewOptions::ATTRIBUTES_B, { include_blank: "Select…" }, class: "input", required: true %>
+              <%= of.select :attribute_b, CrewOptions::ATTRIBUTES_B, { include_blank: "Select…" }, class: "input", required: true,
+                    data: { "officer-randomize-target": "attributeB" } %>
             </div>
           </div>
         </div>
