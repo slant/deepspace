@@ -64,6 +64,14 @@ This is a **solo-only** experience.
 - Dark, atmospheric sci-fi aesthetic.
 - Never guess story text or rules — pull from the original PDF content.
 
+## Events YAML
+- `config/events.yml` contains all 170 story events from PDF pages 10–74, fully QA'd against the PDF (2026-05-27).
+- All intentional deviations from the source material are tracked in `memory/events_yaml_pdf_deviations.md`. Any future change to `events.yml` that deviates from the PDF must be appended there.
+
+## PDF Tooling
+- The Read tool's PDF support does not resolve correctly in this environment.
+- Use `pdftotext -f <start> -l <end> "path/to/file.pdf" -` via Bash for all PDF extraction work.
+
 ## Future Extensions (documented for later)
 - Full Research & Development tracking
 - Journal system
