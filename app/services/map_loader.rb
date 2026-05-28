@@ -15,6 +15,10 @@ class MapLoader
       data["hexes"]
     end
 
+    def sector_rolls
+      data["sectors"]&.transform_values { |v| v["rolls"] } || {}
+    end
+
     def hex_size
       grid["hex_size"]
     end

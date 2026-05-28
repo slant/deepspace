@@ -16,14 +16,12 @@
              data-label="<%= hex['label'] %>"
              data-action="click->hex-map#selectHex">
             <polygon points="<%= points_string(verts) %>" class="hex-polygon" />
-            <% if hex["label"].present? %>
-              <text x="<%= cx %>" y="<%= cy - size * 0.55 %>" class="hex-label"><%= hex["label"] %></text>
-            <% end %>
+
             <% if hex["note"].present? %>
               <text x="<%= cx %>" y="<%= cy + size * 0.35 %>" class="hex-note"><%= hex["note"] %></text>
             <% end %>
             <% if hex["icon"].present? %>
-              <%= render HexIconComponent.new(icon: hex["icon"], cx: cx, cy: cy, size: size) %>
+              <%= render HexIconComponent.new(icon: hex["icon"], cx: cx, cy: cy, size: size, planet_index: planet_index_for(hex)) %>
             <% end %>
             <% if ship_here?(hex) %>
               <g class="ship-token" transform="translate(<%= cx %>, <%= cy %>)">

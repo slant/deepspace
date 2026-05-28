@@ -2,28 +2,40 @@ grid:
   orientation: flat-top
   hex_size: 60
 
+sectors:
+  tau:   { rolls: 2 }
+  zeta:  { rolls: 3 }
+  delta: { rolls: 4 }
+  beta:  { rolls: 6 }
+  alpha: { rolls: 6 }
+
 hexes:
 
-# Sector: Tau
+# Sector: Tau (2 rolls)
 
   - q: 2
     r: -1
     sector: tau
+    label: "19-A"
     icon: home
 
   - q: 1
     r: 0
     sector: tau
+    label: "18-A"
+    icon: circle
 
   - q: 3
     r: -1
     sector: tau
+    label: "18-B"
+    trigger: "4-6"
 
   - q: 2
     r: 0
     sector: tau
 
-# Sector: Zeta
+# Sector: Zeta (3 rolls)
 
   - q: 0
     r: 1
@@ -32,40 +44,56 @@ hexes:
   - q: -1
     r: 2
     sector: zeta
+    label: "17-D"
+    trigger: "10-12"
 
   - q: 1
     r: 1
     sector: zeta
+    label: "17-C"
+    trigger: "7-9"
 
   - q: 0
     r: 2
     sector: zeta
+    label: "16-A"
+    icon: circle
 
   - q: -1
     r: 3
     sector: zeta
+    label: "17-A"
+    trigger: "1-3"
 
   - q: 1
     r: 2
     sector: zeta
+    label: "17-B"
+    trigger: "4-6"
 
   - q: 0
     r: 3
     sector: zeta
 
-# Sector: Delta
+# Sector: Delta (4 rolls)
 
   - q: 5
     r: 0
     sector: delta
+    label: "15-B"
+    icon: circle
 
   - q: 4
     r: 1
     sector: delta
+    label: "15-A"
+    trigger: "2-7"
 
   - q: 5
     r: 1
     sector: delta
+    label: "14-C"
+    trigger: "8-12"
 
   - q: 3
     r: 2
@@ -74,10 +102,14 @@ hexes:
   - q: 4
     r: 2
     sector: delta
+    label: "14-B"
+    trigger: "1"
 
   - q: 3
     r: 3
     sector: delta
+    label: "14-A"
+    icon: circle
 
   - q: 4
     r: 3
@@ -87,15 +119,19 @@ hexes:
     r: 2
     sector: delta
 
-# Sector: Beta
+# Sector: Beta (6 rolls)
 
   - q: 4
     r: -1
     sector: beta
+    label: "13-C"
+    trigger: "11"
 
   - q: 3
     r: 0
     sector: beta
+    label: "20-C"
+    icon: square
 
   - q: 5
     r: -1
@@ -108,22 +144,32 @@ hexes:
   - q: 4
     r: 0
     sector: beta
+    label: "13-B"
+    trigger: "12"
 
   - q: 3
     r: 1
     sector: beta
+    label: "13-A"
+    trigger: "8-10"
 
   - q: 2
     r: 2
     sector: beta
+    label: "20-B"
+    icon: beacon_store
 
   - q: -1
     r: 4
     sector: beta
+    label: "12-C"
+    trigger: "1-3"
 
   - q: 1
     r: 3
     sector: beta
+    label: "12-D"
+    trigger: "4"
 
   - q: 0
     r: 4
@@ -132,6 +178,8 @@ hexes:
   - q: 2
     r: 3
     sector: beta
+    label: "12-B"
+    trigger: "5-7"
 
   - q: -1
     r: 5
@@ -144,12 +192,14 @@ hexes:
   - q: 0
     r: 5
     sector: beta
+    label: "12-A"
+    icon: circle
 
   - q: 2
     r: 4
     sector: beta
 
-# Sector: Alpha
+# Sector: Alpha (6 rolls)
 
   - q: -1
     r: 6
@@ -158,22 +208,32 @@ hexes:
   - q: 1
     r: 5
     sector: alpha
+    label: "20-A"
+    icon: square
 
   - q: 3
     r: 4
     sector: alpha
+    label: "10-C"
+    trigger: "10"
 
   - q: 5
     r: 3
     sector: alpha
+    label: "11-C"
+    trigger: "12"
 
   - q: 0
     r: 6
     sector: alpha
+    label: "10-A"
+    trigger: "1-2"
 
   - q: 2
     r: 5
     sector: alpha
+    label: "11-D"
+    trigger: "7-9"
 
   - q: 4
     r: 4
@@ -182,6 +242,8 @@ hexes:
   - q: -1
     r: 7
     sector: alpha
+    label: "11-A"
+    icon: circle
 
   - q: 1
     r: 6
@@ -202,6 +264,8 @@ hexes:
   - q: 2
     r: 6
     sector: alpha
+    label: "10-B"
+    trigger: "3-6"
 
   - q: 4
     r: 5
@@ -214,6 +278,8 @@ hexes:
   - q: 3
     r: 6
     sector: alpha
+    label: "11-B"
+    trigger: "11"
 
   - q: 2
     r: 7

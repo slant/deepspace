@@ -45,7 +45,22 @@ This is a **solo-only** experience.
 - Rendered entirely with **SVG** — transparent hex polygons, edges drawn on top as dashed lines; boundary edges between sectors render as dashed cyan
 - Ship token moves visually on click; `START_HEX` is `{ q: 2, r: 7 }` (alpha sector, bottom of map)
 - Clicking a sector opens a modal with story content and choices
-- Labels on individual hexes are not yet implemented
+- Event labels (e.g. `"10-A"`) live in `map.yml` for `EventCatalog` lookups but are **never rendered visually** on the map
+- `sectors:` section in `map.yml` stores per-sector d12 roll counts (tau:2, zeta:3, delta:4, beta:6, alpha:6)
+- **Trigger hexes**: a hex with a `trigger: "4-6"` field only activates (shows its icon, enables its event) when a d12 roll during sector generation falls in that range; otherwise it is completely blank. Static hexes always show their icon.
+
+### Hex Icon Types
+- `home` — house SVG path (homeworld)
+- `start` — up-arrow SVG path (starting hex)
+- `circle` — planet sprite (see below)
+- `square` — store (SVG rect)
+- `beacon_store` — planet sprite (smaller, offset up) + square below
+- `jump` — jump point (circle + ⇄ label)
+
+### Planet Sprites
+- `/public/planets.png` is a 500×500px spritesheet: 5×5 grid of 25 planet sprites, each 100×100px, transparent background.
+- Planet selection is deterministic per hex position: `(q * 7 + r * 11).abs % 25`
+- In SVG, a spritesheet `<image>` renders the **full sheet** unless clipped. Always pair it with an inline `<clipPath>`. Use pixel coordinates (`cx.round`, `cy.round`) to generate unique clip IDs per hex.
 
 `public/map/index.html` + `public/map/style.css` are a JS prototype/reference implementation used for visual verification — do not delete.
 
@@ -63,6 +78,7 @@ This is a **solo-only** experience.
 - Mobile-friendly responsive design.
 - Dark, atmospheric sci-fi aesthetic.
 - Never guess story text or rules — pull from the original PDF content.
+- **Never derive hex coordinate/event mappings analytically from PDF text extraction** — the PDF layout does not parse reliably enough. Always ask the user to provide this data directly.
 
 ## Events YAML
 - `config/events.yml` contains all 170 story events from PDF pages 10–74, fully QA'd against the PDF (2026-05-27).

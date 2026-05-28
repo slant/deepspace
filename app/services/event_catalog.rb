@@ -56,6 +56,7 @@ class EventCatalog
       kind = case icon
              when "circle" then "beacon"
              when "square" then "store"
+             when "beacon_store" then "beacon & store"
              when "home" then "homeworld"
              when "jump" then "jump point"
              else "space"
@@ -68,7 +69,7 @@ class EventCatalog
           { "label" => "Mark resolved & return to orbit", "action" => "resolve" },
           { "label" => "Return to orbit", "action" => "orbit" }
         ],
-        resolvable: icon.in?(%w[circle square home])
+        resolvable: icon.in?(%w[circle square beacon_store home])
       }
     end
   end

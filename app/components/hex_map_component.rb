@@ -47,4 +47,8 @@ class HexMapComponent < ApplicationComponent
     label = hex["label"]
     label.present? && campaign.resolved_events.include?(label)
   end
+
+  def planet_index_for(hex)
+    (hex["q"].to_i * 7 + hex["r"].to_i * 11).abs % 25
+  end
 end

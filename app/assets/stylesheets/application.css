@@ -85,7 +85,12 @@
   pointer-events: none;
 }
 
-.hex-icon-home path {
+.hex-icon-planet {
+  pointer-events: none;
+}
+
+.hex-icon-home path,
+.hex-icon-start path {
   fill: #4a5d7a;
   stroke: #94a3b8;
   stroke-width: 1.5;
