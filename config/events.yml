@@ -1,37 +1,2303 @@
-# Sample events — add full rulebook text here over time.
+# events.yml — Deep Space D6: The Long Way Home
+# Story events from pages 10–74 of the PDF rulebook. Page 75 ("For Demo Purposes") is excluded.
+#
+# Action types:
+#   goto      — navigate to another event (requires metadata.goto: "XX-X")
+#   orbit     — return to orbit (end this encounter)
+#   complete  — game complete (victory or positive ending)
+#   game_over — game over (death or unrecoverable loss)
+#
+# Conditional choices are prefixed with [Requires: X] in the label.
+# Items use [ITEM-NAME] notation. Sequences use their printed codes.
+# Some entries are dead ends or unreachable — the author left the adventure incomplete.
+# Combat entries note the encounter format (draw deck + starting threats) in the body.
+
 "10-A":
   title: "Oxygen Leak"
   body: |
-    The unhospitable planet Notus where the oxygen farms are being threatened. One day the farms stopped functioning properly.
-    Your chief engineer lays out possible plans of action.
+    The inhospitable planet Notus where the oxygen farms are being threatened. One day the farms stopped functioning properly. One by one the generators were shutting down and people have had to relocate into shared hubs. It's getting overcrowded. Can you help? We'll pay!
+    The farms were built centuries ago and the people have largely forgotten how they function, much less how to fix them. Your chief engineer lays out the following possible plans of action.
   choices:
     - label: "Buy replacement parts → 41-A"
-      action: "note"
+      action: goto
       metadata: { goto: "41-A" }
+    - label: "[Requires: SYS-PUMP] Already have the pump → 53-B"
+      action: goto
+      metadata: { goto: "53-B" }
     - label: "Solve the power problem → 29-A"
-      action: "note"
+      action: goto
       metadata: { goto: "29-A" }
-    - label: "Stay and monitor → 30-B"
-      action: "note"
+    - label: "Stay and monitor the problem → 30-B"
+      action: goto
       metadata: { goto: "30-B" }
+  resolvable: true
+
+"10-B":
+  title: "A Rain to Drown All Rains"
+  body: |
+    The rain is endless and there doesn't seem to be a safe place to land. In a clearing far from any light sources, you guide the ship safely down.
+    You and your crew make your way through harsh rain and punishing waters until you come across a path.
+  choices:
+    - label: "Head uphill towards a tall pillar of light → 28-D"
+      action: goto
+      metadata: { goto: "28-D" }
+    - label: "Continue towards the distress beacon signal → 42-A"
+      action: goto
+      metadata: { goto: "42-A" }
+    - label: "It's too dangerous — Return to Orbit"
+      action: orbit
+  resolvable: true
+
+"10-C":
+  title: "A Planet like a Gem"
+  body: |
+    Even from orbit the planet shines like a star. The radiant light given off from the planet's rings beckons you. According to the StarNav, there is a UEF outpost here. It might be wise to contact someone there. What should we do?
+  choices:
+    - label: "Seek side jobs → 33-B"
+      action: goto
+      metadata: { goto: "33-B" }
+    - label: "Seek out a UEF contact → 44-A"
+      action: goto
+      metadata: { goto: "44-A" }
+    - label: "Visit the local tavern → 51-A"
+      action: goto
+      metadata: { goto: "51-A" }
+  resolvable: true
+
+"11-A":
+  title: "Robots Taking Over"
+  body: |
+    There are multiple distress beacons coming from this planet. Before you can zero in on one, you're attacked! Threats are swarming your ship and don't appear to respond to any communication. These are robotic ships!
+    COMBAT: 2 threats, draw deck of 5.
+  choices:
+    - label: "Land in a nearby field → 45-B"
+      action: goto
+      metadata: { goto: "45-B" }
+    - label: "Land in the spaceport → 52-B"
+      action: goto
+      metadata: { goto: "52-B" }
+    - label: "Stay in orbit and attempt contact → 51-C"
+      action: goto
+      metadata: { goto: "51-C" }
+  resolvable: true
+
+"11-B":
+  title: "Alien Settlers"
+  body: |
+    Planet designation NMD-11. Many cycles ago humans settled on this abandoned planet. But they were wrong — the planet wasn't abandoned. The Miras used to call the planet home until they left on a species-wide pilgrimage. Now they're back and wish to return to the homes and places they left behind.
+    Under guidance of the UEF, the humans made peace with the Miras and the two share most of the planet. However, tensions are rising as the Miras are set to go on another pilgrimage and the humans want to use the vacant resources in their absence. Both species will meet before a council to present their case.
+    As members of the UEF, we are required by oath to assist in this matter.
+  choices:
+    - label: "Hear the human's side → 53-A"
+      action: goto
+      metadata: { goto: "53-A" }
+    - label: "Hear the Mira's side → 42-C"
+      action: goto
+      metadata: { goto: "42-C" }
+  resolvable: true
+
+"11-C":
+  title: "Time & Space"
+  body: |
+    This planet is uncomfortably close to a black hole. Light bends away from the planet making it look like it's in perpetual motion. The distress beacon alternates between strong and faint signals, but a beacon is a beacon and you set down on one of the planet's many islands.
+    As soon as you power down your engines, the distress beacon completely disappears. Even after boosting the signal, no distress beacon of any type can be found. "What should we do, Captain?"
+  choices:
+    - label: "Venture to a nearby island in the direction of the beacon → 35-C"
+      action: goto
+      metadata: { goto: "35-C" }
+    - label: "Leave the planet → 53-C"
+      action: goto
+      metadata: { goto: "53-C" }
+  resolvable: true
+
+"11-D":
+  title: "Sea of Thieves"
+  body: |
+    This planet is covered primarily in water. It reminds you of one of the planets you've read about in the history books. You've heard of this one before. It's legendary. Rumor has it that a famous space pirate hid his treasures somewhere on this planet. If we find it, we'll be home in no time.
+    The planet is filled with hunters and explorers seeking the rumored lost treasure. If we work with others, we might find it faster. Or maybe it's just a rumor?
+  choices:
+    - label: "Search for the treasure on your own → 36-A"
+      action: goto
+      metadata: { goto: "36-A" }
+    - label: "Join a group of hunters → 61-A"
+      action: goto
+      metadata: { goto: "61-A" }
+    - label: "Set a trap for one of the pirates → 31-B"
+      action: goto
+      metadata: { goto: "31-B" }
     - label: "Return to Orbit"
-      action: "orbit"
+      action: orbit
+  resolvable: true
+
+"12-A":
+  title: "Manaport Outpost"
+  body: |
+    Welcome to the Manaport Waystation. No one on Manaport is from Manaport. This station plays host to millions of lifeforms on transient journeys through the stars. Through a symbiosis of interdependence, it exists without a central authority. Its visitors give to the station what it needs, only asking in return a place to rest. This might not be a bad place to spend some time recovering.
+  choices:
+    - label: "Seek out jobs → 37-A"
+      action: goto
+      metadata: { goto: "37-A" }
+    - label: "Visit the vendor hall → 43-D"
+      action: goto
+      metadata: { goto: "43-D" }
+    - label: "Visit the refueling depot → 72-B"
+      action: goto
+      metadata: { goto: "72-B" }
+    - label: "Visit the research center → 41-B"
+      action: goto
+      metadata: { goto: "41-B" }
+  resolvable: false
+
+"12-B":
+  title: "Diaspora"
+  body: |
+    This was once a rich and prosperous planet until constant warring with the pirate factions resulted in the entire destruction of the planet. What is left looks more like loosely gathered debris.
+    Large chunks of the planet are inhabited by various pirate factions and rebels. The nearby United Earths trade location would probably appreciate some policing in the area. Choose a patrol route.
+  choices:
+    - label: "Patrol route A → 31-C"
+      action: goto
+      metadata: { goto: "31-C" }
+    - label: "Patrol route B → 33-A"
+      action: goto
+      metadata: { goto: "33-A" }
+    - label: "Patrol route C → 45-D"
+      action: goto
+      metadata: { goto: "45-D" }
+  resolvable: true
+
+"12-C":
+  title: "A Planet on the Verge"
+  body: |
+    Strange things keep occurring on this planet. As you get closer you're attacked by a strange new threat you've never seen before.
+    COMBAT: see Patrol route A (→ 44-E).
+  choices:
+    - label: "Engage → 44-E"
+      action: goto
+      metadata: { goto: "44-E" }
+  resolvable: true
+
+"12-D":
+  title: "Hephaestus VII"
+  body: |
+    Neighboring the grand bazaar is a man-made machine planet constructed for the sole purpose of manufacturing a high supply of goods. The planet is surrounded by a thick layer of pollution and acid rain.
+    Pirate raids have forced security measures to become uncomfortably strong. As you approach the landing pad, you detect no less than 12 weapons targeting your ship. Whoever put out the distress beacon sure has a funny way of asking for help.
+    You hail the manufacturing facility asking for permission to enter. Instead of any warm greeting you are sent a simple text message: "Come in."
+  choices:
+    - label: "Egress the ship and enter the factory → 49-C"
+      action: goto
+      metadata: { goto: "49-C" }
+    - label: "Turn around and leave → 52-D"
+      action: goto
+      metadata: { goto: "52-D" }
+  resolvable: true
+
+"13-A":
+  title: "The Greatest Show"
+  body: |
+    Lights everywhere, but nothing appears to be for sale. Instead it's all betting and gambling. You stare at the endless venues for countless games, many of which you've never heard of. As your ship docks in a sponsored landing zone, you and your crew are approached by a man in a dazzling outfit. He calls himself the "Game Master" and claims to be the owner of this planet.
+    "We don't get many federation ships around here. Please, come with me. You'll be my honored guests for today."
+    The men surrounding him with guns pointed at you don't exactly make you feel honored, but you follow him nonetheless. The Game Master suggests that the best way to make money is to join in on the fun. He doesn't give many options.
+  choices:
+    - label: "Enter the gladiator fights → 21-B"
+      action: goto
+      metadata: { goto: "21-B" }
+    - label: "Try your hand at the card tables → 27-B"
+      action: goto
+      metadata: { goto: "27-B" }
+  resolvable: true
+
+"13-B":
+  title: "Just Communication"
+  body: |
+    The outpost stations here are responsible for relaying information from the pirate zone to the UEF fleets. The distress beacon indicates that the communications lines have been shut down by an unknown force. As you arrive at the primary outpost, an alarm sounds — one of the outposts has come under attack.
+    A single shot has completely wiped out one of the smaller outposts. Emergency scanners have failed to locate the source of the attack. You signal a ceasefire as the resident highest ranking official in the zone. Your call is answered by a man calling himself The Shadow.
+    The Shadow is a fearsome predator that lives for the glory of battle.
+  choices:
+    - label: "Engage him → 57-A"
+      action: goto
+      metadata: { goto: "57-A" }
+    - label: "Attempt to flee → 41-D"
+      action: goto
+      metadata: { goto: "41-D" }
+  resolvable: true
+
+"13-C":
+  title: "New New Voluptas"
+  body: |
+    The old Voluptas was a paradise. This newly remodeled vacation planet is a utopia. Things are a little out of budget here.
+  choices:
+    - label: "Take a break and visit the spa → 55-A"
+      action: goto
+      metadata: { goto: "55-A" }
+  resolvable: true
+
+"14-A":
+  title: "Pirate Outpost"
+  body: |
+    The pirates maintain control of the borders using advanced scouting techniques and positioning large fleets at various outpost locations. Each year they move closer and closer to civilian regions. Here the ships are right at the front door and they need to be stopped. Recent reports say the enemy fleet is one giant warship. This will be a dangerous conflict.
+  choices:
+    - label: "Advance to the attack → 67-A"
+      action: goto
+      metadata: { goto: "67-A" }
+    - label: "Retreat → Orbit"
+      action: orbit
+  resolvable: true
+
+"14-B":
+  title: "Asteroid Field"
+  body: |
+    The asteroid field in this sector aids in hiding the pirates. Their ships are designed to withstand impact from the debris. There are dangerous levels of seismic activity and the nearby nebula clouds are throwing off your scanners. Because this is pirate territory, this would be an ideal place for an ambush. Your crew recommends going around or avoiding this area altogether.
+  choices:
+    - label: "Heed the warnings — Return to Orbit"
+      action: orbit
+    - label: "Proceed through the asteroid field → 22-A"
+      action: goto
+      metadata: { goto: "22-A" }
+  resolvable: true
+
+"14-C":
+  title: "Pirate Queen Headquarters"
+  body: |
+    Everywhere in the pirate zone the buildings are barely functional and pose a structural threat in themselves. But not here. The central pirate headquarters contain ornate glasswork and gold emblems with avian insignia. It almost looks like a pleasant place to live. You are summoned to see the Queen.
+  choices:
+    - label: "[Requires: Sequence L + Sequence 711] → 40-A"
+      action: goto
+      metadata: { goto: "40-A" }
+    - label: "[Requires: Sequence L only] → 26-A"
+      action: goto
+      metadata: { goto: "26-A" }
+    - label: "[Requires: Sequence 711 only] → 48-B"
+      action: goto
+      metadata: { goto: "48-B" }
+    - label: "[No qualifying sequences] → 63-B"
+      action: goto
+      metadata: { goto: "63-B" }
+  resolvable: true
+
+"15-A":
+  title: "A War on Two Fronts"
+  body: |
+    It's an all-out war!
+    COMBAT: 10 threats, draw deck of 0 (no draw deck — use only the starting threats).
+    If you survive, gain 8 scrap. If you are destroyed, lose 2 fuel.
+  choices:
+    - label: "Return to Orbit"
+      action: orbit
+  resolvable: true
+
+"15-B":
+  title: "The Queen's Gambit"
+  body: |
+    As your ship flies in closer to the planet you see the destroyed remains of countless other ships. How many other ships were sent here by the Queen? Is it a mission or a death sentence?
+    This region of the planet is filled with endless snowfall. The map given to you by the pirate queen indicates that you'll need to travel on foot for the rest of the way. You embark into the perilous wilderness.
+    As you pass by the remains of the other ships, you don't seem to find any bodies and the escape pods are mostly intact. The map leads you to a tall mountain with a hole at the top similar to a volcano. You venture further in, led on by the blinking dot of the nav map.
+  choices:
+    - label: "Continue → 41-C"
+      action: goto
+      metadata: { goto: "41-C" }
+  resolvable: true
+
+"16-A":
+  title: "Heart of the Swarm"
+  body: |
+    This is where the Endless Ships seem to be originating from. There's no time to report them to the UEF — we must stop them now. You hope you and your crew are ready.
+    COMBAT: 2 threats, draw deck of 15. Use the Endless cards from page 74 of the rulebook.
+  choices:
+    - label: "Defeated the Endless Threat → 40-B"
+      action: goto
+      metadata: { goto: "40-B" }
+    - label: "Defeated by the Endless Threat → 26-B"
+      action: goto
+      metadata: { goto: "26-B" }
+  resolvable: true
+
+"17-A":
+  title: "Resistance"
+  body: |
+    The Endless have consumed all the neighboring planets but pockets of resistance scrape by. Assist them until they are able to evacuate.
+    COMBAT: 1 threat, draw deck of 10. When the last threat card is drawn, you win the encounter.
+    Gain 3 scrap.
+  choices:
+    - label: "Return to Orbit"
+      action: orbit
+  resolvable: true
+
+"17-B":
+  title: "The Planet Eater"
+  body: |
+    The distress beacon here is using a special UEF frequency. As you get closer your suspicions are confirmed as you make out the outline of the UEF Manta — heavily damaged with systems in critical condition.
+    You teleport aboard and search for survivors. Bodies are littered throughout but none are alive. In one of the jammed escape pods you find an unconscious UEF officer, Officer Carla Muller.
+    Muller explains that her crew was responding to a distress beacon in Endless territory when a giant spaceship made from millions of smaller ships swarmed the UEF Manta and tore it apart. Parts of the Manta were assimilated and the monstrous ship grew in size and speed. Based on recorded data, the doomsday ship is headed towards the Grand Bazaar. If it gets there, the mass it consumes will make it unstoppable.
+  choices:
+    - label: "Chase down the planet eating ship → 40-C"
+      action: goto
+      metadata: { goto: "40-C" }
+    - label: "Rely on the bazaar's defenses and leave → 53-D"
+      action: goto
+      metadata: { goto: "53-D" }
+  resolvable: true
+
+"17-C":
+  title: "Relic of the Past"
+  body: |
+    A massive structure can be seen from light-years away. It looks like a ring made from stone. It doesn't seem to function anymore.
+  choices:
+    - label: "[Requires: Sequence 521] → 26-C"
+      action: goto
+      metadata: { goto: "26-C" }
+    - label: "Return to Orbit"
+      action: orbit
   resolvable: true
 
 "17-D":
-  title: "Starting Zone"
+  title: "???"
   body: |
-    You begin your long journey home from Sector Alpha. Consume fuel to move to adjacent hexes.
-    Beacons (circles) and stores (squares) can be visited once each.
+    No such planet is listed on any official star map. The planet is clearly there and your scanners can verify it. It could be a trap. Something beckons you.
   choices:
+    - label: "Land on the planet to explore it → 25-A"
+      action: goto
+      metadata: { goto: "25-A" }
     - label: "Return to Orbit"
-      action: "orbit"
-  resolvable: false
+      action: orbit
+  resolvable: true
+
+"18-A":
+  title: "Aergia Moon Colony"
+  body: |
+    The UEF-sanctioned Aergia was a peaceful planet until the uprising of a radical colony group calling themselves The Red Asters. The Red Asters claim that the UEF is improperly taxing the Aergia Colony without proper representation. The distress beacon originates from the Magnolia Foundation, one of the original settling dynasties.
+    You set down the ship and are immediately greeted by a lone woman — April Cassus. She explains that Aergia is on the verge of complete mutiny. The Red Asters are seeking something called the Pandora Box which is hidden in the Magnolia Foundation compound. April admits she does not know the contents of the locked box, only that her forefathers placed it there for safe keeping. The last person who knew the contents was her older brother who never returned from an exploration mission in the Alpha Sector.
+    April asks for your help defending the compound.
+  choices:
+    - label: "Assist April with defending the compound → 58-C"
+      action: goto
+      metadata: { goto: "58-C" }
+    - label: "Demand to open the box → 27-C"
+      action: goto
+      metadata: { goto: "27-C" }
+    - label: "[Requires: Flower Locket] → 50-C"
+      action: goto
+      metadata: { goto: "50-C" }
+  resolvable: true
+
+"18-B":
+  title: "Split"
+  body: |
+    The space between the UEF zone and the pirate territory is an ongoing war. You've been assigned to aid the UEF forces on the ground as part of the 7th Fleet.
+    While orbiting the planet, you run into a pirate scouting team. You fire your lasers and bring their ship to destruction. In the aftermath, the pirate escape pod activates a distress beacon broadcasting to all channels — highly unusual, as pirates use their own channel.
+    You show mercy and rescue the escape pod. Safety scans show two life forms and no weapons. When the pod doors open you're floored to see two young children emerge. It turns out they are brother and sister. Their mom is a citizen of the pirate colonies; their dad is a soldier from the UEF. They both want to go home, but in separate ways.
+  choices:
+    - label: "Send the boy to his father in the UEF, then Return to Orbit"
+      action: orbit
+    - label: "Send the girl to her mother in the pirate colony, then Return to Orbit"
+      action: orbit
+    - label: "Send both children to the UEF, then Return to Orbit"
+      action: orbit
+    - label: "Send both children to the pirate colony, then Return to Orbit"
+      action: orbit
+  resolvable: true
 
 "19-A":
-  title: "UEF Homeworld"
-  body: "You have reached home. The Long Way Home is complete!"
+  title: "Home"
+  body: |
+    You finally made it home.
+
+    It is true that when you first joined the UEF you were searching for your place in the universe. How fitting then that to find your place you had to become truly lost. The journey of a hero may culminate in celebration, applause, and revere; but a real ending is undramatic. To have seen the things you've seen and to recall the choices you've made is to consider not what difficulties or challenges had beset you. Rather, to understand the urge to serve others at whatever the cost.
+    The UEF has made you into a symbol. You are a beacon of what the UEF stands for, bred not from battlefields and sorties, but from difficult choices made with the trust earned by your crew.
+
+    "Safety does not exist in outer space. Avoiding danger is no safer in the long run than meeting it head-on. Life is either a daring adventure, or nothing at all."
+
+    — Check your sequences and items below for additional endings before choosing Journey Complete.
   choices:
-    - label: "Victory!"
-      action: "complete"
+    - label: "[Circled sequence 000] → 38-B"
+      action: goto
+      metadata: { goto: "38-B" }
+    - label: "[Underlined sequence 99] → 24-A"
+      action: goto
+      metadata: { goto: "24-A" }
+    - label: "[Underlined sequence 761] → 28-A"
+      action: goto
+      metadata: { goto: "28-A" }
+    - label: "[Underlined sequence 182] → 39-C"
+      action: goto
+      metadata: { goto: "39-C" }
+    - label: "[Underlined sequence 364] → 23-B"
+      action: goto
+      metadata: { goto: "23-B" }
+    - label: "[Underlined sequence 182947] → 32-B"
+      action: goto
+      metadata: { goto: "32-B" }
+    - label: "[Underlined sequence 000] → 47-B"
+      action: goto
+      metadata: { goto: "47-B" }
+    - label: "[Item: CARGO13] → 64-C"
+      action: goto
+      metadata: { goto: "64-C" }
+    - label: "[Item: ORB1] → 34-C"
+      action: goto
+      metadata: { goto: "34-C" }
+    - label: "[Item: EE7] → 68-B"
+      action: goto
+      metadata: { goto: "68-B" }
+    - label: "Journey complete"
+      action: complete
+  resolvable: true
+
+"20-A":
+  title: "Scrapyard Seller"
+  body: |
+    The scrapyard sellers are modest in their inventory. Choose to perform any number of the following actions.
+    • Purchase [SYS-PUMP] for 5 scrap.
+    • Research: spend 3 scrap per roll on available crew dice.
+    • Purchase 1 fuel for every 4 scrap (limit 5).
+  choices:
+    - label: "Return to Orbit"
+      action: orbit
+  resolvable: false
+
+"20-B":
+  title: "Grand Black Market Bazaar"
+  body: |
+    Choose to perform any number of the following actions.
+    • Research: spend 5 scrap per roll on available crew dice.
+    • Purchase 1 fuel for every 6 scrap (no limit).
+  choices:
+    - label: "Return to Orbit"
+      action: orbit
+  resolvable: false
+
+"20-C":
+  title: "Traveling Traders"
+  body: |
+    You're able to find the traveling traders by following their social media! Choose to perform any number of the following actions.
+    • Research: spend 3 scrap per roll on available crew dice.
+    • Purchase 1 fuel for every 5 scrap (limit 5).
+    • Complete Luxury Food mission: lose [Lux Food], gain 15 scrap.
+  choices:
+    - label: "Return to Orbit"
+      action: orbit
+  resolvable: false
+
+"21-A":
+  title: "Adrift"
+  body: |
+    Your ship is out of fuel. As you drift you think of all the things that could have gone differently. Maybe someone will find you? Maybe you can play a game to pass the time?
+
+    Boredom and idleness is exactly when we feel time and being the most acutely. Alone together in our lighted ship, sailing against the darkness and all that was yet to come.
+
+    THE END
+  choices:
+    - label: "Game Over"
+      action: game_over
+  resolvable: true
+
+"21-B":
+  title: "Gladiator Fights"
+  body: |
+    You are confident in the abilities of your officers. The gladiator fights have the largest payout. Pick one of your officers. Cross out their title and replace it with GLADIATOR. If the officer fails any challenge, cross out the entire officer and lose any scrap gained from this event.
+    Using all 6 crew dice, pick one of the following challenges (crew symbols are any face except the skull):
+    • Roll 3 matching crew symbols in 3 rolls — gain 3 scrap.
+    • Roll 5 matching symbols in less than 6 rolls — gain 5 scrap.
+    • Roll 1 of each symbol in less than 10 rolls (duplicates must be re-rolled) — gain 25 scrap.
+    • Roll no skulls in a single roll — gain 15 scrap.
+    • Roll 3 matching crew symbols in 1 roll — gain 10 scrap.
+    • Roll 2 pairs of any symbol in 2 rolls — gain 5 scrap.
+    If successful, you may pick a different challenge or return to Orbit.
+  choices:
+    - label: "Return to Orbit"
+      action: orbit
+  resolvable: true
+
+"22-A":
+  title: "Asteroid Field"
+  body: |
+    The asteroids appear to push off each other with tremendous force. Roll the threat die:
+    1 — The asteroids graze your ship but cause no significant damage.
+    2 — An asteroid hits your cargo bay area. Lose 5 scrap.
+    3 — An asteroid hits your fuel tanks. Lose 2 fuel.
+    4 — An asteroid hits your fuel tanks. Lose 2 fuel.
+    5 — Several asteroids make impact. Lose 5 scrap and 1 fuel.
+    6 — Small asteroids crumble into valuable ore. Gain 5 scrap.
+    In all the mayhem, your scanners detect a nearby hidden cache.
+  choices:
+    - label: "Stay in the asteroid field, roll again, and grab the cache → 23-A"
+      action: goto
+      metadata: { goto: "23-A" }
+    - label: "Get out of the asteroid field — Return to Orbit"
+      action: orbit
+  resolvable: true
+
+"23-A":
+  title: "The Cache"
+  body: |
+    You came all this way — you might as well try to get something out of it. You pull the cache into your holdings and proceed to unlock it. A cloud of smoke fills your immediate surroundings. In that moment your alarms go off. It was a trap!
+    COMBAT: 3 threats, draw deck of 4. You cannot return crew from the scanners using any station action.
+    Gain 2 scrap.
+  choices:
+    - label: "Return to Orbit"
+      action: orbit
+  resolvable: true
+
+"23-B":
+  title: "A Harmonious Arrangement"
+  body: |
+    It was always strange to you how those in charge of people often lived better lives than those they were in charge of. If their responsibility is the well-being of their followers, why then do the followers live so poorly? You suggested that the humans who lived with the Miras redistribute the current wealth. This task was difficult for the humans, but with assistance from the Miras who live communally, they were able to achieve a harmonious arrangement.
+    Humans and Miras continue to coexist and share in each other's culture and technology. When you return to the planet many decades later you're surprised to find something of a utopia. It makes you wonder how cultural diversity can improve the lives of beings on other planets.
+    (Sequence ending — return to 19-A for remaining sequences.)
+  choices:
+    - label: "Return to 19-A"
+      action: goto
+      metadata: { goto: "19-A" }
+  resolvable: true
+
+"24-A":
+  title: "The Reunion"
+  body: |
+    After you've taken a ride on an archaic "tractor" type vehicle, you come up to a structure that looks like a farm. The invitation said RED BARN and this is the only building for miles. You walk in and are surprised to see some of your old crew. It's a reunion!
+    The faces appear aged but each one immensely familiar. The one responsible for this shindig approaches you. You recall how this person was adamant about saving the AI programming of some machine you destroyed back when you were far from home.
+    The AI has advanced beyond current technology. As you watch ducks being fed by robotic workers you can't help but appreciate the peaceful tranquility of the moment.
+    (Sequence ending — return to 19-A for remaining sequences.)
+  choices:
+    - label: "Return to 19-A"
+      action: goto
+      metadata: { goto: "19-A" }
+  resolvable: true
+
+"25-A":
+  title: "The Secret Facility"
+  body: |
+    As you explore the planet, you see buildings and vehicles — human buildings and vehicles. However, everything looks abandoned rather than conquered by the Endless. The emptiness of the towns leads you to the only place with any activity according to your sensors: a place that looks like a science lab.
+    Entering the lab, you immediately recognize the UEF signs throughout the building. One of your officers connects to a nearby terminal and downloads the data-logs. This planet apparently used to be a secret UEF science facility. They had been experimenting with new bio-regenerative technology and testing it on prisoners. According to the log, these experiments failed and the subjects were transformed into the Endless!
+    You run back to your ship and notice the distinct silhouette of UEF ships on the way. You don't think they are here to help you.
+    COMBAT: The Ouroboros (refer to rulebook for Ouroboros rules).
+  choices:
+    - label: "Defeated the Ouroboros → 63-C"
+      action: goto
+      metadata: { goto: "63-C" }
+    - label: "Defeated by the Ouroboros → 48-B"
+      action: goto
+      metadata: { goto: "48-B" }
+  resolvable: true
+
+"26-A":
+  title: "The Vortex Gift"
+  body: |
+    You present the Queen the vortex. You attempt to explain what happened but she doesn't seem to care at all. Her eyes gleam at the sight of the vortex. She explains how it can create almost anything when the right combination of objects are thrown into it.
+    She gives you a reward of 100 scrap, claiming she no longer has need for possessions and wealth.
+  choices:
+    - label: "[Requires: Sequence Z underlined] → 64-B"
+      action: goto
+      metadata: { goto: "64-B" }
+    - label: "Gain 100 scrap — Return to Orbit"
+      action: orbit
+  resolvable: true
+
+"26-B":
+  title: "Part of the Endless"
+  body: |
+    You are now part of the Endless. You were always part of the Endless. On the bright side, you and your crew will now live forever as part of the collective hive mind of the Endless.
+
+    GAME OVER
+  choices:
+    - label: "Game Over"
+      action: game_over
+  resolvable: true
+
+"26-C":
+  title: "Blasted Through Time and Space"
+  body: |
+    The code works and you're blasted through time and space.
+    Draw a line from [17-C] to any other point on the map. You can now travel between these two locations as if they were adjacent.
+  choices:
+    - label: "Return to Orbit"
+      action: orbit
+  resolvable: true
+
+"27-A":
+  title: "Duty First"
+  body: |
+    You have a duty to serve the needs of the UEF. You take the cargo. Gain item [CARGO13].
+  choices:
+    - label: "Spend 1 fuel — seek side jobs → 33-B"
+      action: goto
+      metadata: { goto: "33-B" }
+    - label: "Spend 1 fuel — visit the local tavern → 51-A"
+      action: goto
+      metadata: { goto: "51-A" }
+    - label: "Return to Orbit"
+      action: orbit
+  resolvable: true
+
+"27-B":
+  title: "The Card Tables"
+  body: |
+    The gladiator games are too risky. You decide it best to try your hand at the card tables. The game is a lot like poker. There are 3 other players at the table.
+    Roll 3 crew dice — these represent your current hand. In secret, roll 2 more dice and keep them hidden.
+    Bet scrap (max 10, min 2), then go to 37-B to determine the winner.
+    Hand rankings (highest to lowest): Five of a kind, Four of a kind, Three of a kind with a pair, Three of a kind, Two pair, Pair.
+    [Requires: Sequence 313] — you may look at one of the hidden dice before betting.
+    After this you will return to Orbit.
+  choices:
+    - label: "Place your bet → 37-B"
+      action: goto
+      metadata: { goto: "37-B" }
+  resolvable: true
+
+"27-C":
+  title: "Demand the Box"
+  body: |
+    April bursts into tears. She is unable to open the box and feels hopeless. In that moment, the compound comes under fire by the Red Asters.
+    COMBAT: 2 threats, draw deck of 3.
+  choices:
+    - label: "Confront the Red Asters about the contents of the box → 58-C"
+      action: goto
+      metadata: { goto: "58-C" }
+    - label: "Return to Orbit"
+      action: orbit
+  resolvable: true
+
+"28-A":
+  title: "An Exhausted World"
+  body: |
+    When the Miras leave their planet, the humans make use of it. Over time the planet's natural resources are depleted. With no other choice, the humans leave seeking a new place to call home. The Miras eventually return but are unable to save what's left of the planet. In just a few cycles the Mira population dwindles. It won't be long before they are extinct.
+    (Sequence ending — return to 19-A for remaining sequences.)
+  choices:
+    - label: "Return to 19-A"
+      action: goto
+      metadata: { goto: "19-A" }
+  resolvable: true
+
+# 28-B is not present in the PDF — appears to be an incomplete/missing entry.
+
+"28-C":
+  title: "Aboard the Derelict Ship"
+  body: |
+    The engines are still warm but it doesn't look like anyone has been on the ship for several cycles. Attempt a skill check.
+    If you succeed, gain 30 scrap.
+    NOTE: This entry references 78-B and 24-C which do not exist in this version of the rulebook — dead end per author.
+  choices:
+    - label: "Return to Orbit"
+      action: orbit
+  resolvable: true
+
+"28-D":
+  title: "The Solar Tower"
+  body: |
+    The path leads upward but the waters strangely remain the same depth. According to the StarNav, this planet was colonized by a small group of humans who built Solar Towers to absorb heat and make it livable. You wonder if they had the same definition of livable as you do.
+    Climbing to what seems to be the top, you come upon a tall building shining in the dark overcast. Despite the rain, you actually smell a familiar scent. Hot Chocolate!
+    You enter the building — it looks abandoned. The automated machines whir away and hot chocolate overflows onto the floor. Everything is made of a valuable alloy.
+  choices:
+    - label: "Salvage what you can — gain 5 scrap, Return to Orbit"
+      action: orbit
+    - label: "Continue ascending the tower → 39-A"
+      action: goto
+      metadata: { goto: "39-A" }
+  resolvable: true
+
+"29-A":
+  title: "The Power Problem"
+  body: |
+    It looks like the power system is complex but one of the panels contains some instructions. You see if you can decipher it.
+    The grid has nodes P, B, C, X, T, R, Y, Z, E connected to Colonies 1, 2, 3 and Batteries, with a Filter at 73%.
+    Rules:
+    1. If the Filter is above 60%, Colony 3 must have 3 connections.
+    2. P must be connected to T, but cannot be connected to B.
+    3. All colonies must be connected to 3 batteries unless it connects to a filter.
+    4. Y can only have 2 connections.
+    5. If X only has 2 connections, rule 2 no longer has to be valid.
+    6. If the Filter is below 80%, Colony 2 can only have 1 connection unless rule 8 is valid.
+    7. X and C must have the same number of connections.
+    8. Y must connect to Z.
+    9. If R is connected to E, Colony 2 can only have 1 connection.
+    (Refer to the rulebook diagram for the grid layout.)
+  choices:
+    - label: "The power grid is broken → 38-D"
+      action: goto
+      metadata: { goto: "38-D" }
+    - label: "The power grid is operating correctly → 10-A"
+      action: goto
+      metadata: { goto: "10-A" }
+  resolvable: true
+
+# 30-A references entries 06-B and 07-A which do not exist in the story section — dead end per author.
+"30-A":
+  title: "The Journey Begins"
+  body: |
+    Your ship has seen better days. It would behoove us to spend some time repairing its systems and hull, but if we stay here, we risk a follow-up attack. The engineers say that we won't get far at all without a functioning Warp Drive. To repair it, we'll need to assign engineers to the task. Likewise, the scientists have been working on new developments that should give us a fighting chance should we choose to venture forth.
+    NOTE: Entries 06-B and 07-A referenced here do not exist in this version of the rulebook.
+  choices:
+    - label: "Remain and repair the systems (→ 06-B — missing entry)"
+      action: orbit
+    - label: "Venture into the unknown (→ 07-A — missing entry)"
+      action: orbit
+  resolvable: true
+
+"30-B":
+  title: "Patience"
+  body: |
+    Patience is often rewarded in these kinds of situations. You decide to monitor the situation and patrol the oxygen farm for clues. Gain the RESTLESS attribute on a random crew member.
+  choices:
+    - label: "[Requires: HACKER] Follow the digital trail → 31-A"
+      action: goto
+      metadata: { goto: "31-A" }
+    - label: "[Requires: OBSERVANT] You notice something suspicious → 35-A"
+      action: goto
+      metadata: { goto: "35-A" }
+    - label: "No special skills → 52-A"
+      action: goto
+      metadata: { goto: "52-A" }
+  resolvable: true
+
+"30-C":
+  title: "World of Glass"
+  body: |
+    What an interesting planet. Massive structures on the surface constantly rearrange themselves due to what looks like the wind. The sound is horrible — constant grinding of glass and the occasional shatter. From orbit it's a beautiful kaleidoscope of colors and shapes. The engineers are doubtful that we'll find anything useful. Still, something seems to draw you in.
+  choices:
+    - label: "Land the ship and explore → 12-C"
+      action: goto
+      metadata: { goto: "12-C" }
+    - label: "Leave — Return to Orbit"
+      action: orbit
+  resolvable: true
+
+"31-A":
+  title: "The Virus"
+  body: |
+    Your officer hacks into the oxygen farm systems and discovers that a virus was installed. You attempt to remove the virus.
+    Roll the threat die and add 2 to the result (max 6) — place the threat die in the RE-ROLLS box showing that number. Roll 6 crew dice and attempt to match the symbols shown. You can lock dice placed on the symbols. Every time you re-roll, lower the value of the re-roll die. Once the die reaches 0, stop.
+  choices:
+    - label: "Completed the removal → 32-A"
+      action: goto
+      metadata: { goto: "32-A" }
+    - label: "Failed → 39-A"
+      action: goto
+      metadata: { goto: "39-A" }
+  resolvable: true
+
+"31-B":
+  title: "Trap a Pirate"
+  body: |
+    Pirates are outlaws under UEF laws. If we can apprehend one, their knowledge may aid us in finding the treasure.
+    You hide your ship among the tides of a known treasure spot and wait.
+    [Requires: BOUNTY HUNTER, PATIENT, or OBSESSIVE] — COMBAT: 1 threat, draw deck of 8.
+    Otherwise — COMBAT: 3 threats, draw deck of 4.
+    To capture a pirate ship, bring any external ship threat (with more than 1 health) to exactly 1 health, then assign 2 crew as an away mission to that ship. Then discard the threat.
+    If you survive and capture a pirate, underline sequence 711, then go to 43-C.
+    If you survive but did not capture (or no valid target), go to 44-C.
+  choices:
+    - label: "Survived and captured a pirate (underline sequence 711) → 43-C"
+      action: goto
+      metadata: { goto: "43-C" }
+    - label: "Survived but no capture → 44-C"
+      action: goto
+      metadata: { goto: "44-C" }
+  resolvable: true
+
+"31-C":
+  title: "Patrol Route A"
+  body: |
+    You patrol the region and encounter various threats.
+    COMBAT: 4 threats, draw deck of 2.
+  choices:
+    - label: "Return to Orbit"
+      action: orbit
+  resolvable: true
+
+"32-A":
+  title: "Virus Removed"
+  body: |
+    You remove the virus "PIONTE.EXE" and report your findings to the local authorities. Gain 10 scrap.
+  choices:
+    - label: "Return to Orbit"
+      action: orbit
+  resolvable: true
+
+"32-B":
+  title: "Guilty"
+  body: |
+    When the Miras returned to their planet, they found it ravished and exhausted of resources. They had no choice but to reclaim their land. A war broke out between the humans and the Miras. The UEF, after retrieving data logs covering your visit, finds you guilty of violating the prime mandates of interspecies interaction.
+    Many human and Mira lives are lost in the ensuing war. The UEF finds it necessary to imprison you to appease Mira politicians. You spend your remaining years in a Mira prison.
+
+    "In only the memory of those slain is as much a prison as any small confined space."
+
+    THE END
+    (Sequence ending — this is a negative outcome reached from 19-A.)
+  choices:
+    - label: "Game Over"
+      action: game_over
+  resolvable: true
+
+"33-A":
+  title: "Patrol Route B"
+  body: |
+    You patrol the region and encounter various threats.
+    COMBAT: 8 threats, draw deck of 0.
+    Gain 2 scrap.
+  choices:
+    - label: "Return to Orbit"
+      action: orbit
+  resolvable: true
+
+"33-B":
+  title: "Side Jobs"
+  body: |
+    There's no end to the jobs available here but only a handful seem relevant to you.
+  choices:
+    - label: "Aid in defending the planet borders from pirates → 34-B"
+      action: goto
+      metadata: { goto: "34-B" }
+    - label: "Work in the local mines → 47-A"
+      action: goto
+      metadata: { goto: "47-A" }
+  resolvable: false
+
+"33-C":
+  title: "Mob Anger"
+  body: |
+    The planet's citizens turn on you in anger, looking to scrap your ship for parts. At the last moment, someone steps up and explains the situation.
+  choices:
+    - label: "Continue → 34-A"
+      action: goto
+      metadata: { goto: "34-A" }
+  resolvable: true
+
+"34-A":
+  title: "The Saboteur Revealed"
+  body: |
+    The man reveals that he has sabotaged the systems with a virus in order to bring the competing hubs together and unite them. You have the man arrested by local authorities and his virus is purged from the system, returning them to normal. Gain 10 scrap.
+  choices:
+    - label: "Return to Orbit"
+      action: orbit
+  resolvable: true
+
+"34-B":
+  title: "Defend the Mining Belt"
+  body: |
+    The neighboring pirate territory encroaches on the gem planet. Countless pirates lie in wait to capture the hardwork of mining ships and their crew. Defend the mining belt from bandits.
+    COMBAT: 2 threats, draw deck of 8. Gain 2 scrap per external threat defeated.
+    If you succeed, gain 30 scrap.
+  choices:
+    - label: "Victory → 35-B"
+      action: goto
+      metadata: { goto: "35-B" }
+  resolvable: true
+
+"34-C":
+  title: "The Orb"
+  body: |
+    The Orb is entrancing. It seems to never stop spinning under any circumstance. It never stops.
+    (Item ending — return to 19-A for remaining sequences.)
+  choices:
+    - label: "Return to 19-A"
+      action: goto
+      metadata: { goto: "19-A" }
+  resolvable: true
+
+"35-A":
+  title: "The Shadow in the Generator"
+  body: |
+    On one of your patrols you notice a shadowy figure entering one of the generator buildings from a secret hatch. Following the suspect into the building you discover a man uploading a virus into the mainframe!
+  choices:
+    - label: "Confront the man → 34-A"
+      action: goto
+      metadata: { goto: "34-A" }
+  resolvable: true
+
+"35-B":
+  title: "A Job Well Done"
+  body: |
+    A job well done.
+  choices:
+    - label: "Spend 1 fuel — seek a UEF contact → 42-A"
+      action: goto
+      metadata: { goto: "42-A" }
+    - label: "Spend 1 fuel — visit the local tavern → 51-A"
+      action: goto
+      metadata: { goto: "51-A" }
+    - label: "Return to Orbit"
+      action: orbit
+  resolvable: true
+
+"35-C":
+  title: "The Black Hole"
+  body: |
+    Realizing that the beacon had to come from somewhere, you set out towards a nearby island. Once your crew has made it to the island, you look back in horror as your ship begins to sink!
+    Overhead you see the looming darkness of the black hole as it consumes all light surrounding you and your crew. You call out orders but no sound seems to come out. Your crew gestures in meaningless signals as everything around you ceases to exist.
+    In your final moments you activate your personal distress beacon. You only have time to write a few words: "Stay Away."
+
+    "Perhaps death is truly the apotheosis of our time in a galaxy defined by entropy."
+
+    THE END
+  choices:
+    - label: "Game Over"
+      action: game_over
+  resolvable: true
+
+"36-A":
+  title: "The Treasure Map"
+  body: |
+    The only clues left behind by the Space Pirate's comrades is a map. You view it hoping to glean the whereabouts of the treasure. Three sites are marked X on the map with the following riddle:
+    "A shadow made from stone to follow / To the black bird which low tides swallow / A cave lies treasure to not pass by / in paces counted in half the sky"
+    Where should we go?
+  choices:
+    - label: "Go to treasure site A → 49-A"
+      action: goto
+      metadata: { goto: "49-A" }
+    - label: "Go to treasure site B → 56-A"
+      action: goto
+      metadata: { goto: "56-A" }
+    - label: "Go to treasure site C → 61-C"
+      action: goto
+      metadata: { goto: "61-C" }
+  resolvable: true
+
+"37-A":
+  title: "Odd Jobs"
+  body: |
+    Apart from a few simple fetch quests, there doesn't seem to be a huge demand for work. As you ask around, you are approached by a well-dressed man. He says he is the captain of a delivery vessel and his ship has broken down on their way to their final destination. The cargo is mostly luxury consumables heading to [20-C]. The food has an expiration date and in order to make it on time, he has been asking travelers in Manaport to take portions of his cargo to [20-C] with a nominal up-front payment of 15 scrap. Upon scanning the cargo, your crew confirms that the items are indeed food.
+  choices:
+    - label: "Agree to deliver the cargo — gain 15 scrap, acquire [Lux Food] → 49-B"
+      action: goto
+      metadata: { goto: "49-B" }
+    - label: "Politely decline → 45-A"
+      action: goto
+      metadata: { goto: "45-A" }
+  resolvable: false
+
+"37-B":
+  title: "The Card Game Resolution"
+  body: |
+    The other players are all alien species and impossible to read. Each of the 3 other players' hands are revealed.
+    Hand rankings (highest to lowest): Five of a kind, Four of a kind, Three of a kind with a pair, Three of a kind, Two pair, Pair.
+    (Compare your visible dice hand to the aliens' — refer to the rulebook for the alien hands diagram.)
+    If you have the best hand, gain scrap equal to your bet.
+    If tied for the best hand (or it cannot be determined), lose 0 scrap.
+    If you do not have the best hand, lose scrap equal to your bet.
+  choices:
+    - label: "Return to Orbit"
+      action: orbit
+  resolvable: true
+
+# 38-A and 38-C are not present in the PDF.
+
+"38-B":
+  title: "A Peaceful Retirement"
+  body: |
+    The Endless were an indomitable threat to the galaxy. You had to destroy them. Unfortunately, this was in direct violation of a UEF prime mandate. The UEF recognizes your heroism in the line of duty so instead of a court martial they allow you to retire peacefully in the Aquila sector.
+    Though this marks your end with the UEF, you've widened your eyes to the greater adventures and possibilities of the galaxy. Perhaps one day you'll set off on another adventure. They all witnessed first-hand the destructive power of the Endless and knew you made the right call. Sometimes the highest authority in the universe is your own conscience.
+    (Sequence ending — return to 19-A for remaining sequences.)
+  choices:
+    - label: "Return to 19-A"
+      action: goto
+      metadata: { goto: "19-A" }
+  resolvable: true
+
+"38-D":
+  title: "Power Grid Fixed"
+  body: |
+    The power grid was broken — which could only mean a subroutine was installed into the system causing the malfunction. You install a new routine to ignore outside routines. The people of Notus reward you with 6 scrap.
+  choices:
+    - label: "Return to Orbit"
+      action: orbit
+  resolvable: true
+
+"39-A":
+  title: "The Tower"
+  body: |
+    The tower is not very big but it is very tall. Each floor serves a singular purpose — one floor a classroom, the next a play area for children. There's not a living being in sight, but the automations are still functioning.
+    At the highest level a single computer sits alone. You boot it up, light floods the room. A video plays showing the early settlers of this planet. The rain never stopped, and eventually got too thick to power the solar arrays. The planet was abandoned. The final message reads: "We built this tower knowing we could, but never asking if we should — Edward Stiles, Historian, Living Quarters 60th Floor."
+    That's strange. You could have sworn you were only on floor 40.
+    You've seen enough and decide to depart. Right as you break atmosphere an enemy ambush appears!
+    COMBAT: 3 threats, draw deck of 4. Gain 3 scrap.
+  choices:
+    - label: "Return to Orbit"
+      action: orbit
+  resolvable: true
+
+"39-B":
+  title: "Rising Waters"
+  body: |
+    The water levels feel like they're rising. For each officer on your crew, roll 2 crew dice. Any officer with a result containing at least one skull — place an X in their box.
+    You press onward until you come upon a split in the path.
+  choices:
+    - label: "Take the path on the left → 61-B"
+      action: goto
+      metadata: { goto: "61-B" }
+    - label: "Take the path on the right → 70-A"
+      action: goto
+      metadata: { goto: "70-A" }
+    - label: "Turn back — Return to Orbit"
+      action: orbit
+  resolvable: true
+
+"39-C":
+  title: "Ongoing Tensions"
+  body: |
+    The humans are not happy to leave the land untouched. After you left planet NMD-11, the UEF declared it a protected zone but that did not stop small groups from encroaching on the resources. In time, the colonies of humans on the planet became violent, declaring that the UEF has favored aliens over humanity. When the Miras returned from their pilgrimage, they were disappointed to see the UEF unable to honor their word.
+    Tensions between these two groups continue to increase. You hope nothing worse befalls them.
+    (Sequence ending — return to 19-A for remaining sequences.)
+  choices:
+    - label: "Return to 19-A"
+      action: goto
+      metadata: { goto: "19-A" }
+  resolvable: true
+
+"40-A":
+  title: "Surrender the Vortex"
+  body: |
+    You surrender the vortex to the Queen. In an act of gratitude, she gives you 2 hours to leave before she will send pirates after you. Cross out items [Q-BOMB] and [Vortex]. You decide it's best to leave.
+  choices:
+    - label: "Return to Orbit"
+      action: orbit
+  resolvable: true
+
+"40-B":
+  title: "The Endless Contained"
+  body: |
+    The Endless are finally contained — for now. As the heart of the swarm implodes on itself, you receive a message from the UEF asking you to obtain a sample specimen of the Endless. They will use it to research a weapon to aid in future threats.
+    Draw a beacon at [17-D].
+  choices:
+    - label: "Capture a specimen — gain item [EE7] → Orbit"
+      action: orbit
+    - label: "Destroy all traces of the Endless forever — circle sequence 000 → Orbit"
+      action: orbit
+  resolvable: true
+
+"40-C":
+  title: "The Planet Eater Chase"
+  body: |
+    You tow the Manta and head in the direction of the giant craft. The slow moving ship is easy to catch up to. You focus your weapon fire at the ship but your shots only make it larger and faster.
+    Upon viewing the massive ship increase in size, Officer Carla Muller becomes uncontrollably despondent. You order your crew to restrain her but she breaks free and escapes the bridge. You can only watch in horror as an escape pod piloted by Officer Muller takes off heading directly for the maw of the planet eating ship. Her pod will only aid in the destruction!
+  choices:
+    - label: "Shoot her pod down → 50-B"
+      action: goto
+      metadata: { goto: "50-B" }
+    - label: "Let the pod go — it's her choice → 71-B"
+      action: goto
+      metadata: { goto: "71-B" }
+  resolvable: true
+
+"41-A":
+  title: "Buying Parts"
+  body: |
+    This might not work and the net profit isn't as good. It will also cost precious fuel. You will need to go to 20-A and purchase the [SYS-PUMP] item.
+  choices:
+    - label: "Return to Orbit"
+      action: orbit
+  resolvable: true
+
+"41-B":
+  title: "Manaport Research Center"
+  body: |
+    The research center at Manaport is nice but expensive.
+    Research: spend 6 scrap per roll on available crew dice.
+  choices:
+    - label: "Return to 12-A"
+      action: goto
+      metadata: { goto: "12-A" }
+  resolvable: false
+
+"41-C":
+  title: "The Mountain Labyrinth"
+  body: |
+    Entering the mountain proves a dangerous feat as the winds become dangerously fast, almost shearing off your looser garments. Once inside the mountain canyons, the walls take on a new texture and begin to look like a labyrinth. The walls look man-made but scanners show no indication of who or when they were made. You also notice a large network of chains woven into the ground.
+    You're just meters away from where X marks the spot. From your vantage you can see a vortex in the center with all manner of light and energy spewing out of it. Your scanners read off the charts — this is the treasure, an object of pure endless energy.
+    What little light there was begins to fade away. Suddenly all light is blocked out by a strange alien ship hovering overhead! The looming ship begins firing lasers down around you, instantly disintegrating its targets. You take cover behind nearby rocks — but it shoots the rocks and they disappear.
+    Your ship crew radios in to let you know they have the strange ship targeted and ready to fire.
+  choices:
+    - label: "Order your ship crew to attack the alien → 62-D"
+      action: goto
+      metadata: { goto: "62-D" }
+    - label: "Run back into the canyons → 66-B"
+      action: goto
+      metadata: { goto: "66-B" }
+  resolvable: true
+
+"41-D":
+  title: "No Running"
+  body: |
+    You attempt to flee, but The Shadow's long range cannon fires upon your ship and creates a hull breach. One of your officers is sucked out before it can be repaired. Cross out an officer.
+    He killed your officer. There's no running.
+  choices:
+    - label: "Engage the ruthless criminal → 57-A"
+      action: goto
+      metadata: { goto: "57-A" }
+  resolvable: true
+
+"42-A":
+  title: "Rising Waters"
+  body: |
+    The water levels feel like they're rising. For each officer on your crew, roll 2 crew dice. Any officer with a result containing at least one skull — place an X in their box.
+    You press onward until you come upon a split in the path.
+  choices:
+    - label: "Take the path on the left → 61-B"
+      action: goto
+      metadata: { goto: "61-B" }
+    - label: "Take the path on the right → 70-A"
+      action: goto
+      metadata: { goto: "70-A" }
+  resolvable: true
+
+"42-B":
+  title: "A Useful Secret"
+  body: |
+    Your officer's intuition paid off. You've been told a secret about card games. It might come in handy later. Underline sequence 313.
+  choices:
+    - label: "Continue → 52-A"
+      action: goto
+      metadata: { goto: "52-A" }
+  resolvable: true
+
+"42-C":
+  title: "The Mira Side"
+  body: |
+    The Miras appear to be a very peaceful species, though they are very territorial. A Mira representative speaks:
+    "We have seen what humans do to the lands they use. They damage it beyond repair and care not for any generations that may inherit it afterwards. We Mira experience time much differently to you humans. What is a 50-year pilgrimage to you is merely a few days to us. Humans appear incapable of planning beyond 100 or so years — a number that aligns with your average lifespan. All we ask is that the land we use remain untouched by human hand while we are gone. We have lived in unison with this planet for millions of years. Human presence here has been unplanned but we have made compromises. When we leave, nothing will change for the humans."
+    As an outsider human, your words will have a large impact at the council. One of your crew members points out that the Miras have no way to enforce their desires if they weren't to happen.
+  choices:
+    - label: "Now listen to the human's side → 53-A"
+      action: goto
+      metadata: { goto: "53-A" }
+    - label: "Ready to make a decision → 54-A"
+      action: goto
+      metadata: { goto: "54-A" }
+  resolvable: true
+
+"43-A":
+  title: "The Beacon"
+  body: |
+    You finally make it to the beacon.
+    For each officer: if they have 4 or more X marks they are fatigued — draw an X through their entire box (they may no longer be used). If they are WEAK, IMPULSIVE, or STUBBORN this threshold is 3. If they are OPTIMISTIC, IMPROVISER, or PERSISTENT this threshold is 5.
+    The beacon is surrounded by the bodies of another starship crew. From the tattered uniforms you recognize the UEF insignia. They appear as if they had fallen asleep in the open rain. Plants have made their way into the bodies, replacing flesh with vine and root.
+    The cargo looks intact. Gain 20 scrap, 2 fuel, and item [Flower Locket]. The map they left behind shows a way back out.
+  choices:
+    - label: "Return to Orbit"
+      action: orbit
+  resolvable: true
+
+"43-B":
+  title: "Skilled Work"
+  body: |
+    Your officers are full of surprises. Those buyers will surely be happy with what you've made for them. Gain 5 scrap.
+  choices:
+    - label: "Continue → 52-A"
+      action: goto
+      metadata: { goto: "52-A" }
+  resolvable: true
+
+"43-C":
+  title: "Pirate Secrets"
+  body: |
+    The captured pirates reveal that the rumor is just a fable made to attract gullible treasure seekers for pirates to prey on. In exchange for their freedom, they tell you about a hidden planet at 15-B. Create a beacon on 15-B.
+  choices:
+    - label: "Return to Orbit"
+      action: orbit
+  resolvable: true
+
+"43-D":
+  title: "Vendor Hall"
+  body: |
+    The Manaport vendor hall seems to stretch for miles. A innumerable amount of scents and odors fill the air matched only by the multitude of languages being spoken. Your crew splits up to enjoy their favorite types of food.
+    After you and your officers have enjoyed a meal, sellers descend upon you noticing the gleaming UEF badges on your uniforms. Nothing appears useful — mostly trinkets and handmade goods. You do take note of some rather interesting findings.
+    [Requires: GLUTTONOUS, DREAMER, or XENO-BIOLOGIST] — you must purchase the fluffy creature.
+  choices:
+    - label: "Purchase board games for 2 scrap → 51-D"
+      action: goto
+      metadata: { goto: "51-D" }
+    - label: "Purchase a cute fluffy creature for 1 scrap → 44-D"
+      action: goto
+      metadata: { goto: "44-D" }
+    - label: "Purchase a perfectly round sphere for 2 scrap → 45-C"
+      action: goto
+      metadata: { goto: "45-C" }
+    - label: "Purchase nothing → 12-A"
+      action: goto
+      metadata: { goto: "12-A" }
+  resolvable: false
+
+"44-A":
+  title: "The UEF Office"
+  body: |
+    You decide it's worth your time to report in at the UEF Office. The inside is stark and empty — there's very little signage save for a single recruiting poster. It's a vintage poster, the kind that got you to enroll many many cycles ago.
+    You're hailed by a uniformed UEF official. He tells you that the FLUE HQ has more or less abandoned this office, sending a small care package of supplies every few cycles. His long range transmitter is outdated so he won't be able to update HQ with your status. Before you leave he asks for a favor.
+    The official says he has UEF-sanctioned goods that need to be delivered to the UEF. When pressed, he refuses to tell you what's inside the large cargo crate.
+  choices:
+    - label: "Agree to take the crate → 27-A"
+      action: goto
+      metadata: { goto: "27-A" }
+    - label: "Refuse to take the crate → 45-A"
+      action: goto
+      metadata: { goto: "45-A" }
+  resolvable: true
+
+"44-B":
+  title: "The Right People"
+  body: |
+    Every skill has a use out here — you just have to know the right people. Gain 2 fuel.
+  choices:
+    - label: "Continue → 52-A"
+      action: goto
+      metadata: { goto: "52-A" }
+  resolvable: true
+
+"44-C":
+  title: "No Capture"
+  body: |
+    Capturing a pirate ship has proven much more difficult than anticipated.
+  choices:
+    - label: "Try again → 31-B"
+      action: goto
+      metadata: { goto: "31-B" }
+    - label: "Return to Orbit"
+      action: orbit
+  resolvable: true
+
+"44-D":
+  title: "Fluffy Creature"
+  body: |
+    Lose 1 scrap. It's cute. It's fluffy. It doesn't look like it does anything. Acquire item [Fluffy Creature]. What should we name it?
+  choices:
+    - label: "Continue → 52-C"
+      action: goto
+      metadata: { goto: "52-C" }
+  resolvable: true
+
+"44-E":
+  title: "The Endless Advance"
+  body: |
+    The Endless are a new threat that endanger the galaxy. They attack in a single hive mind. They've been spreading out from their home-world in [15-A]. Hold them back!
+    Use the Endless cards from page 74 of the rulebook.
+    COMBAT: 3 threats, draw deck of 6.
+    If defeated, you narrowly escape — lose 3 fuel.
+    If victorious, gain 6 scrap.
+  choices:
+    - label: "Return to Orbit"
+      action: orbit
+  resolvable: true
+
+"45-A":
+  title: "Wise Decline"
+  body: |
+    Without knowing the contents of the cargo, you put your ship and crew at risk. You kindly decline.
+  choices:
+    - label: "Spend 1 fuel — seek side jobs → 33-B"
+      action: goto
+      metadata: { goto: "33-B" }
+    - label: "Spend 1 fuel — visit the local tavern → 51-A"
+      action: goto
+      metadata: { goto: "51-A" }
+    - label: "Return to Orbit"
+      action: orbit
+  resolvable: true
+
+"45-B":
+  title: "Landing in the Field"
+  body: |
+    It was a struggle just to get into orbit — it might be best to land away from all the machines. From outside the colony it looks like complete disarray. The digital billboards are all showing errors and structures like drawbridges and construction equipment are moving sporadically. You take your crew on the ground towards the city.
+  choices:
+    - label: "Proceed → 46-A"
+      action: goto
+      metadata: { goto: "46-A" }
+  resolvable: true
+
+"45-C":
+  title: "The Perfect Sphere"
+  body: |
+    You've never seen something so perfectly spherical. It defies logic. Acquire item [ORB1].
+  choices:
+    - label: "Continue → 52-C"
+      action: goto
+      metadata: { goto: "52-C" }
+  resolvable: true
+
+"45-D":
+  title: "Patrol Route C"
+  body: |
+    You patrol the region and encounter various threats.
+    COMBAT: 3 threats, draw deck of 10. Gain 4 scrap.
+  choices:
+    - label: "Continue → 33-A"
+      action: goto
+      metadata: { goto: "33-A" }
+  resolvable: true
+
+"45-E":
+  title: "The Red Asters' Conviction"
+  body: |
+    The Red Asters do not know the exact contents of the box, only that they've been told it is worth dying for. Their compassion and willingness to die for their cause has had a profound impact on April. She hands the Pandora Box over to the Red Asters and they open it, guns drawn.
+  choices:
+    - label: "Continue → 68-A"
+      action: goto
+      metadata: { goto: "68-A" }
+  resolvable: true
+
+"46-A":
+  title: "Secret in the System"
+  body: |
+    The comms finally beep to life. A panicked woman tells you about robots going haywire and attacking civilians. She informs you that the city leaders imported special computers from a planet called Arcfall and the robots have been out of control ever since.
+    You venture into the heart of the city where the master computer system is located. To fix it you must draw a single continuous circuit (line) through each node (circle), following these rules:
+    • The circuit cannot cross itself.
+    • The circuit must turn 90 degrees when it hits a black node.
+    • The circuit must go straight through white nodes (it cannot turn there).
+    • The circuit cannot turn on an X.
+    • The circuit must end where it starts.
+    (Refer to the rulebook diagram for the node layout. Give yourself at least 30 minutes.)
+  choices:
+    - label: "Solved the puzzle in time → 48-A"
+      action: goto
+      metadata: { goto: "48-A" }
+    - label: "Failed to find a solution — system breaks down, Return to Orbit"
+      action: orbit
+  resolvable: true
+
+"47-A":
+  title: "Mining"
+  body: |
+    Roll the threat die to determine which section to mine. [Requires: RELIABLE, RESOURCEFUL, or STRONG] — you may re-roll once. Then roll 2 crew dice. [Requires: SOLDIER or FREELANCER] — add 1 crew die. [Requires: LAZY] — remove a die.
+    Gain scrap equal to the number of matching symbols of one crew die of your choice.
+    (Refer to the rulebook table for section results by die value 1–6.)
+  choices:
+    - label: "Spend 1 fuel — seek a UEF contact → 42-A"
+      action: goto
+      metadata: { goto: "42-A" }
+    - label: "Spend 1 fuel — visit the local tavern → 51-A"
+      action: goto
+      metadata: { goto: "51-A" }
+    - label: "Return to Orbit"
+      action: orbit
+  resolvable: true
+
+"47-B":
+  title: "The Cost of Inaction"
+  body: |
+    Sometimes a choice is too large for one person to make. It is often the better choice to make none at all. Your inaction between the humans and Miras leaves you bereft of responsibility, and yet the ongoing struggle between the two makes you wonder if you would have had an impact.
+    You wonder even more when the Miras attack the human settlements out of anger. You wonder yet more when the humans retaliate. Wondering is all you have left when war breaks out and the Miras become extinct. Now there's nothing left to wonder about.
+    (Sequence ending — reached from 19-A for underlined sequence 000.)
+  choices:
+    - label: "Return to 19-A"
+      action: goto
+      metadata: { goto: "19-A" }
+  resolvable: true
+
+"48-A":
+  title: "The AI Contained"
+  body: |
+    The AI to the system is complex but you contain it after outsmarting it.
+    [Requires: GREEDY or ROBOTICIST] — underline sequence 99. Gain 15 scrap.
+  choices:
+    - label: "Destroy the AI — gain 15 scrap, Return to Orbit"
+      action: orbit
+    - label: "Keep the AI — gain 15 scrap, acquire item [AI-System], Return to Orbit"
+      action: orbit
+    - label: "[Requires: GREEDY or ROBOTICIST] Underline sequence 99, gain 15 scrap — Return to Orbit"
+      action: orbit
+  resolvable: true
+
+"48-B":
+  title: "The Queen's Offer"
+  body: |
+    Word of your affairs with pirates have traveled far. The Queen has become familiar with your distaste for her brethren. She offers you salvation.
+    The queen tells you about a nearby planetoid that holds immense wealth but it is guarded by dangerous creatures. She has lost many ships trying to acquire it. It is your turn now — it doesn't seem like she's giving you a choice.
+    The queen has installed a bomb into your ship's cargo bay and threatens to detonate it at any sign of betrayal. Your mission is to recover the treasure at 15-B and bring it back to the Queen.
+    Draw a beacon at 15-B. Gain item [Q-BOMB].
+  choices:
+    - label: "Return to Orbit"
+      action: orbit
+  resolvable: true
+
+"48-C":
+  title: "No One Will Know"
+  body: |
+    So this is how it ends? No one will know of the travesty!
+
+    "Things need not have happened to be true. Tales of dreams are the shadow truth that will endure when mere facts are dust and ashes are forgot."
+
+    THE END
+  choices:
+    - label: "Game Over"
+      action: game_over
+  resolvable: true
+
+"49-A":
+  title: "Treasure Site A"
+  body: |
+    You arrive at the point only to discover another group of hunters already there. They say they've been searching the area for hours but haven't found anything. They did find an old ornate stone with a phrase carved into it: LOKI'S CROW. You wonder what it could mean.
+  choices:
+    - label: "Return to Orbit"
+      action: orbit
+  resolvable: true
+
+"49-B":
+  title: "Cargo Loaded"
+  body: |
+    [20-C] is on the way home and you have plenty of room in your cargo bay. Acquire item [Lux Food].
+  choices:
+    - label: "Visit the vendor hall → 43-D"
+      action: goto
+      metadata: { goto: "43-D" }
+    - label: "Visit the refueling depot → 72-B"
+      action: goto
+      metadata: { goto: "72-B" } # PDF says 44-D but that's the Fluffy Creature entry — apparent PDF typo; 72-B is the actual refueling depot
+    - label: "Visit the research center → 41-B"
+      action: goto
+      metadata: { goto: "41-B" }
+    - label: "Leave Manaport → 59-A"
+      action: goto
+      metadata: { goto: "59-A" }
+  resolvable: true
+
+"49-C":
+  title: "The Rogue Android"
+  body: |
+    As you step out of your ship, lights appear on the ground guiding the way. They lead to a large hall barely lit. After what seems like forever, the main doors slide open and 4 strange figures appear.
+    The strangers introduce themselves as representatives of the 4 major manufacturing companies. They have collectively sent out a distress beacon seeking help in regards to a rogue android. The advanced robotics in the factory have created a self-aware android intent on destroying the humans that enslave it. So far, it has already harmed 6 workers.
+  choices:
+    - label: "Hunt down the android → 59-B"
+      action: goto
+      metadata: { goto: "59-B" }
+    - label: "[Requires: AI-System] Upload it to combat the android → 64-B"
+      action: goto
+      metadata: { goto: "64-B" }
+  resolvable: true
+
+"50-A":
+  title: "Free the Creature"
+  body: |
+    The UEF must not willingly cause harm to a sentient creature, especially an undocumented one. You teleport back to your ship and fire ultrasonic attacks to destroy the chains found in the ground. When all the chains are broken up, the mountain begins to rise from the earth.
+    As the former mountain makes contact with the alien ship, both transform into dense gas clouds and ascend into outer space. Looks like we won't have anything for the Queen.
+  choices:
+    - label: "[Requires: Q-BOMB] → 60-A"
+      action: goto
+      metadata: { goto: "60-A" }
+    - label: "Return to Orbit"
+      action: orbit
+  resolvable: true
+
+"50-B":
+  title: "Shoot the Pod"
+  body: |
+    You can't let the ship get any bigger and decide to open fire on the escape pod. A few blasts and the pod is destroyed. With weapons having no effect on the planet eater, you can only think of one option.
+  choices:
+    - label: "Ram the planet eater with your ship to throw it off course → 60-B"
+      action: goto
+      metadata: { goto: "60-B" }
+    - label: "Escape from the ship → 53-D"
+      action: goto
+      metadata: { goto: "53-D" }
+  resolvable: true
+
+"50-C":
+  title: "The Flower Locket"
+  body: |
+    You recognize that the Locket you found is in the shape of a Magnolia. Giving the Locket to April, it contains an encoded data message. In the message, her brother informs April that it is imperative that the contents of the Pandora Box be made public but kept out of the hands of the UEF. The locket contains the code to open the box.
+  choices:
+    - label: "Confiscate the box as UEF property (do not open it) → 60-B"
+      action: goto
+      metadata: { goto: "60-B" }
+    - label: "Open the box → 68-A"
+      action: goto
+      metadata: { goto: "68-A" }
+    - label: "Leave the box unopened and assist April with defense → 58-C"
+      action: goto
+      metadata: { goto: "58-C" }
+  resolvable: true
+
+"51-A":
+  title: "The Tavern"
+  body: |
+    The tavern is filled with all walks of life. "You will never find a more hardworking group of individuals and heroes," retorts one of your crew members. This is a good place to exchange your skillset for anything useful. Choose only one option.
+  choices:
+    - label: "[Requires: SMUGGLER, PSYCHIC, or CHARMING] Use your skills → 42-B"
+      action: goto
+      metadata: { goto: "42-B" }
+    - label: "[Requires: ARTISAN, CHEF, or MUSICIAN] Use your skills → 43-B"
+      action: goto
+      metadata: { goto: "43-B" }
+    - label: "[Requires: ASTRONOMER, CHEMIST, DOCTOR, or PILOT] Use your skills → 44-B"
+      action: goto
+      metadata: { goto: "44-B" }
+    - label: "No matching skills → 52-A"
+      action: goto
+      metadata: { goto: "52-A" }
+  resolvable: false
+
+"51-B":
+  title: "Rising Waters"
+  body: |
+    The water levels feel like they're rising. For each officer on your crew, roll 2 crew dice. Any officer with a result containing at least one skull — place an X in their box.
+    You press onward until you come upon a split in the path.
+  choices:
+    - label: "Take the path on the left → 39-B"
+      action: goto
+      metadata: { goto: "39-B" }
+    - label: "Take the path on the right → 70-A"
+      action: goto
+      metadata: { goto: "70-A" }
+  resolvable: true
+
+"51-C":
+  title: "Attempt Contact"
+  body: |
+    There's no point landing on such a hostile planet until we can verify the distress beacons. You orbit and attempt to contact any life on the surface. As you try different frequencies you are attacked again! A giant shockwave ruptures through your ship. The chief engineer yells: "Shields offline!"
+    COMBAT: 4 threats, draw deck of 1. Shields are set to zero and cannot be used.
+    If defeated, you barely escape and crash land in a scrapyard — lose 1 fuel.
+  choices:
+    - label: "Survived — de-board at the scrapyard → 46-A"
+      action: goto
+      metadata: { goto: "46-A" }
+    - label: "Defeated — crash land, lose 1 fuel, de-board → 46-A"
+      action: goto
+      metadata: { goto: "46-A" }
+  resolvable: true
+
+"51-D":
+  title: "Board Games"
+  body: |
+    Lose 2 scrap. It's very old and has something to do with a Dragon's Ransom. Your crew says it's the best game they've ever played. Add LUCKY to all your officers.
+  choices:
+    - label: "Continue → 52-C"
+      action: goto
+      metadata: { goto: "52-C" }
+  resolvable: true
+
+"52-A":
+  title: "That Worked Out Well"
+  body: |
+    Gain 2 scrap. That worked out well.
+  choices:
+    - label: "Spend 1 fuel — seek a UEF contact → 44-A"
+      action: goto
+      metadata: { goto: "44-A" }
+    - label: "Spend 1 fuel — seek side jobs → 33-B"
+      action: goto
+      metadata: { goto: "33-B" }
+    - label: "Return to Orbit"
+      action: orbit
+  resolvable: true
+
+"52-B":
+  title: "Landing at the Spaceport"
+  body: |
+    There's a lot happening in the center of the colony where the Spaceport is located. Landing there should allow us to get to the bottom of things quicker.
+    As you try to land, the automated defense system kicks in and fires on your ship. Roll 3 crew dice:
+    • 2 or 3 crew symbols — deflect the attack and land safely.
+    • 1 crew symbol — lose 1 fuel.
+    • 0 crew symbols — lose 1 fuel and 5 scrap.
+  choices:
+    - label: "Proceed → 46-A"
+      action: goto
+      metadata: { goto: "46-A" }
+  resolvable: true
+
+"52-C":
+  title: "Too Many Sellers"
+  body: |
+    The vendor hall is lively but there are just too many sellers and it's hard to concentrate. Time to leave.
+  choices:
+    - label: "Seek out jobs → 37-A"
+      action: goto
+      metadata: { goto: "37-A" }
+    - label: "Visit the refueling depot → 72-B"
+      action: goto
+      metadata: { goto: "72-B" }
+    - label: "Visit the research center → 41-B"
+      action: goto
+      metadata: { goto: "41-B" }
+    - label: "Leave Manaport → 59-A"
+      action: goto
+      metadata: { goto: "59-A" }
+  resolvable: true
+
+"52-D":
+  title: "It Feels Like a Trap"
+  body: |
+    It feels like a trap and you decide to get your ship and crew out of there. The automated defense system fires upon your ship, placing two of your crew in the infirmary.
+    COMBAT: 1 threat, draw deck of 5. Start with 2 crew in the infirmary.
+  choices:
+    - label: "Return to Orbit"
+      action: orbit
+  resolvable: true
+
+"53-A":
+  title: "The Human Side"
+  body: |
+    The current president of the humans welcomes you with open arms.
+    "On this planet, humans and Miras are equal. We split resources 50/50. To let half of all resources go to waste while they are gone would be incredulous. My people starve and struggle to maintain an adequate level of comfort — using the Miras' resources would help us greatly. If you help us, we can help you. Go in front of the council and side with humanity. Your words won't guarantee the resources for us, but it will go a long way."
+    The president speaks of poverty but appears to be living quite well. In fact, much of the human populace is divided in wealth disparity. A surplus of resources could surely balance that out.
+  choices:
+    - label: "Now listen to the Mira's side → 42-C"
+      action: goto
+      metadata: { goto: "42-C" }
+    - label: "Ready to make a decision → 54-A"
+      action: goto
+      metadata: { goto: "54-A" }
+  resolvable: true
+
+"53-B":
+  title: "Pump Installed"
+  body: |
+    You install the [SYS-PUMP] item (cross out [SYS-PUMP]) and the machines seem to function like normal. Unfortunately, the next day the generators go offline once again.
+  choices:
+    - label: "Try something else → 10-A"
+      action: goto
+      metadata: { goto: "10-A" }
+    - label: "Ignore the problem and leave → 33-C"
+      action: goto
+      metadata: { goto: "33-C" }
+  resolvable: true
+
+"53-C":
+  title: "Leaving the Planet"
+  body: |
+    The beacon might have been a simple malfunction due to the black hole. You decide it's safest to leave. The planet's gravity seems to increase as if it was trying to keep you here. You increase thrusters to reach escape velocity. Lose 1 fuel.
+    As you enter orbit the distress beacon can be heard again. Going back down might be a waste of time and cost more fuel.
+  choices:
+    - label: "Land the ship and search the area → 35-C"
+      action: goto
+      metadata: { goto: "35-C" }
+    - label: "Continue to Orbit → 54-B"
+      action: goto
+      metadata: { goto: "54-B" }
+  resolvable: true
+
+"53-D":
+  title: "Escape to Orbit"
+  body: |
+    You escape to orbit. There is nothing you can do about the unkillable ship, but you will have vengeance. You point your ship towards the Endless home planet. Cross out [20-B].
+  choices:
+    - label: "Return to Orbit"
+      action: orbit
+  resolvable: true
+
+"54-A":
+  title: "A Decision Must Be Made"
+  body: |
+    After much consideration you have arrived at your decision. The answer is obvious to you.
+  choices:
+    - label: "Suggest humans use resources in the Miras' absence — underline sequence 761, Return to Orbit"
+      action: orbit
+    - label: "Suggest humans stay away from Mira land for 50 years — underline sequence 182, Return to Orbit"
+      action: orbit
+    - label: "Suggest humans redistribute current wealth and leave Mira land untouched — underline sequence 364, Return to Orbit"
+      action: orbit
+    - label: "[LIE] Tell humans to stay away but privately tell them to use the land — underline sequence 182947, give two officers MISTRUSTING, Return to Orbit"
+      action: orbit
+    - label: "Say nothing at the council — underline sequence 000, Return to Orbit"
+      action: orbit
+  resolvable: true
+
+"54-B":
+  title: "Your Own Distress Beacon"
+  body: |
+    Back in orbit the distress beacon is stronger than ever. You're able to pinpoint the exact location this time. To your astonishment, it's coming from the same island your ship landed on.
+    In a butchered transmission you make out the words "Stay Away." In disbelief you notice that the sender of the distress beacon is you — or some version of you that landed on that planet.
+    Looking back at the viewport you no longer see a planet. Instead the only thing visible is the black hole. Did the planet get swallowed up? And how did you send and receive your own distress beacon? It looks like we won't have time to find out. Your ship begins to feel the pull of gravity and it's time to go.
+  choices:
+    - label: "Return to Orbit"
+      action: orbit
+  resolvable: true
+
+"54-C":
+  title: "Caught in the Trap"
+  body: |
+    You were unable to disarm the trap and the canyon walls begin to tremble. You can hear them shouting.
+    "You idiots! You were supposed to disarm the trap! It was so easy!" Just as their words become muffled, your radio kicks in and one of your crew members messages you. She overheard that the famous treasure seekers are actually bandits that trap people in the caves and steal their ship. It looks like the trap caught the right person this time.
+    Back at the camp, you're celebrated for stopping these treasure hunters who have tricked many travelers. Gain 8 scrap.
+  choices:
+    - label: "Return to Orbit"
+      action: orbit
+  resolvable: true
+
+"54-D":
+  title: "The Empty Room"
+  body: |
+    On your way out you pass by the room where the teenagers were gathered. To your surprise the room is completely empty with no sign that they were ever there. As you canvas the area for clues, the faint sound of video blips and bloops is barely audible.
+    Once outside you attempt to get in touch with the woman you first asked for your assistance. Your comm-link can find no such number, only suggesting that the number has been disconnected for many years.
+  choices:
+    - label: "Head back to get refueled → 73-A"
+      action: goto
+      metadata: { goto: "73-A" }
+  resolvable: true
+
+"55-A":
+  title: "The Spa"
+  body: |
+    You and your crew spend the whole day at the spa. It's quite relaxing, but you can't help but wonder if there was something more to it. The downtime gives you the chance to appreciate the beauty of life.
+    Lose 10 scrap.
+  choices:
+    - label: "Return to Orbit"
+      action: orbit
+  resolvable: true
+
+# 56-A appears to be a duplicate of 48-A in the PDF text — likely an authoring error.
+"56-A":
+  title: "Treasure Site B"
+  body: |
+    The AI to the system is complex but you contain it after outsmarting it.
+    NOTE: This entry appears to duplicate 48-A in the rulebook. Likely an authoring error — treat as the same outcome.
+    [Requires: GREEDY or ROBOTICIST] — underline sequence 99. Gain 15 scrap.
+  choices:
+    - label: "Destroy the AI — gain 15 scrap, Return to Orbit"
+      action: orbit
+    - label: "Keep the AI — gain 15 scrap, acquire item [AI-System], Return to Orbit"
+      action: orbit
+  resolvable: true
+
+"56-B":
+  title: "Group B Treasure Hunt"
+  body: |
+    You rendezvous at the designated waypoint, certain that the treasure is located here. As you approach the canyon, you make out a faint glimpse of pirate ships surrounding you. It's a trap! Fight your way out.
+    COMBAT: 4 threats, draw deck of 4.
+    The dust settles and the treasure is all yours! Gain 8 scrap.
+    "Alas, we can retire from this lucrative life of hunting and danger," jokes a crew member.
+  choices:
+    - label: "Return to Orbit"
+      action: orbit
+  resolvable: true
+
+"56-C":
+  title: "Ladder Pulled Up"
+  body: |
+    It worked! You turn around to celebrate the success only to find that the famous treasure seekers have raised the ladder out of the canyon, trapping you below!
+    "Sorry, but you don't become famous by sharing loot! Better luck next time."
+    It takes a few hours before the crew back at your ship realizes you're missing and sends help. They get you out of the canyon but the traitors are long gone.
+  choices:
+    - label: "Return to Orbit"
+      action: orbit
+  resolvable: true
+
+"57-A":
+  title: "The Shadow"
+  body: |
+    The Shadow is a ruthless pirate hunter who only lives for the challenge of a good fight. He challenges you to a 1-on-1 ship duel. If he wins, you and your crew will perish. If you win, he will let you go and leave the outpost. You have no choice but to accept.
+    Your scanners indicate that The Shadow's vessel is capable of cloaking and has a long range cannon.
+    Setup: Use your ship token for your ship (starts at position A) and another token for The Shadow's ship (starts at position B). Refer to the rulebook for the asteroid field map and movement compass.
+    Each turn:
+    1. Move your ship one space in any direction (not optional). Neither ship can move into an asteroid.
+    2. Place a crew die showing the command icon in any open space.
+    3. Roll the threat die and move The Shadow based on the result. If The Shadow lands on your crew die marker, it takes a hit — cross out one direction on its movement compass.
+    4. If The Shadow can draw a straight line in any hexagonal direction to your ship (ignoring obstacles), it lands a hit — surrender a crew die.
+    If you have surrendered 5 crew dice, you lose the battle. If The Shadow has taken 6 hits, you win.
+  choices:
+    - label: "Victory — The Shadow is defeated → 58-A"
+      action: goto
+      metadata: { goto: "58-A" }
+    - label: "Defeat — you surrendered 5 crew dice"
+      action: game_over
+  resolvable: true
+
+"58-A":
+  title: "The Shadow Defeated"
+  body: |
+    The Shadow's ship is crushed and you are the victor. He begs you to destroy his ship, as he can no longer return home defeated.
+  choices:
+    - label: "Show mercy and spare him → 60-C"
+      action: goto
+      metadata: { goto: "60-C" }
+    - label: "Destroy his ship — gain 5 scrap, Return to Orbit"
+      action: orbit
+  resolvable: true
+
+"58-B":
+  title: "Red Asters Refuse"
+  body: |
+    The Red Asters refuse to communicate with you. You have no choice but to help April, as she is at risk. April says her family has a powerful weapon — a red medallion that increases the efficiency of your crew.
+  choices:
+    - label: "Continue → 58-C"
+      action: goto
+      metadata: { goto: "58-C" }
+  resolvable: true
+
+"58-C":
+  title: "Defend the Compound"
+  body: |
+    April is overjoyed by your answer to the call of duty. The Red Asters command a powerful fleet, but April gives you a weapon that will help you turn the tide.
+    COMBAT: 5 threats, draw deck of 9.
+    Special bonus station for this encounter only: convert all available crew to medical crew.
+  choices:
+    - label: "Victory → 59-C"
+      action: goto
+      metadata: { goto: "59-C" }
+  resolvable: true
+
+"59-A":
+  title: "Leaving Manaport"
+  body: |
+    Manaport never sleeps, but you do. You decide it's time to leave.
+  choices:
+    - label: "[Requires: Lux Food AND Fluffy Creature] → 61-D"
+      action: goto
+      metadata: { goto: "61-D" }
+    - label: "Return to Orbit"
+      action: orbit
+  resolvable: true
+
+"59-B":
+  title: "Hunting the Android"
+  body: |
+    The last known sighting of the android was near the hovercar assembly line. You and your officers spread out following your movement detectors. With all the machinery, it's hard to tell what's a machine and what could be the android.
+    Then you spot it. The humanoid robot is unmistakable. You draw your blaster pistol and follow the android behind an oil tank. Right as you round the corner, it flips a switch dropping several large car chassis around you, cutting you off from your officers. The android stares at you with red eyes glowing and a large wrench in its hands. One of your officers is shouting at you to shoot it.
+  choices:
+    - label: "Fire at the android → 61-E"
+      action: goto
+      metadata: { goto: "61-E" }
+    - label: "Put your hands up → 65-B"
+      action: goto
+      metadata: { goto: "65-B" }
+  resolvable: true
+
+"59-C":
+  title: "Mutiny Averted"
+  body: |
+    The Red Asters are quelled. A moon colony mutiny has been averted. You will no doubt be promoted once word of your accomplishments has reached home.
+  choices:
+    - label: "Return to Orbit"
+      action: orbit
+  resolvable: true
+
+"60-A":
+  title: "Q-Bomb Detonates"
+  body: |
+    Q-Bomb detonates, but as the ensuing explosions bear out across your ship, the heat and force become gas before making contact with anything. In what seems like a final act of kindness, the creatures you helped have helped you in return. Cross out [Q-Bomb].
+  choices:
+    - label: "Return to Orbit"
+      action: orbit
+  resolvable: true
+
+"60-B":
+  title: "The End of the Ship"
+  body: |
+    Your ship is pulled apart by an army of tiny machines. The machines methodically disassemble your whole ship before your very eyes. The machines are savage until they reach you and your crew — they avoid you for as long as possible but eventually make contact and self-destruct. The planet killer is falling apart! This might be the end for your crew, but at least the millions at the bazaar will be safe.
+
+    THE END
+  choices:
+    - label: "Game Over"
+      action: game_over
+  resolvable: true
+
+"60-C":
+  title: "Mercy for The Shadow"
+  body: |
+    You leave The Shadow to the emptiness of space. Before the comms are disconnected he says that he will see you again and that it will be the last time.
+    You may now research the Cloaking Device in the Research & Development section of your character sheet. Cross out the '?' box.
+  choices:
+    - label: "Return to Orbit"
+      action: orbit
+  resolvable: true
+
+"61-A":
+  title: "Join a Group"
+  body: |
+    People have been searching for this treasure for ages. By joining a group we can catch up on their progress. There are two groups willing to join forces. You tell them you just need enough to help you get home.
+  choices:
+    - label: "Join Group A — famous seekers offering 75/25 split → 62-A"
+      action: goto
+      metadata: { goto: "62-A" }
+    - label: "Join Group B — small group offering 50/50 split → 56-B"
+      action: goto
+      metadata: { goto: "56-B" }
+  resolvable: true
+
+"61-B":
+  title: "Rising Waters"
+  body: |
+    The water levels feel like they're rising. For each officer on your crew, roll 2 crew dice. Any officer with a result containing at least one skull — place an X in their box.
+    You press onward until you come upon a split in the path.
+  choices:
+    - label: "Take the path on the left → 39-B"
+      action: goto
+      metadata: { goto: "39-B" }
+    - label: "Take the path on the right → 70-A"
+      action: goto
+      metadata: { goto: "70-A" }
+  resolvable: true
+
+"61-C":
+  title: "Treasure Site C — It's a Trap"
+  body: |
+    It's a trap! You begin to doubt whether there was any actual treasure this whole time.
+    COMBAT: 3 threats, draw deck of 3.
+    We've wasted enough time on this planet.
+  choices:
+    - label: "Return to Orbit"
+      action: orbit
+  resolvable: true
+
+"61-D":
+  title: "Feeding the Creatures"
+  body: |
+    The ship's galley chef informs you that the creatures' current intake of food stands to exhaust the current supply of rations. She suggests giving the creatures some of the Luxury Food to hold them over. Your officer suggests rounding them up and sending them out the airlock. What should we do?
+  choices:
+    - label: "Round up and jettison the creatures in a pod back to Manaport → 62-C"
+      action: goto
+      metadata: { goto: "62-C" }
+    - label: "Allow the creatures to snack on some of the Luxury Food → 71-A"
+      action: goto
+      metadata: { goto: "71-A" }
+  resolvable: true
+
+"61-E":
+  title: "The Android Surrenders"
+  body: |
+    The shot rips through the android's shoulder faster than it can react. You are surprised to discover that the android begins to make noise as if reeling from the pain of the blaster shot. The android surrenders.
+  choices:
+    - label: "Keep the android and report it was destroyed → 66-A"
+      action: goto
+      metadata: { goto: "66-A" }
+    - label: "Hand the robot over to the representatives → 73-B"
+      action: goto
+      metadata: { goto: "73-B" }
+  resolvable: true
+
+"62-A":
+  title: "The Dice Tower"
+  body: |
+    You only need enough to get home, and the famous group seems to be the most capable. The treasure seekers tell you about a hidden cavern filled with traps. You'll need to work with them to unlock the traps and reveal the passage to the treasure. They take a position in an adjacent cave and wait for you to complete your side of the puzzle.
+    Take 5 crew dice and turn them so that the command icon is face up. Then without looking, stack the 5 dice in a single tower. By only touching two dice at a time, rotate each die until the pattern matches the target image in the rulebook (the orientation of the icon does not matter).
+    If the dice fall over, the trap is sprung.
+  choices:
+    - label: "Dice fell over — trap sprung → 54-C"
+      action: goto
+      metadata: { goto: "54-C" }
+    - label: "Succeeded — trap disarmed → 56-C"
+      action: goto
+      metadata: { goto: "56-C" }
+  resolvable: true
+
+"62-B":
+  title: "Looking for the Boy"
+  body: |
+    The woman leads you to the location of the hatch. It's not far from the station and there are lots of children playing in the area. You tell her to wait for her son at home while you attempt a search. She leaves you with her comm number and you climb down the hatch.
+    Graffiti lines the walls and arrows have been painted on corners suggesting a path. To your surprise there are lights every few feet. You follow the sound of some noise and come across a group of teenagers playing video games in the dark. They don't seem concerned about your presence. When asked about a young boy, they offer nothing insightful.
+  choices:
+    - label: "Continue looking → 63-A"
+      action: goto
+      metadata: { goto: "63-A" }
+    - label: "Leave and go back to the fuel station → 73-A"
+      action: goto
+      metadata: { goto: "73-A" }
+  resolvable: true
+
+"62-C":
+  title: "Jettison the Creatures"
+  body: |
+    It takes some time but your crew is able to find all the fluffy creatures and lock them into a container. Lose 1 fuel. The last of the creatures stare at you with wide, sad eyes. Perhaps they'll find a new home back on Manaport.
+  choices:
+    - label: "Return to Orbit"
+      action: orbit
+  resolvable: true
+
+"62-D":
+  title: "Counterattack"
+  body: |
+    You're running out of cover and decide to counterattack. You order your crew to fire back at the alien ship. The initial barrage of laser fire appears to have no effect on its thick armor. Switching to missiles, the alien ship accurately disintegrates each missile mid-flight before it can make contact.
+    The next sound you hear is one you never thought you'd hear. The radio sounds of your ship and its crew being destroyed sends chills down your spine. It only takes a few minutes before you can hear the alien ship bearing in on your location. It seems your destiny will end here.
+
+    THE END
+  choices:
+    - label: "Game Over"
+      action: game_over
+  resolvable: true
+
+"63-A":
+  title: "Deeper in the Mines"
+  body: |
+    Further down the corridors you catch a glimpse of a short figure. Calling out, they stop to look back before running down an adjacent hallway. In a hurry you and your officers give chase. From the corner of your eyes you look into rooms and notice a large amount of discarded mining equipment. As you pass each room, the amount of equipment increases substantially.
+    You stop to catch your breath when one of your officers speaks up. They recall details of a massive mining colony that drilled into a subterranean gas pocket and the releasing toxins killed hundreds of miners. The story continues that the gas caused hallucinations of children running around in the mines, resulting in many workers refusing to evacuate.
+  choices:
+    - label: "Continue looking → 64-A"
+      action: goto
+      metadata: { goto: "64-A" }
+    - label: "Leave and go back to the fuel station → 54-D"
+      action: goto
+      metadata: { goto: "54-D" }
+  resolvable: true
+
+"63-B":
+  title: "The Queen's Deal"
+  body: |
+    The Queen welcomes you to her stronghold. Despite her reputation, she doesn't appear threatening or hostile. Hearing about your accomplishments throughout the sector, she offers you a deal.
+    The queen tells you about a nearby planetoid that holds immense wealth but is guarded by dangerous creatures. She has lost many ships trying to acquire it. She asks that you recover the treasure at 15-B and bring it back to her. Draw a beacon at 15-B.
+  choices:
+    - label: "Return to Orbit"
+      action: orbit
+  resolvable: true
+
+"63-C":
+  title: "Ouroboros Defeated"
+  body: |
+    The Ouroboros lies in wreckage. In their last breath, the crew of the Ouroboros claims to be rogue agents and that the UEF will deny any involvement.
+    Acquire [DATALOG-9].
+  choices:
+    - label: "Return to Orbit"
+      action: orbit
+  resolvable: true
+
+"64-A":
+  title: "The Boy in the Mines"
+  body: |
+    Further down the mines you can hear the laughter of children. From behind you, a young boy appears holding a small ball. He asks if you would like to play catch, but before you can answer he runs off into the darkness.
+    There is no more equipment now and, save for a few torches, the walls are barren. Looking down you see footprints. On closer inspection they match the UEF standard issue boot.
+    [Requires: COWARD] — you must select the leave option.
+  choices:
+    - label: "Follow after the boy → 65-A"
+      action: goto
+      metadata: { goto: "65-A" }
+    - label: "Leave and go back to the fuel station → 54-D"
+      action: goto
+      metadata: { goto: "54-D" }
+  resolvable: true
+
+"64-B":
+  title: "Assault on the Queen"
+  body: |
+    With the Queen and her men distracted you set your plan into action. All at once, you and your officers open fire on the Queen and her guards. In the ensuing chaos one of your officers is fatally wounded. Your ship sets off an ion bomb, disabling the pirate defenses and jammers, and you teleport back to your ship. With the pirate headquarters in disarray you make a clean escape.
+    [Unless you have DARK MATTER SPECIALIST, ASSASSIN, or LOYAL] — lose item [Vortex].
+  choices:
+    - label: "Return to Orbit"
+      action: orbit
+  resolvable: true
+
+"64-C":
+  title: "Deep Space D-6"
+  body: |
+    You return the mysterious cargo to the proper UEF authorities. It's a bunch of old toys — something called "Deep Space D-6." The officer tells you they were small board games made by the UEF to get kids interested in space travel. Apparently it was a very effective tool! Each game sells at a vintage auction for ridiculous amounts of money.
+    Good thing you kept a copy for yourself.
+    (Item ending — return to 19-A for remaining sequences.)
+  choices:
+    - label: "Return to 19-A"
+      action: goto
+      metadata: { goto: "19-A" }
+  resolvable: true
+
+"65-A":
+  title: "The Laughter"
+  body: |
+    The laughter is so loud now and it sounds like there are even more children. Are they trapped down here? Were they playing some sort of game?
+    Your eyelids feel heavy and right as you are about to tell your crew to take a short break, you notice they've already begun to nap. You might as well sleep now. Right on the floor. Right next to these footprints. Footprints of your own shoes.
+    You'll find the boy in the morning.
+
+    THE END
+  choices:
+    - label: "Game Over"
+      action: game_over
+  resolvable: true
+
+"65-B":
+  title: "The Android's Message"
+  body: |
+    The android has not attacked you despite having a clear opportunity. You raise your arms to signal that you mean it no harm. As you slowly approach, it extends its arm offering the wrench.
+    You look closer at the tool and find a rough engraving on the side. The words are clear: "NO DELETE I."
+    Back at your ship, your officers run a memory diagnostic and discover that the android was created by the machines as a way to communicate with the manufacturing companies. It explains that it was built to feel pain in order to convey the dangerous work environment of the facilities. The android reports numerous work-related casualties that were erased from record. It further reports that it was acting out of self-defense when it attacked the workers who attempted to dismantle it.
+  choices:
+    - label: "Keep the android and report it was destroyed → 66-A"
+      action: goto
+      metadata: { goto: "66-A" }
+    - label: "Hand the robot over to the representatives → 73-B"
+      action: goto
+      metadata: { goto: "73-B" }
+    - label: "Explain the situation to the representatives → 54-D"
+      action: goto
+      metadata: { goto: "54-D" }
+  resolvable: true
+
+"66-A":
+  title: "Keep the Android"
+  body: |
+    You decide to hold on to the android yourself. This kind of advanced technology belongs with the UEF. Gain item [ANDY]. The representatives are concerned that they were not able to salvage any parts, but are happy that the android has been taken care of. Gain 5 scrap.
+  choices:
+    - label: "Return to Orbit"
+      action: orbit
+  resolvable: true
+
+"66-B":
+  title: "The Canyon Walls"
+  body: |
+    The alien ship's weapons are too powerful to contend with. You run back to the safety of the canyon walls. As you observe the alien ship you notice that the lasers it fired left no trace of destruction.
+    You throw your radio out into the open and in a flash it too disappears after being struck by a laser beam. That's when you notice that your officer's radio is still picking up a signal. The alien ship isn't destroying things — it's abducting them!
+    You gather your officers and as a group run out into the opening. As predicted, a beam of hot light comes down and in the next moment you are inside the ship.
+    The walls match the same texture and pattern of the canyons you were once in. You travel down familiar pathways — everything looks the same except there are no chains.
+    It makes perfect sense now. The mountain is not a mountain — it is an ancient cosmic creature with the ability to produce energy from nothing. The creature must have been imprisoned here and forced to create goods and valuables. The alien ship you are currently aboard is its mate, trying to protect it. As you make your way to the center of the ship you come upon an identical vortex to one you saw previously. Your officer says this vortex is much weaker and you may be able to teleport it back to your ship.
+  choices:
+    - label: "Teleport back to your ship and free the chained creature → 50-A"
+      action: goto
+      metadata: { goto: "50-A" }
+    - label: "Teleport the vortex back to your ship and escape with it → 73-C"
+      action: goto
+      metadata: { goto: "73-C" }
+  resolvable: true
+
+"67-A":
+  title: "The Dreadship"
+  body: |
+    The Dreadship comes into range and the battle begins. Combat the ship following the regular Deep Space D-6 rules. Instead of placing scanner dice on your ship board, place them on the Dreadship in the appropriate spot. Medical crew can still interact with this space as if it were the scanners.
+    When attacking the ship, you may target any of its systems individually. Mark off a box for each damage. When all boxes for a system are filled, cross out that system — it can no longer be activated. To destroy the ship, mark off all boxes for the ship's core.
+    Dreadship systems (refer to rulebook diagram):
+    • Hull systems — deal -3 Hull and -2 Hull damage.
+    • Infirmary system — sends a unit to the infirmary.
+    • Core system — must destroy all other systems first; immune for one round after its shield activates.
+    Once the ship is defeated, gain 10 scrap.
+  choices:
+    - label: "Victory — gain 10 scrap, Return to Orbit"
+      action: orbit
+  resolvable: true
+
+"68-A":
+  title: "The Pandora Box Opened"
+  body: |
+    You open the box and reveal a piece of paper. Paper is an old inscribing technology used by ancient civilizations to document events. The paper is clearly of UEF origins but uses the old UEF insignia.
+    The document outlines the UEF constitutional policy on colony rights. It states: "Any new space-born human race shall maintain priority involvement on all matters pertaining to inter-space government."
+    This document would completely change the power holders of the current UEF government structure.
+  choices:
+    - label: "Give the document to the Red Asters → 59-C"
+      action: goto
+      metadata: { goto: "59-C" }
+    - label: "Secure the box for transportation to the UEF HQ → 69-A"
+      action: goto
+      metadata: { goto: "69-A" }
+  resolvable: true
+
+"68-B":
+  title: "Invictus"
+  body: |
+    You followed orders and brought the UEF a sample of the Endless. As a reward, you're promoted to Admiral and given command of your own station at Alexandria, a small outer reach planet. The technology from the Endless creates a surplus of resources for your planet. But the technology is finite.
+    Your former commanders at the UEF request that you bring the Endless tech home to Terra where it can be further researched and possibly replicated. You fear the tech will be destroyed and put Alexandria — your new home — in peril. Without your compliance the UEF is forced to reject Alexandria's membership. That's okay, because you don't need their help anymore. We'll have a new name, one that better represents us.
+    We are now Invictus.
+    Many colonies across the galaxy join Invictus. The old ways of the UEF are being demolished. The UEF puts up a good fight, almost defeating you — but that's when your engineers present you with something far greater than any single weapon in the UEF. The Ouroboros Mark III. There's not a single ship in the galaxy that can stop it.
+
+    THE END
+    (Item ending — reached from 19-A for item EE7.)
+  choices:
+    - label: "End"
+      action: complete
+  resolvable: true
+
+"69-A":
+  title: "Seize the Box"
+  body: |
+    The Red Asters are in no position to bargain. You seize control of the box. Gain item [PandoraBox]. As captain of the UEF, the stability of the United Earths Federation is your primary objective.
+    With the box in your possession, The Red Asters make a counterattack on your ship.
+    COMBAT: 4 threats, draw deck of 4.
+    If defeated, lose item [PandoraBox].
+  choices:
+    - label: "Defeated — lose [PandoraBox], Return to Orbit"
+      action: orbit
+    - label: "Victorious — Return to Orbit"
+      action: orbit
+  resolvable: true
+
+"70-A":
+  title: "Rising Waters"
+  body: |
+    The water levels feel like they're rising. For each officer on your crew, roll 2 crew dice. Any officer with a result containing at least one skull — place an X in their box.
+    You press onward until you come upon a split in the path.
+  choices:
+    - label: "Take the path on the left → 39-B"
+      action: goto
+      metadata: { goto: "39-B" }
+    - label: "Take the path on the right → 72-A"
+      action: goto
+      metadata: { goto: "72-A" }
+    - label: "Turn back — Return to Orbit"
+      action: orbit
+  resolvable: true
+
+"71-A":
+  title: "Snack Time"
+  body: |
+    There's plenty of Luxury Food to feed the creatures and still make the delivery. Luckily the creatures only seem to want a little bit of the high-end food. It doesn't take long before many of the little creatures start to look sick and appear to go into a coma.
+    You have your doctor run tests and discover that the Luxury Food was laced with a poison that was undetectable. Because of the creatures' fast metabolism, the poison was able to be identified. This food would have surely killed any humans that consumed it! You file a report calling for the arrest of the man who gave you the cargo, though you suspect the original owner of the goods is long out of the picture. Cross out [Lux Food].
+  choices:
+    - label: "Return to Orbit"
+      action: orbit
+  resolvable: true
+
+"71-B":
+  title: "The Pod Enters the Maw"
+  body: |
+    The escape pod enters the maw of the ship and your sensors detect that the size of the ship has decreased ever so slightly. You surmise that the ship cannot handle complex organic matter.
+  choices:
+    - label: "Pilot your ship into the maw → 60-B"
+      action: goto
+      metadata: { goto: "60-B" }
+    - label: "Slingshot the UEF Manta into the maw → 72-C"
+      action: goto
+      metadata: { goto: "72-C" }
+  resolvable: true
+
+"72-A":
+  title: "Rising Waters"
+  body: |
+    The water levels feel like they're rising. For each officer on your crew, roll 2 crew dice. Any officer with a result containing at least one skull — place an X in their box.
+    You press onward until you come upon a split in the path.
+  choices:
+    - label: "Take the path on the left → 39-B"
+      action: goto
+      metadata: { goto: "39-B" }
+    - label: "Take the path on the right → 43-A"
+      action: goto
+      metadata: { goto: "43-A" }
+    - label: "Turn back — Return to Orbit"
+      action: orbit
+  resolvable: true
+
+"72-B":
+  title: "Refueling Depot"
+  body: |
+    The queue for the refueling station is long and you decide to wander around the area with your officers. You don't get very far before you're hailed by a distraught woman. She tells you that her son went down into a nearby hatch after he dropped his toy ball down a drainage port. The boy has been missing for about an hour.
+  choices:
+    - label: "Offer to help look for the boy → 62-B"
+      action: goto
+      metadata: { goto: "62-B" }
+    - label: "Tell her to continue to wait → 73-A"
+      action: goto
+      metadata: { goto: "73-A" }
+  resolvable: false
+
+"72-C":
+  title: "The Slingshot"
+  body: |
+    Your pilot executes a perfect two-body slingshot and propels the UEF Manta and all its contents into the maw of the alien ship. You hold your breath as the ship nears its final destination.
+    You would not believe it if you weren't seeing it with your own eyes. The ship begins to shrink and erratically veers off course. The ship no longer poses a threat.
+  choices:
+    - label: "Return to Orbit"
+      action: orbit
+  resolvable: true
+
+"73-A":
+  title: "Free Fuel"
+  body: |
+    The fuel is free, which explains why the line is so long. Gain 2 fuel.
+  choices:
+    - label: "Seek out jobs → 37-A"
+      action: goto
+      metadata: { goto: "37-A" }
+    - label: "Visit the vendor hall → 43-D"
+      action: goto
+      metadata: { goto: "43-D" }
+    - label: "Visit the research center → 41-B"
+      action: goto
+      metadata: { goto: "41-B" }
+    - label: "Leave Manaport → 59-A"
+      action: goto
+      metadata: { goto: "59-A" }
+  resolvable: false
+
+"73-B":
+  title: "Android Returned"
+  body: |
+    The android is property of the companies here and you hand it over to them. They are extremely grateful for your service. Gain 11 scrap. You wonder what they will do with such advanced technology.
+  choices:
+    - label: "Return to Orbit"
+      action: orbit
+  resolvable: true
+
+"73-C":
+  title: "The Vortex Captured"
+  body: |
+    Your mission is to find the treasure so you decide to capture the vortex. You teleport back to your ship after teleporting the vortex into a specially constructed compartment.
+    In the distance you can hear the loud crashing of the alien ship colliding with the mountain. The shockwave ruptures through the surface of the planet, signaling that it's time to go!
+    Gain item [Vortex] and underline sequence L.
+  choices:
+    - label: "Return to Orbit"
+      action: orbit
   resolvable: true
