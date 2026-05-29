@@ -54,5 +54,18 @@ class MapLoader
     def reload!
       @data = @hex_index = nil
     end
+
+    def trigger_hexes_for_sector(sector)
+      hexes.select { |h| h["sector"] == sector && h["trigger"].present? }
+    end
+
+    def parse_trigger(str)
+      parts = str.split("-").map(&:to_i)
+      parts.size == 1 ? [parts.first] : (parts.first..parts.last).to_a
+    end
+
+    def hex_for_roll(sector, roll)
+      trigger_hexes_for_sector(sector).find { |h| parse_trigger(h["trigger"]).include?(roll) }
+    end
   end
 end
