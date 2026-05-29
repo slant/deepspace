@@ -84,7 +84,7 @@ class HexEventsController < ApplicationController
   private
 
   def set_campaign
-    @campaign = current_user.campaigns.find_by!(public_id: params[:campaign_id])
+    @campaign = current_user.campaigns.active.find_by!(public_id: params[:campaign_id])
   end
 
   def campaign_state
