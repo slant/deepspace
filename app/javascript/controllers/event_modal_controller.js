@@ -9,6 +9,7 @@ export default class extends Controller {
     window.addEventListener("hex:selected", this.onHexSelected)
     this.currentHex = null
     this.currentEventLabel = null
+    this.gameOver = false
   }
 
   disconnect() {
@@ -54,28 +55,37 @@ export default class extends Controller {
 
   async choose(hex, choice) {
     const url = `/campaigns/${this.campaignIdValue}/hex/${hex.q}/${hex.r}`
-    const response = await fetch(url, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        "X-CSRF-Token": this.csrfToken
-      },
-      body: JSON.stringify({
-        action_type: choice.action,
-        goto_target: choice.metadata?.goto || null,
-        scrap_delta: choice.metadata?.scrap_delta || 0,
-        fuel_delta:  choice.metadata?.fuel_delta  || 0,
-        current_event_label: this.currentEventLabel
+    let response, data
+
+    try {
+      response = await fetch(url, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          "X-CSRF-Token": this.csrfToken
+        },
+        body: JSON.stringify({
+          action_type: choice.action,
+          goto_target: choice.metadata?.goto || null,
+          scrap_delta: choice.metadata?.scrap_delta || 0,
+          fuel_delta:  choice.metadata?.fuel_delta  || 0,
+          current_event_label: this.currentEventLabel
+        })
       })
-    })
+    } catch {
+      this.bodyTarget.innerHTML = "<p>Connection error. Please try again.</p>"
+      return
+    }
 
-    if (!response.ok) return
+    if (!response.ok) {
+      this.bodyTarget.innerHTML = "<p>Something went wrong. Please try again.</p>"
+      return
+    }
 
-    const data = await response.json()
+    data = await response.json()
 
     window.dispatchEvent(new CustomEvent("campaign:updated"))
-    Turbo.visit(window.location.href, { frame: "campaign_map" })
 
     if (data.game_over) {
       this.showGameOver(data)
@@ -83,11 +93,13 @@ export default class extends Controller {
       this.currentEventLabel = choice.metadata?.goto || null
       this.show(data.next_event)
     } else {
+      Turbo.visit(window.location.href, { frame: "campaign_map" })
       this.close()
     }
   }
 
   showGameOver(data) {
+    this.gameOver = true
     this.titleTarget.textContent = data.title || "Mission Failed"
     this.bodyTarget.innerHTML = this.formatBody(data.body)
     this.choicesTarget.innerHTML = ""
@@ -96,10 +108,7 @@ export default class extends Controller {
     btn.type = "button"
     btn.className = "btn btn-secondary w-full"
     btn.textContent = "Return to Main Menu"
-    btn.addEventListener("click", () => {
-      this.close()
-      Turbo.visit("/campaigns")
-    })
+    btn.addEventListener("click", () => this.close())
     this.choicesTarget.appendChild(btn)
   }
 
@@ -107,6 +116,7 @@ export default class extends Controller {
     this.dialogTarget.classList.add("hidden")
     this.backdropTarget.classList.add("hidden")
     document.body.classList.remove("modal-open")
+    if (this.gameOver) Turbo.visit("/campaigns")
   }
 
   formatBody(text) {
