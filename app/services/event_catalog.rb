@@ -28,6 +28,11 @@ class EventCatalog
       end
     end
 
+    def for_event(id)
+      stored = events[id]
+      stored ? normalize(stored) : nil
+    end
+
     private
 
     def normalize(data)
