@@ -4,28 +4,34 @@ one:
   user: one
   character: one
   name: MyString
+  public_id: aaaa
   status: 1
   ship_q: 1
   ship_r: 1
   fuel: 1
   scrap: 1
   cargo_sequence: MyString
-  discovered_sectors: 
-  researched_upgrades: 
-  resolved_events: 
+  discovered_sectors: "[]"
+  researched_upgrades: "{}"
+  resolved_events: "[]"
+  planet_sprites: "{}"
+  activated_hexes: "[]"
   draft_step: 1
 
 two:
   user: two
   character: two
   name: MyString
+  public_id: bbbb
   status: 1
   ship_q: 1
   ship_r: 1
   fuel: 1
   scrap: 1
   cargo_sequence: MyString
-  discovered_sectors: 
-  researched_upgrades: 
-  resolved_events: 
+  discovered_sectors: "[]"
+  researched_upgrades: "{}"
+  resolved_events: "[]"
+  planet_sprites: "{}"
+  activated_hexes: "[]"
   draft_step: 1

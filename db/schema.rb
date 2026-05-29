@@ -10,11 +10,12 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_27_230951) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_29_002205) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
   create_table "campaigns", force: :cascade do |t|
+    t.json "activated_hexes", default: [], null: false
     t.string "cargo_sequence"
     t.bigint "character_id"
     t.datetime "created_at", null: false
@@ -22,6 +23,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_27_230951) do
     t.integer "draft_step", default: 1, null: false
     t.integer "fuel", default: 10, null: false
     t.string "name"
+    t.json "planet_sprites", default: {}, null: false
     t.string "public_id", null: false
     t.json "researched_upgrades", default: {}, null: false
     t.json "resolved_events", default: [], null: false
