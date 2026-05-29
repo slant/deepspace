@@ -589,6 +589,7 @@
       metadata: { goto: "64-B" }
     - label: "Gain 100 scrap — Return to Orbit"
       action: orbit
+      metadata: { scrap_delta: 100 }
   resolvable: true
 
 "26-B":
@@ -619,10 +620,10 @@
   choices:
     - label: "Spend 1 fuel — seek side jobs → 33-B"
       action: goto
-      metadata: { goto: "33-B" }
+      metadata: { goto: "33-B", fuel_delta: -1 }
     - label: "Spend 1 fuel — visit the local tavern → 51-A"
       action: goto
-      metadata: { goto: "51-A" }
+      metadata: { goto: "51-A", fuel_delta: -1 }
     - label: "Return to Orbit"
       action: orbit
   resolvable: true
@@ -688,6 +689,7 @@
   choices:
     - label: "Salvage what you can — gain 5 scrap, Return to Orbit"
       action: orbit
+      metadata: { scrap_delta: 5 }
     - label: "Continue ascending the tower → 39-A"
       action: goto
       metadata: { goto: "39-A" }
@@ -909,10 +911,10 @@
   choices:
     - label: "Spend 1 fuel — seek a UEF contact → 42-A"
       action: goto
-      metadata: { goto: "42-A" }
+      metadata: { goto: "42-A", fuel_delta: -1 }
     - label: "Spend 1 fuel — visit the local tavern → 51-A"
       action: goto
-      metadata: { goto: "51-A" }
+      metadata: { goto: "51-A", fuel_delta: -1 }
     - label: "Return to Orbit"
       action: orbit
   resolvable: true
@@ -957,7 +959,7 @@
   choices:
     - label: "Agree to deliver the cargo — gain 15 scrap, acquire [Lux Food] → 49-B"
       action: goto
-      metadata: { goto: "49-B" }
+      metadata: { goto: "49-B", scrap_delta: 15 }
     - label: "Politely decline → 45-A"
       action: goto
       metadata: { goto: "45-A" }
@@ -1202,13 +1204,13 @@
   choices:
     - label: "Purchase board games for 2 scrap → 51-D"
       action: goto
-      metadata: { goto: "51-D" }
+      metadata: { goto: "51-D", scrap_delta: -2 }
     - label: "Purchase a cute fluffy creature for 1 scrap → 44-D"
       action: goto
-      metadata: { goto: "44-D" }
+      metadata: { goto: "44-D", scrap_delta: -1 }
     - label: "Purchase a perfectly round sphere for 2 scrap → 45-C"
       action: goto
-      metadata: { goto: "45-C" }
+      metadata: { goto: "45-C", scrap_delta: -2 }
     - label: "Purchase nothing → 12-A"
       action: goto
       metadata: { goto: "12-A" }
@@ -1281,10 +1283,10 @@
   choices:
     - label: "Spend 1 fuel — seek side jobs → 33-B"
       action: goto
-      metadata: { goto: "33-B" }
+      metadata: { goto: "33-B", fuel_delta: -1 }
     - label: "Spend 1 fuel — visit the local tavern → 51-A"
       action: goto
-      metadata: { goto: "51-A" }
+      metadata: { goto: "51-A", fuel_delta: -1 }
     - label: "Return to Orbit"
       action: orbit
   resolvable: true
@@ -1358,10 +1360,10 @@
   choices:
     - label: "Spend 1 fuel — seek a UEF contact → 42-A"
       action: goto
-      metadata: { goto: "42-A" }
+      metadata: { goto: "42-A", fuel_delta: -1 }
     - label: "Spend 1 fuel — visit the local tavern → 51-A"
       action: goto
-      metadata: { goto: "51-A" }
+      metadata: { goto: "51-A", fuel_delta: -1 }
     - label: "Return to Orbit"
       action: orbit
   resolvable: true
@@ -1386,10 +1388,13 @@
   choices:
     - label: "Destroy the AI — gain 15 scrap, Return to Orbit"
       action: orbit
+      metadata: { scrap_delta: 15 }
     - label: "Keep the AI — gain 15 scrap, acquire item [AI-System], Return to Orbit"
       action: orbit
+      metadata: { scrap_delta: 15 }
     - label: "[Requires: GREEDY or ROBOTICIST] Underline sequence 99, gain 15 scrap — Return to Orbit"
       action: orbit
+      metadata: { scrap_delta: 15 }
   resolvable: true
 
 "48-B":
@@ -1546,7 +1551,7 @@
       metadata: { goto: "46-A" }
     - label: "Defeated — crash land, lose 1 fuel, de-board → 46-A"
       action: goto
-      metadata: { goto: "46-A" }
+      metadata: { goto: "46-A", fuel_delta: -1 }
   resolvable: true
 
 "51-D":
@@ -1566,10 +1571,10 @@
   choices:
     - label: "Spend 1 fuel — seek a UEF contact → 44-A"
       action: goto
-      metadata: { goto: "44-A" }
+      metadata: { goto: "44-A", fuel_delta: -1 }
     - label: "Spend 1 fuel — seek side jobs → 33-B"
       action: goto
-      metadata: { goto: "33-B" }
+      metadata: { goto: "33-B", fuel_delta: -1 }
     - label: "Return to Orbit"
       action: orbit
   resolvable: true
@@ -1738,8 +1743,10 @@
   choices:
     - label: "Destroy the AI — gain 15 scrap, Return to Orbit"
       action: orbit
+      metadata: { scrap_delta: 15 }
     - label: "Keep the AI — gain 15 scrap, acquire item [AI-System], Return to Orbit"
       action: orbit
+      metadata: { scrap_delta: 15 }
   resolvable: true
 
 "56-B":
@@ -1795,6 +1802,7 @@
       metadata: { goto: "60-C" }
     - label: "Destroy his ship — gain 5 scrap, Return to Orbit"
       action: orbit
+      metadata: { scrap_delta: 5 }
   resolvable: true
 
 "58-B":
@@ -2139,6 +2147,7 @@
   choices:
     - label: "Victory — gain 10 scrap, Return to Orbit"
       action: orbit
+      metadata: { scrap_delta: 10 }
   resolvable: true
 
 "68-A":
