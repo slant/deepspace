@@ -3,6 +3,8 @@
 class Campaign < ApplicationRecord
   DEFAULT_CARGO = "000-2-134711-182947-76123199-322521-8431364-L-M-Z".freeze
   START_HEX = { q: 2, r: 7 }.freeze
+  PLANET_COUNT = 25
+  PLANET_ICON_TYPES = %w[circle beacon_store].freeze
 
   belongs_to :user
   belongs_to :character, optional: true
@@ -88,8 +90,40 @@ class Campaign < ApplicationRecord
       cargo_sequence: DEFAULT_CARGO,
       name: "#{character.name} — #{character.ship_name}"
     )
+    assign_planet_sprites!
     discover_sector!(MapLoader.hex_at(ship_q, ship_r)["sector"]) if MapLoader.hex_at(ship_q, ship_r)
     log!("Campaign begun. Good luck, Captain #{character.name}.", entry_type: "milestone")
+  end
+
+  def assign_planet_sprites!
+    sprites = MapLoader.hexes
+      .select { |h| h["icon"].in?(PLANET_ICON_TYPES) }
+      .each_with_object({}) { |hex, hash| hash["#{hex['q']},#{hex['r']}"] = rand(PLANET_COUNT) }
+    update!(planet_sprites: sprites)
+  end
+
+  def planet_sprite_for(q, r)
+    planet_sprites["#{q},#{r}"] || (q * 7 + r * 11).abs % PLANET_COUNT
+  end
+
+  def generate_sector!(sector)
+    roll_count = MapLoader.sector_rolls[sector].to_i
+    activated = activated_hexes.dup
+
+    roll_count.times do
+      roll = rand(1..12)
+      hex = MapLoader.hex_for_roll(sector, roll)
+      next unless hex
+      key = "#{hex['q']},#{hex['r']}"
+      next if activated.include?(key)
+      activated << key
+    end
+
+    update!(activated_hexes: activated)
+  end
+
+  def hex_active?(q, r)
+    activated_hexes.include?("#{q},#{r}")
   end
 
   def log!(body, entry_type: "note", metadata: {})
@@ -109,6 +143,8 @@ class Campaign < ApplicationRecord
     self.discovered_sectors ||= []
     self.researched_upgrades ||= {}
     self.resolved_events ||= []
+    self.planet_sprites ||= {}
+    self.activated_hexes ||= []
     self.fuel ||= 10
     self.scrap ||= 0
     self.draft_step ||= 1
