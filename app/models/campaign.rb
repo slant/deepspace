@@ -76,6 +76,7 @@ class Campaign < ApplicationRecord
     sectors = discovered_sectors.dup
     return if sectors.include?(sector)
 
+    generate_sector!(sector)
     update!(discovered_sectors: sectors + [ sector ])
     log!("Entered #{sector.titleize} sector", entry_type: "sector")
   end

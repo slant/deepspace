@@ -96,4 +96,32 @@ class CampaignTest < ActiveSupport::TestCase
 
     assert_not campaign.hex_active?(2, 6)
   end
+
+  test "discover_sector! populates activated_hexes for the sector" do
+    campaign = campaigns(:one)
+    campaign.update_column(:activated_hexes, [])
+    campaign.update_column(:discovered_sectors, [])
+
+    campaign.discover_sector!("alpha")
+
+    alpha_trigger_coords = MapLoader.trigger_hexes_for_sector("alpha")
+      .map { |h| "#{h['q']},#{h['r']}" }
+    campaign.reload.activated_hexes.each do |coord|
+      assert_includes alpha_trigger_coords, coord
+    end
+  end
+
+  test "discover_sector! called twice for the same sector does not re-roll" do
+    campaign = campaigns(:one)
+    campaign.update_column(:activated_hexes, [])
+    campaign.update_column(:discovered_sectors, [])
+
+    campaign.discover_sector!("alpha")
+    first_result = campaign.reload.activated_hexes.dup
+
+    campaign.discover_sector!("alpha")
+    second_result = campaign.reload.activated_hexes
+
+    assert_equal first_result, second_result
+  end
 end
