@@ -7,6 +7,8 @@ export default class extends Controller {
   connect() {
     this.onHexSelected = this.openHex.bind(this)
     window.addEventListener("hex:selected", this.onHexSelected)
+    this.currentHex = null
+    this.currentEventLabel = null
   }
 
   disconnect() {
@@ -24,6 +26,8 @@ export default class extends Controller {
     if (!response.ok) return
 
     const data = await response.json()
+    this.currentHex = data.hex
+    this.currentEventLabel = data.hex?.label || null
     this.show(data)
     Turbo.visit(window.location.href, { frame: "campaign_map" })
   }
@@ -33,12 +37,13 @@ export default class extends Controller {
     this.bodyTarget.innerHTML = this.formatBody(data.body)
     this.choicesTarget.innerHTML = ""
 
+    const hex = data.hex || this.currentHex
     ;(data.choices || []).forEach((choice) => {
       const btn = document.createElement("button")
       btn.type = "button"
       btn.className = "btn btn-secondary w-full"
       btn.textContent = choice.label
-      btn.addEventListener("click", () => this.choose(data.hex, choice))
+      btn.addEventListener("click", () => this.choose(hex, choice))
       this.choicesTarget.appendChild(btn)
     })
 
@@ -49,18 +54,53 @@ export default class extends Controller {
 
   async choose(hex, choice) {
     const url = `/campaigns/${this.campaignIdValue}/hex/${hex.q}/${hex.r}`
-    await fetch(url, {
+    const response = await fetch(url, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
         "X-CSRF-Token": this.csrfToken
       },
-      body: JSON.stringify({ action_type: choice.action })
+      body: JSON.stringify({
+        action_type: choice.action,
+        goto_target: choice.metadata?.goto || null,
+        scrap_delta: choice.metadata?.scrap_delta || 0,
+        fuel_delta:  choice.metadata?.fuel_delta  || 0,
+        current_event_label: this.currentEventLabel
+      })
     })
-    this.close()
-    Turbo.visit(window.location.href, { frame: "campaign_map" })
+
+    if (!response.ok) return
+
+    const data = await response.json()
+
     window.dispatchEvent(new CustomEvent("campaign:updated"))
+    Turbo.visit(window.location.href, { frame: "campaign_map" })
+
+    if (data.game_over) {
+      this.showGameOver(data)
+    } else if (data.next_event) {
+      this.currentEventLabel = choice.metadata?.goto || null
+      this.show(data.next_event)
+    } else {
+      this.close()
+    }
+  }
+
+  showGameOver(data) {
+    this.titleTarget.textContent = data.title || "Mission Failed"
+    this.bodyTarget.innerHTML = this.formatBody(data.body)
+    this.choicesTarget.innerHTML = ""
+
+    const btn = document.createElement("button")
+    btn.type = "button"
+    btn.className = "btn btn-secondary w-full"
+    btn.textContent = "Return to Main Menu"
+    btn.addEventListener("click", () => {
+      this.close()
+      Turbo.visit("/campaigns")
+    })
+    this.choicesTarget.appendChild(btn)
   }
 
   close() {
