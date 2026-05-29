@@ -124,4 +124,52 @@ class CampaignTest < ActiveSupport::TestCase
 
     assert_equal first_result, second_result
   end
+
+  test "apply_resource_delta! increases scrap and fuel by positive deltas" do
+    campaign = campaigns(:one)
+    campaign.update_columns(scrap: 10, fuel: 5)
+
+    campaign.apply_resource_delta!(scrap_delta: 3, fuel_delta: 2)
+
+    campaign.reload
+    assert_equal 13, campaign.scrap
+    assert_equal 7, campaign.fuel
+  end
+
+  test "apply_resource_delta! decreases scrap and fuel by negative deltas" do
+    campaign = campaigns(:one)
+    campaign.update_columns(scrap: 10, fuel: 5)
+
+    campaign.apply_resource_delta!(scrap_delta: -4, fuel_delta: -2)
+
+    campaign.reload
+    assert_equal 6, campaign.scrap
+    assert_equal 3, campaign.fuel
+  end
+
+  test "apply_resource_delta! floors scrap and fuel at zero" do
+    campaign = campaigns(:one)
+    campaign.update_columns(scrap: 1, fuel: 1)
+
+    campaign.apply_resource_delta!(scrap_delta: -999, fuel_delta: -999)
+
+    campaign.reload
+    assert_equal 0, campaign.scrap
+    assert_equal 0, campaign.fuel
+  end
+
+  test "apply_resource_delta! is a no-op when both deltas are zero" do
+    campaign = campaigns(:one)
+    campaign.update_columns(scrap: 5, fuel: 3)
+
+    assert_no_difference ["campaign.reload.scrap", "campaign.reload.fuel"] do
+      campaign.apply_resource_delta!(scrap_delta: 0, fuel_delta: 0)
+    end
+  end
+
+  test "campaign status can be set to failed" do
+    campaign = campaigns(:one)
+    campaign.update!(status: :failed)
+    assert campaign.reload.failed?
+  end
 end

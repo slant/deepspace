@@ -10,7 +10,7 @@ class Campaign < ApplicationRecord
   belongs_to :character, optional: true
   has_many :journal_entries, -> { order(created_at: :desc) }, dependent: :destroy
 
-  enum :status, { draft: 0, active: 1, completed: 2 }
+  enum :status, { draft: 0, active: 1, completed: 2, failed: 3 }
 
   validates :name, presence: true, if: :active?
 
@@ -109,6 +109,14 @@ class Campaign < ApplicationRecord
 
   def planet_sprite_for(q, r)
     planet_sprites["#{q},#{r}"] || (q * 7 + r * 11).abs % PLANET_COUNT
+  end
+
+  def apply_resource_delta!(scrap_delta: 0, fuel_delta: 0)
+    return if scrap_delta.zero? && fuel_delta.zero?
+    update!(
+      scrap: [scrap + scrap_delta, 0].max,
+      fuel:  [fuel  + fuel_delta,  0].max
+    )
   end
 
   def generate_sector!(sector)
