@@ -49,6 +49,11 @@ class HexMapComponent < ApplicationComponent
   end
 
   def planet_index_for(hex)
-    (hex["q"].to_i * 7 + hex["r"].to_i * 11).abs % 25
+    campaign.planet_sprite_for(hex["q"].to_i, hex["r"].to_i)
+  end
+
+  def icon_for(hex)
+    return hex["icon"] if hex["icon"].present?
+    return "circle" if hex["trigger"].present? && campaign.hex_active?(hex["q"].to_i, hex["r"].to_i)
   end
 end

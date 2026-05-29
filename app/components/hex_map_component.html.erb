@@ -20,8 +20,8 @@
             <% if hex["note"].present? %>
               <text x="<%= cx %>" y="<%= cy + size * 0.35 %>" class="hex-note"><%= hex["note"] %></text>
             <% end %>
-            <% if hex["icon"].present? %>
-              <%= render HexIconComponent.new(icon: hex["icon"], cx: cx, cy: cy, size: size, planet_index: planet_index_for(hex)) %>
+            <% if (hex_icon = icon_for(hex)) %>
+              <%= render HexIconComponent.new(icon: hex_icon, cx: cx, cy: cy, size: size, planet_index: planet_index_for(hex)) %>
             <% end %>
             <% if ship_here?(hex) %>
               <g class="ship-token" transform="translate(<%= cx %>, <%= cy %>)">
