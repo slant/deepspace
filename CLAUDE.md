@@ -88,6 +88,9 @@ This is a **solo-only** experience.
 - The Read tool's PDF support does not resolve correctly in this environment.
 - Use `pdftotext -f <start> -l <end> "path/to/file.pdf" -` via Bash for all PDF extraction work.
 
+## TODO List
+- `TODO.md` in the project root tracks all pending and future work items. Add new items there when they come up during a session.
+
 ## Future Extensions (documented for later)
 - Full Research & Development tracking
 - Journal system

@@ -3,7 +3,7 @@
 class Campaign < ApplicationRecord
   DEFAULT_CARGO = "000-2-134711-182947-76123199-322521-8431364-L-M-Z".freeze
   START_HEX = { q: 2, r: 7 }.freeze
-  PLANET_COUNT = 25
+  PLANET_COUNT = 30
   PLANET_ICON_TYPES = %w[circle beacon_store].freeze
 
   belongs_to :user
@@ -99,9 +99,11 @@ class Campaign < ApplicationRecord
   end
 
   def assign_planet_sprites!
-    sprites = MapLoader.hexes
-      .select { |h| h["icon"].in?(PLANET_ICON_TYPES) }
-      .each_with_object({}) { |hex, hash| hash["#{hex['q']},#{hex['r']}"] = rand(PLANET_COUNT) }
+    planet_hexes = MapLoader.hexes.select { |h| h["icon"].in?(PLANET_ICON_TYPES) }
+    indices = (0...PLANET_COUNT).to_a.sample(planet_hexes.size)
+    sprites = planet_hexes.each_with_index.with_object({}) do |(hex, i), hash|
+      hash["#{hex['q']},#{hex['r']}"] = indices[i]
+    end
     update!(planet_sprites: sprites)
   end
 
