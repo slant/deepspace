@@ -23,6 +23,7 @@ Items are grouped by game system. Checked items are already implemented.
 ---
 
 ## Character Creation
+- [ ] **Add "Project Union" as a 5th ship option**: a promo ship the user owns (physical board photo in `docs/reference/ships/`), not currently in `Character#ship_type`/character creation. Not related to combat — purely a new selectable ship name/flavor at creation time, same as the existing 4.
 - [x] Captain name, ship name, ship type selection (4 ships)
 - [x] 4 officers with name, title, specialty, attribute A, attribute B
 - [x] Officer randomize button
