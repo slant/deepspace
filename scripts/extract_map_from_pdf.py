@@ -8,7 +8,7 @@ from pathlib import Path
 import fitz
 import yaml
 
-PDF = Path("public/Deep Space D6 - The Long Way Home RPG v1.43.pdf")
+PDF = Path("public/docs/Deep Space D6 - The Long Way Home RPG v1.43.pdf")
 OUT = Path("config/map.yml")
 
 REGION = {

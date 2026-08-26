@@ -23,7 +23,7 @@ Create OAuth credentials in [Google Cloud Console](https://console.cloud.google.
 
 ## Map data
 
-`config/map.yml` was generated from the official PDF starmap (page 8) in `public/Deep Space D6 - The Long Way Home RPG v1.43.pdf`. Regenerate with:
+`config/map.yml` was generated from the official PDF starmap (page 8) in `public/docs/Deep Space D6 - The Long Way Home RPG v1.43.pdf`. Regenerate with:
 
 ```bash
 .venv/bin/python scripts/extract_map_from_pdf.py
@@ -31,7 +31,7 @@ Create OAuth credentials in [Google Cloud Console](https://console.cloud.google.
 
 ## Rulebook
 
-The rulebook PDF is served at `/Deep%20Space%20D6%20-%20The%20Long%20Way%20Home%20RPG%20v1.43.pdf`.
+The rulebook PDF is served at `/docs/Deep%20Space%20D6%20-%20The%20Long%20Way%20Home%20RPG%20v1.43.pdf`.
 
 
 
