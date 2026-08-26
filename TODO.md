@@ -47,7 +47,7 @@ Items are grouped by game system. Checked items are already implemented.
   - Alpha: 1–4 Empty, 5–6 Combat 2+5
   - Beta: 1–3 Empty, 4 Combat 2+4, 5 Combat 3+2, 6 Combat 3+5
   - Delta: 1–2 Empty, 3 Combat 2+6 +3 scrap, 4 Combat 4+5 +3 scrap, 5 Combat 2+6 +4 scrap, 6 Combat 4+5 +5 scrap
-  - Zeta: 1 Gain 2 scrap, 2 Combat 3+0, 3 Combat 2+5, 4 Combat 2+5, 5 Combat 3+6, 6 Combat 4+7
+  - Zeta: 1 Empty, 2 Combat 3+0, 3 Combat 2+5, 4 Combat 2+5, 5 Combat 3+6, 6 Combat 4+7 — **all 5 combat rows (2–6) carry the "EE" (Endless Expansion) icon in the rulebook.** Per pages 2 & 5, if the player doesn't own the expansion, these should be ignored (treated as Empty Space) rather than resolved as combat. See "Expansion content flag" below — until that's built, all Zeta combat rolls should be treated as ignored/Empty for every player, since we have no real Endless card data to run genuine combat with.
   - Tau: No encounters
 - [ ] **Long Range Scanners upgrade effect**: during Open Space roll, reduce the d6 result by 2 (min 1)
 
@@ -57,20 +57,20 @@ Items are grouped by game system. Checked items are already implemented.
 - [x] `orbit` action: close modal, return to map
 - [x] `complete` action: mark campaign won
 - [x] Conditional choice labels present (e.g. `[Requires: HACKER]`)
-- [ ] **`goto` action**: follow the chain to the next event, append each step to the event log (grouped/indented). See `memory/event_chain_ux.md`. This is the most commonly used action type.
-- [ ] **`game_over` action**: wire in controller — currently unhandled. Should end campaign as a loss and show a loss screen.
+- [x] **`goto` action**: follows chain to next event inline (modal updates in-place); each step logged as "X → Y" entry type "event".
+- [x] **`game_over` action**: sets campaign status to `:failed`, logs milestone, shows minimal "Mission Failed" modal state with redirect to campaign list.
 - [ ] **Conditional choice enforcement — officer attributes/specialties**: `[Requires: HACKER]`, `[Requires: SMUGGLER, PSYCHIC, or CHARMING]` etc. are shown to all players but should be greyed out or hidden unless a matching officer exists on the campaign.
 - [ ] **Conditional choice enforcement — items**: choices like `[Requires: AI-System]`, `[Requires: Flower Locket]`, `[Requires: Q-BOMB]`, `[Requires: SYS-PUMP]` require a named item in the cargo. Items must be tracked and checked.
 - [ ] **Conditional choice enforcement — cargo sequences**: choices like `[Requires: Sequence L + Sequence 711]`, `[Requires: Sequence Z underlined]`, `[Circled sequence 000]` branch based on which substrings in the cargo string are underlined or circled. The enforcement layer must check the cargo state.
 - [ ] **Story flags**: some events grant named flags (e.g., discovering the Cloaking Device, gaining RESTLESS). These need to be tracked in campaign state and checked during conditional choices.
 - [ ] **Items**: events award bracketed items (e.g., `[Lux Food]`, `[AI-System]`, `[EE7]`, `[PandoraBox]`). Items need to be written into cargo, checked for conditionals, and crossed out when lost (e.g., event 69-A loses `[PandoraBox]`).
 - [ ] **Cargo sequence manipulation**: some event choices instruct the player to underline or circle specific substrings in the cargo string (e.g., "underline sequence 99", "circle sequence 000"). Needs interactive UI — tap a token to toggle underline/circle state — and the state must persist in campaign.
-- [ ] **Scrap side-effects on choices**: many `orbit` and `goto` choices say "gain X scrap" or "spend X scrap" in their label (e.g., event 26-A: "Gain 100 scrap", event 28-D: "gain 5 scrap", event 43-D: "Purchase board games for 2 scrap"). The controller currently does not apply these changes. Needs a `scrap_delta` metadata field (or label parsing) wired to `campaign.scrap`.
-- [ ] **Fuel side-effects on choices**: choices in events 27-A, 35-B, 45-A, 47-A, 52-A say "Spend 1 fuel" and event 73-A gives 2 free fuel. The controller must decrement/increment `campaign.fuel` when these choices are selected.
+- [x] **Scrap side-effects on choices**: `scrap_delta` metadata field added to all affected choices (26-A, 28-D, 37-A, 43-D, 48-A, 51-C, 56-A, 58-A, 67-A); controller applies via `apply_resource_delta!`.
+- [x] **Fuel side-effects on choices**: `fuel_delta` metadata field added to all "Spend 1 fuel" choices (27-A, 35-B, 45-A, 47-A, 51-C, 52-A); controller applies via `apply_resource_delta!`. Note: event-body fuel gains (e.g. 73-A "Gain 2 fuel") are narrative instructions not yet wired.
 - [ ] **Multi-action store UI**: events 20-A, 20-B, and 20-C are hub stores where the player can perform *any number* of independent actions in one visit (purchase items, buy fuel for scrap, research with crew dice). The current single-choice modal doesn't support this — needs a checklist/multi-step UI for these events.
 - [ ] **Fuel depot — buy fuel for scrap**: 20-A sells 1 fuel per 4 scrap (limit 5); 20-B sells 1 fuel per 6 scrap (no limit); 20-C sells 1 fuel per 5 scrap (limit 5).
 - [ ] **Store — buy items for scrap**: event 20-A sells `[SYS-PUMP]` for 5 scrap. Purchasing must add the item to cargo and deduct scrap.
-- [ ] **Expansion content flag**: some events are marked for the Endless Expansion only. These events should be skippable (or flagged as unavailable) for players without the expansion. Needs a campaign setting and filtering in EventCatalog.
+- [ ] **Expansion content flag**: events tagged `expansion: endless` in `events.yml` (currently 16-A, 17-A) carry the rulebook's "EE" icon and per pages 2 & 5 should be ignored entirely for players without the Endless Expansion — not shown, not resolved, treated as if the hex/roll did nothing. Also applies to Open Space combat rolls 2–6 in Sector Zeta (see Open Space section). Needs a campaign setting ("owns Endless Expansion") and filtering in `EventCatalog`/`HexEventsController`. We do not have real Endless Expansion card data, so even when a campaign is flagged as owning it, there's currently nothing to actually run — until real card data is supplied, treat all `expansion: endless` content as ignored regardless of the flag. Do not confuse with 44-E, which is unmarked in the rulebook and always resolves against the page-74 demo deck for everyone — see `docs/reference/deep-space-d6-mechanics.md`.
 - [ ] **Dice roll mechanics within events**: several events require rolling dice mid-event and branching on the result. These cannot be handled by simple choice buttons — they need an in-modal dice roll step:
   - Event 22-A: Roll threat die → asteroid outcome (1=no damage, 2=lose 5 scrap, 3=lose 1 fuel, 4–6=varying damage)
   - Event 27-B: Roll 3 crew dice (player hand) vs 2 hidden dice (opponent) for card game
@@ -85,7 +85,7 @@ Items are grouped by game system. Checked items are already implemented.
 - [x] Scrap tracked, shown in HUD
 - [x] Cargo sequence displayed in HUD (read-only)
 - [x] Activity journal (movement, events, milestones) shown in sidebar
-- [ ] **Fuel depletion = game over**: when fuel hits 0 and player tries to move, trigger event 21-A ("Out of Fuel") instead of silently blocking movement
+- [x] **Fuel depletion = game over**: moving to an adjacent hex with 0 fuel triggers event 21-A ("Adrift") instead of silently blocking movement; ship does not move, `game_over` choice ends the campaign.
 - [ ] **Scrap gain/loss from events**: events that award or cost scrap (e.g. open space combat in Delta/Zeta sectors) need to update `campaign.scrap` and reflect in HUD
 - [ ] **Cargo sequence interactions**: see Events section above (circling/underlining characters)
 
@@ -107,7 +107,8 @@ The app currently has no combat system. Combat is triggered by Open Space encoun
 - [ ] **No cards remaining rule**: if draw deck is empty, take 1 hull damage (shields first) until all external threats resolved
 - [ ] **End of combat**: fully repair ship (hull + shields), return threat cards to deck, shuffle
 - [ ] **Combat game over**: if ship destroyed, end campaign as a loss (unless event says otherwise)
-- [ ] **Special combat — event 15-A / 44-E (Endless)**: uses Endless Expansion cards from page 74; only available with expansion. 10 threats, draw deck of 0.
+- [ ] **Special combat — event 44-E (Endless)**: `Combat: 3+6` (9 cards total), always resolvable — uses the rulebook's own page-74 9-card demo deck (4× Spore: Attack, 2× Swarmling, Spore: Guard, Mothership, Infecter) for every player, expansion-owned or not. Not gated (no "EE" icon on this event). See `docs/reference/deep-space-d6-mechanics.md`.
+- [ ] **Special combat — events 16-A / 17-A (Endless, expansion-gated)**: `Combat: 2+15` and `Combat: 1+10`. Both carry the rulebook's "EE" icon (`expansion: endless` in `events.yml`) — see "Expansion content flag" above. These are separate from 44-E and do not use the page-74 demo deck.
 - [ ] **Special combat — event 67-A (Dreadship)**: scanner dice are placed on the Dreadship board, not the player's ship. Requires a different combat layout.
 - [ ] **Special combat — event 57-A (The Shadow)**: 1-on-1 duel with special rules; if you lose, game over; if you win, he lets you go.
 - [ ] **Special combat — event 58-C**: April gives a special weapon that modifies combat for this encounter.

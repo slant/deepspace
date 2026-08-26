@@ -58,9 +58,10 @@ This is a **solo-only** experience.
 - `jump` — jump point (circle + ⇄ label)
 
 ### Planet Sprites
-- `/public/planets.png` is a 500×500px spritesheet: 5×5 grid of 25 planet sprites, each 100×100px, transparent background.
-- Planet selection is deterministic per hex position: `(q * 7 + r * 11).abs % 25`
+- `/public/planets.png` is a **500×600px** spritesheet: 5 columns × 6 rows of 100×100px cells, all 30 used (`Campaign::PLANET_COUNT = 30`).
+- Planet selection is assigned once per campaign in `Campaign#assign_planet_sprites!` (random sample across all planet/beacon_store hexes, stored in `planet_sprites`); `Campaign#planet_sprite_for` falls back to a deterministic `(q * 7 + r * 11).abs % 30` for any hex not yet assigned.
 - In SVG, a spritesheet `<image>` renders the **full sheet** unless clipped. Always pair it with an inline `<clipPath>`. Use pixel coordinates (`cx.round`, `cy.round`) to generate unique clip IDs per hex.
+- **The sheet is not square.** The `<image>` element's `width`/`height` must preserve the real 5:6 aspect ratio (`HexIconComponent::SHEET_COLS`/`SHEET_ROWS`), not a single square size — SVG's default `preserveAspectRatio="xMidYMid meet"` letterboxes/offsets non-square sources scaled into a square box, which misaligns every cell's clip and bleeds in neighboring sprites.
 
 `public/map/index.html` + `public/map/style.css` are a JS prototype/reference implementation used for visual verification — do not delete.
 
@@ -82,11 +83,19 @@ This is a **solo-only** experience.
 
 ## Events YAML
 - `config/events.yml` contains all 170 story events from PDF pages 10–74, fully QA'd against the PDF (2026-05-27).
-- All intentional deviations from the source material are tracked in `memory/events_yaml_pdf_deviations.md`. Any future change to `events.yml` that deviates from the PDF must be appended there.
+- All intentional deviations from the source material are tracked in `docs/reference/events-yaml-pdf-deviations.md`. Any future change to `events.yml` that deviates from the PDF must be appended there.
+- `expansion: endless` is a top-level field on an event marking it as gated behind the Endless Expansion (the rulebook's printed "EE" icon). See `docs/reference/deep-space-d6-mechanics.md` for what that means and which events carry it.
+
+## Events YAML — Resource Deltas
+- Choice-level resource changes use explicit `scrap_delta` and `fuel_delta` integer fields in the choice's `metadata` hash (positive = gain, negative = cost). Example: `metadata: { goto: "33-B", fuel_delta: -1 }`.
+- The controller reads these automatically via `campaign.apply_resource_delta!` — never parse label text for amounts.
+- **Event-body resource instructions** (e.g. event 73-A body: "Gain 2 fuel") are narrative text the player reads. They are NOT currently wired as automatic side-effects. Do not add `fuel_delta`/`scrap_delta` to the *choices* of such events unless the choice itself causes the change — the body text is informational only.
 
 ## PDF Tooling
 - The Read tool's PDF support does not resolve correctly in this environment.
 - Use `pdftotext -f <start> -l <end> "path/to/file.pdf" -` via Bash for all PDF extraction work.
+- **`pdftotext` silently drops small rasterized icon graphics** (e.g. the rulebook's "EE" Endless Expansion marker) — they don't appear as text at all, not even as garbled characters, so a text-only pass can miss meaningful markers with no error. When icon/symbol presence matters, render the page as an image (`pdftoppm -png -r 200 -f <page> -l <page> "file.pdf" out`) and inspect it visually instead of trusting text extraction alone.
+- `pdftoppm`'s page numbers don't match the rulebook's own printed footer numbers — there's a fixed +1 offset (footer page N is `pdftoppm` page N+1) because of the unnumbered cover page. Confirm against the visible footer, don't assume.
 
 ## TODO List
 - `TODO.md` in the project root tracks all pending and future work items. Add new items there when they come up during a session.
