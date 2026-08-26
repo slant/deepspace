@@ -11,6 +11,13 @@
 # Items use [ITEM-NAME] notation. Sequences use their printed codes.
 # Some entries are dead ends or unreachable — the author left the adventure incomplete.
 # Combat entries note the encounter format (draw deck + starting threats) in the body.
+#
+# expansion: endless — event is marked with the printed "EE" (Endless Expansion)
+# icon in the rulebook (16-A, 17-A). Per rulebook pages 2 & 5: "If you do not have
+# the [Endless] expansion, ignore these events." Not yet enforced at runtime — see
+# TODO.md "Expansion content flag". Do not confuse with 44-E, which is unmarked and
+# always resolves against the page-74 demo card set regardless of expansion
+# ownership — see docs/reference/deep-space-d6-mechanics.md.
 
 "10-A":
   title: "Oxygen Leak"
@@ -299,9 +306,10 @@
 
 "16-A":
   title: "Heart of the Swarm"
+  expansion: endless
   body: |
     This is where the Endless Ships seem to be originating from. There's no time to report them to the UEF — we must stop them now. You hope you and your crew are ready.
-    COMBAT: 2 threats, draw deck of 15. Use the Endless cards from page 74 of the rulebook.
+    COMBAT: 2 threats, draw deck of 15.
   choices:
     - label: "Defeated the Endless Threat → 40-B"
       action: goto
@@ -313,6 +321,7 @@
 
 "17-A":
   title: "Resistance"
+  expansion: endless
   body: |
     The Endless have consumed all the neighboring planets but pockets of resistance scrape by. Assist them until they are able to evacuate.
     COMBAT: 1 threat, draw deck of 10. When the last threat card is drawn, you win the encounter.
