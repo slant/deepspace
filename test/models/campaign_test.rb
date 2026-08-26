@@ -295,4 +295,22 @@ class CampaignTest < ActiveSupport::TestCase
 
     assert_nothing_raised { campaign.kill_random_officer! }
   end
+
+  # --- Journey summary ---
+
+  test "journey_summary reflects items, marks, and officer losses" do
+    campaign = campaigns(:one)
+    campaign.gain_item!("Vortex")
+    campaign.gain_item!("Q-BOMB")
+    campaign.lose_item!("Q-BOMB")
+    campaign.mark_sequence!("711", "underline")
+    campaign.character.officers.first.kill!
+
+    summary = campaign.reload.journey_summary
+
+    assert_equal 1, summary[:items_collected]
+    assert_equal 1, summary[:items_lost]
+    assert_equal 1, summary[:sequences_marked]
+    assert_equal 1, summary[:officers_lost]
+  end
 end

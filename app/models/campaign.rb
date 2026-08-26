@@ -35,6 +35,18 @@ class Campaign < ApplicationRecord
     character&.name.presence || name.presence || "New Campaign"
   end
 
+  def journey_summary
+    {
+      moves: journal_entries.where(entry_type: "movement").count,
+      sectors_discovered: discovered_sectors.size,
+      items_collected: items.count { |i| !i["lost"] },
+      items_lost: items.count { |i| i["lost"] },
+      sequences_marked: cargo_marks.size,
+      officers_lost: character.officers.count(&:dead?),
+      final_position: current_hex_label
+    }
+  end
+
   def current_hex_label
     hex = MapLoader.hex_at(ship_q, ship_r)
     hex&.dig("label") || "#{ship_q},#{ship_r}"

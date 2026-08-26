@@ -9,6 +9,7 @@ Rails.application.routes.draw do
 
   resources :campaigns, only: %i[index show new update destroy] do
     resource :character, only: %i[edit update]
+    resources :journal_entries, only: %i[create]
   end
 
   get "campaigns/:campaign_id/hex/:q/:r", to: "hex_events#show", as: :campaign_hex_event

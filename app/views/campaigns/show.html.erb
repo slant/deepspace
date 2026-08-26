@@ -2,8 +2,19 @@
 
 <div class="flex h-[calc(100vh-3.5rem)] flex-col">
   <% if @campaign.completed? || @campaign.failed? %>
-    <div class="shrink-0 border-b border-space-700 bg-space-800 py-2 text-center text-sm font-semibold uppercase tracking-wider text-space-100">
-      <%= @campaign.completed? ? "Victory!" : "Failed" %>
+    <% summary = @campaign.journey_summary %>
+    <div class="shrink-0 border-b border-space-700 bg-space-800 px-4 py-3 text-space-100">
+      <p class="text-center text-sm font-semibold uppercase tracking-wider">
+        <%= @campaign.completed? ? "Victory!" : "Failed" %>
+      </p>
+      <dl class="mt-2 flex flex-wrap justify-center gap-x-6 gap-y-1 text-center font-mono text-xs text-space-400">
+        <div><dt class="inline">Moves </dt><dd class="inline text-space-100"><%= summary[:moves] %></dd></div>
+        <div><dt class="inline">Sectors </dt><dd class="inline text-space-100"><%= summary[:sectors_discovered] %></dd></div>
+        <div><dt class="inline">Items held </dt><dd class="inline text-space-100"><%= summary[:items_collected] %></dd></div>
+        <div><dt class="inline">Sequences marked </dt><dd class="inline text-space-100"><%= summary[:sequences_marked] %></dd></div>
+        <div><dt class="inline">Officers lost </dt><dd class="inline text-space-100"><%= summary[:officers_lost] %></dd></div>
+        <div><dt class="inline">Ended at </dt><dd class="inline text-space-100"><%= summary[:final_position] %></dd></div>
+      </dl>
     </div>
   <% end %>
 
@@ -79,6 +90,12 @@
           </li>
         <% end %>
       </ul>
+      <% if @campaign.active? %>
+        <form class="mt-2 flex gap-2" data-controller="journal-note" data-journal-note-url-value="<%= campaign_journal_entries_path(@campaign) %>" data-action="submit->journal-note#submit">
+          <input type="text" placeholder="Add a note…" maxlength="500" class="input flex-1 text-xs" data-journal-note-target="input">
+          <button type="submit" class="btn-secondary px-3 text-xs">Add</button>
+        </form>
+      <% end %>
     </section>
   </aside>
 
