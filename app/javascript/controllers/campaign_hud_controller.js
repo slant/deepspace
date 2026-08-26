@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["fuel", "scrap", "cargo", "position", "journal", "items", "sequences"]
+  static targets = ["fuel", "scrap", "cargo", "position", "journal", "items", "sequences", "officers"]
   static values = { updateUrl: String }
 
   connect() {
@@ -21,6 +21,7 @@ export default class extends Controller {
       if (this.hasJournalTarget) this.renderJournal(data.campaign.journal_entries || [])
       if (this.hasItemsTarget) this.renderItems(data.campaign.items || [])
       if (this.hasSequencesTarget) this.renderSequences(data.campaign.cargo_marks || {})
+      if (this.hasOfficersTarget) this.renderOfficers(data.campaign.officers || [])
     }
   }
 
@@ -56,6 +57,20 @@ export default class extends Controller {
           <li class="rounded border border-space-700 bg-space-800 px-1.5 py-0.5 font-mono text-xs ${
             state === "underline" ? "underline" : "ring-1 ring-cyan-400/60"
           }">${this.escape(token)}</li>
+        `
+      )
+      .join("")
+  }
+
+  renderOfficers(officers) {
+    this.officersTarget.innerHTML = officers
+      .map(
+        (o) => `
+          <li class="${o.dead ? "text-space-400 line-through" : ""}">
+            <span class="text-space-100">${this.escape(o.name)}</span>
+            <span class="text-space-400"> — ${this.escape(o.title)}, ${this.escape(o.specialty)}</span>
+            <div class="text-xs text-space-400/80">${this.escape((o.attributes || []).join(", "))}</div>
+          </li>
         `
       )
       .join("")

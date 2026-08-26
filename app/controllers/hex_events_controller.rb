@@ -125,9 +125,14 @@ class HexEventsController < ApplicationController
       @campaign.lose_item!(params[:lose_item]) if params[:lose_item].present?
     end
 
-    return unless params[:mark_sequence].present? && params[:mark_type].present?
+    @campaign.mark_sequence!(params[:mark_sequence], params[:mark_type]) if params[:mark_sequence].present? && params[:mark_type].present?
 
-    @campaign.mark_sequence!(params[:mark_sequence], params[:mark_type])
+    if params[:gain_random_officer_attribute].present?
+      count = params[:gain_random_officer_attribute_count].presence&.to_i || 1
+      @campaign.add_random_officer_attribute!(params[:gain_random_officer_attribute], count: count)
+    end
+    @campaign.add_all_officers_attribute!(params[:gain_all_officers_attribute]) if params[:gain_all_officers_attribute].present?
+    @campaign.kill_random_officer! if ActiveModel::Type::Boolean.new.cast(params[:kill_random_officer])
   end
 
   def requirement_met?(requires_param)

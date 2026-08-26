@@ -249,4 +249,50 @@ class CampaignTest < ActiveSupport::TestCase
 
     assert_equal "circle", campaign.reload.sequence_state("000")
   end
+
+  # --- Officer mutations ---
+
+  test "add_random_officer_attribute! grants the attribute to a living officer" do
+    campaign = campaigns(:one)
+
+    campaign.add_random_officer_attribute!("Restless")
+
+    officer = campaign.character.officers.reload.first
+    assert_includes officer.bonus_attributes, "Restless"
+  end
+
+  test "add_random_officer_attribute! skips dead officers" do
+    campaign = campaigns(:one)
+    officer = campaign.character.officers.first
+    officer.kill!
+
+    campaign.add_random_officer_attribute!("Restless")
+
+    assert_not officer.reload.bonus_attributes.include?("Restless")
+  end
+
+  test "add_all_officers_attribute! grants the attribute to every officer" do
+    campaign = campaigns(:one)
+
+    campaign.add_all_officers_attribute!("Lucky")
+
+    campaign.character.officers.reload.each do |officer|
+      assert_includes officer.bonus_attributes, "Lucky"
+    end
+  end
+
+  test "kill_random_officer! marks a living officer dead" do
+    campaign = campaigns(:one)
+
+    campaign.kill_random_officer!
+
+    assert campaign.character.officers.reload.first.dead?
+  end
+
+  test "kill_random_officer! is a no-op when all officers are already dead" do
+    campaign = campaigns(:one)
+    campaign.character.officers.each(&:kill!)
+
+    assert_nothing_raised { campaign.kill_random_officer! }
+  end
 end

@@ -66,10 +66,10 @@ class ChoiceRequirement
     end
 
     def officer_has_any?(campaign, names)
-      officers = campaign.character&.officers || []
+      officers = (campaign.character&.officers || []).reject(&:dead?)
       wanted = Array(names).map { |n| n.to_s.downcase }
       officers.any? do |officer|
-        [ officer.specialty, officer.attribute_a, officer.attribute_b ].any? do |trait|
+        [ officer.specialty, *officer.all_attributes ].any? do |trait|
           trait.present? && wanted.include?(trait.to_s.downcase)
         end
       end

@@ -250,6 +250,44 @@ class HexEventsControllerTest < ActionDispatch::IntegrationTest
     assert_equal({ "711" => "underline" }, response.parsed_body["campaign"]["cargo_marks"])
   end
 
+  test "PATCH orbit with gain_random_officer_attribute grants it to a living officer" do
+    patch campaign_hex_event_update_path(campaign_id: @campaign.public_id, q: 1, r: 1),
+      params: { action_type: "orbit", gain_random_officer_attribute: "Restless" },
+      as: :json
+
+    assert_response :ok
+    assert_includes @campaign.character.officers.reload.first.bonus_attributes, "Restless"
+  end
+
+  test "PATCH orbit with gain_random_officer_attribute_count grants it to that many officers" do
+    patch campaign_hex_event_update_path(campaign_id: @campaign.public_id, q: 1, r: 1),
+      params: { action_type: "orbit", gain_random_officer_attribute: "Mistrusting", gain_random_officer_attribute_count: 1 },
+      as: :json
+
+    assert_response :ok
+    assert_includes @campaign.character.officers.reload.first.bonus_attributes, "Mistrusting"
+  end
+
+  test "PATCH orbit with gain_all_officers_attribute grants it to every officer" do
+    patch campaign_hex_event_update_path(campaign_id: @campaign.public_id, q: 1, r: 1),
+      params: { action_type: "orbit", gain_all_officers_attribute: "Lucky" },
+      as: :json
+
+    assert_response :ok
+    @campaign.character.officers.reload.each do |officer|
+      assert_includes officer.bonus_attributes, "Lucky"
+    end
+  end
+
+  test "PATCH orbit with kill_random_officer marks an officer dead" do
+    patch campaign_hex_event_update_path(campaign_id: @campaign.public_id, q: 1, r: 1),
+      params: { action_type: "orbit", kill_random_officer: true },
+      as: :json
+
+    assert_response :ok
+    assert @campaign.character.officers.reload.first.dead?
+  end
+
   test "PATCH goto to a gated event returns locked:false for a choice whose requirement is met" do
     officers(:one).update!(specialty: "Greedy")
 

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_26_005253) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_26_010512) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -62,12 +62,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_26_005253) do
   create_table "officers", force: :cascade do |t|
     t.string "attribute_a"
     t.string "attribute_b"
+    t.json "bonus_attributes", default: [], null: false
     t.bigint "character_id", null: false
     t.datetime "created_at", null: false
+    t.boolean "dead", default: false, null: false
     t.string "name", default: "", null: false
     t.integer "position", null: false
     t.string "specialty"
     t.integer "title", default: 0, null: false
+    t.string "title_override"
     t.datetime "updated_at", null: false
     t.index ["character_id", "position"], name: "index_officers_on_character_id_and_position", unique: true
     t.index ["character_id"], name: "index_officers_on_character_id"

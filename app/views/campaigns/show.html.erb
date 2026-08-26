@@ -16,6 +16,19 @@
     <h1 class="font-display text-lg font-semibold text-cyan-300"><%= @campaign.character.ship_name %></h1>
     <p class="text-sm text-space-400">Captain <%= @campaign.character.name %></p>
 
+    <section class="mt-4">
+      <h2 class="text-xs font-semibold uppercase tracking-wider text-space-400">Officers</h2>
+      <ul class="mt-2 space-y-2 text-sm" data-campaign-hud-target="officers">
+        <% @campaign.character.officers.each do |officer| %>
+          <li class="<%= 'text-space-400 line-through' if officer.dead? %>">
+            <span class="text-space-100"><%= officer.name %></span>
+            <span class="text-space-400"> — <%= officer.effective_title %>, <%= officer.specialty %></span>
+            <div class="text-xs text-space-400/80"><%= officer.all_attributes.join(", ") %></div>
+          </li>
+        <% end %>
+      </ul>
+    </section>
+
     <dl class="mt-6 space-y-3 font-mono text-sm">
       <div class="flex justify-between">
         <dt class="text-space-400">Fuel</dt>

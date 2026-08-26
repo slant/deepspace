@@ -83,7 +83,11 @@ export default class extends Controller {
           lose_items: choice.metadata?.lose_items || null,
           lose_item_unless: choice.metadata?.lose_item_unless || null,
           mark_sequence: choice.metadata?.mark_sequence || null,
-          mark_type: choice.metadata?.mark_type || null
+          mark_type: choice.metadata?.mark_type || null,
+          gain_random_officer_attribute: choice.metadata?.gain_random_officer_attribute || null,
+          gain_random_officer_attribute_count: choice.metadata?.gain_random_officer_attribute_count || null,
+          gain_all_officers_attribute: choice.metadata?.gain_all_officers_attribute || null,
+          kill_random_officer: choice.metadata?.kill_random_officer || false
         })
       })
     } catch {

@@ -64,7 +64,10 @@ class CampaignsController < ApplicationController
         { created_at: e.created_at.strftime("%b %d %H:%M"), body: e.body }
       },
       items: campaign.items,
-      cargo_marks: campaign.cargo_marks
+      cargo_marks: campaign.cargo_marks,
+      officers: campaign.character.officers.map { |o|
+        { name: o.name, title: o.effective_title, specialty: o.specialty, attributes: o.all_attributes, dead: o.dead? }
+      }
     }
   end
 end

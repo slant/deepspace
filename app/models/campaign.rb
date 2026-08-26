@@ -169,6 +169,34 @@ class Campaign < ApplicationRecord
     log!("Marked sequence #{token} (#{type}d)", entry_type: "sequence")
   end
 
+  # --- Officer mutations ---
+  # Permanent in-play officer changes from events. "Random" selections are
+  # made here (not left to the client) since Campaign is the single source
+  # of truth for what already happened this playthrough.
+
+  def add_random_officer_attribute!(name, count: 1)
+    living = character.officers.reload.reject(&:dead?)
+    return if living.empty?
+
+    chosen = living.sample(count)
+    chosen.each { |o| o.add_attribute!(name) }
+    log!("#{chosen.map(&:name).join(', ')} gained #{name.upcase}", entry_type: "officer")
+  end
+
+  def add_all_officers_attribute!(name)
+    character.officers.reload.each { |o| o.add_attribute!(name) }
+    log!("All officers gained #{name.upcase}", entry_type: "officer")
+  end
+
+  def kill_random_officer!
+    living = character.officers.reload.reject(&:dead?)
+    return if living.empty?
+
+    officer = living.sample
+    officer.kill!
+    log!("Officer #{officer.name} was lost", entry_type: "officer")
+  end
+
   def generate_sector!(sector)
     roll_count = MapLoader.sector_rolls[sector].to_i
     activated = activated_hexes.dup
