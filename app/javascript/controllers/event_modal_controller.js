@@ -109,10 +109,24 @@ export default class extends Controller {
     } else if (data.next_event) {
       this.currentEventLabel = choice.metadata?.goto || null
       this.show(data.next_event)
+    } else if (choice.metadata?.stay_open) {
+      // Store-style actions (buy fuel, buy an item, complete a mission):
+      // apply, then re-fetch so locked/limit states refresh, but keep the
+      // modal open so the player can perform more actions in this visit.
+      await this.refresh(hex)
     } else {
       Turbo.visit(window.location.href, { frame: "campaign_map" })
       this.close()
     }
+  }
+
+  async refresh(hex) {
+    const url = `/campaigns/${this.campaignIdValue}/hex/${hex.q}/${hex.r}`
+    const response = await fetch(url, {
+      headers: { Accept: "application/json", "X-CSRF-Token": this.csrfToken }
+    })
+    if (!response.ok) return
+    this.show(await response.json())
   }
 
   showGameOver(data) {

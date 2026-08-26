@@ -40,6 +40,8 @@ class ChoiceRequirement
         !officer_has_any?(campaign, requires["excludes_specialty_or_attribute"])
       when "item"
         campaign.has_item?(requires["item"])
+      when "excludes_item"
+        !campaign.has_item?(requires["excludes_item"])
       when "items_all"
         Array(requires["items_all"]).all? { |name| campaign.has_item?(name) }
       when "sequence"

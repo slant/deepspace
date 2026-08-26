@@ -67,6 +67,13 @@ class ChoiceRequirementTest < ActiveSupport::TestCase
     assert ChoiceRequirement.satisfied?({ "item" => "AI-System" }, campaign: @campaign)
   end
 
+  test "excludes_item is satisfied only when the item is not held" do
+    assert ChoiceRequirement.satisfied?({ "excludes_item" => "SYS-PUMP" }, campaign: @campaign)
+
+    @campaign.gain_item!("SYS-PUMP")
+    assert_not ChoiceRequirement.satisfied?({ "excludes_item" => "SYS-PUMP" }, campaign: @campaign)
+  end
+
   test "item requirement is not satisfied by a lost item" do
     @campaign.gain_item!("Vortex")
     @campaign.lose_item!("Vortex")

@@ -316,6 +316,67 @@ class HexEventsControllerTest < ActionDispatch::IntegrationTest
     assert_equal false, ungated["locked"]
   end
 
+  # --- Store UI (20-A/B/C, multi-action stay-open purchases) ---
+
+  test "PATCH buying SYS-PUMP applies the cost and item, and GET afterward shows it locked" do
+    @campaign.update_columns(scrap: 10)
+
+    patch campaign_hex_event_update_path(campaign_id: @campaign.public_id, q: 1, r: 1),
+      params: { action_type: "orbit", scrap_delta: -5, gain_item: "SYS-PUMP" },
+      as: :json
+
+    assert_response :ok
+    assert_equal 5, @campaign.reload.scrap
+    assert @campaign.has_item?("SYS-PUMP")
+
+    get campaign_hex_event_path(campaign_id: @campaign.public_id, q: 1, r: 1), as: :json
+    # simulate visiting 20-A again to check the choice is now locked
+    patch campaign_hex_event_update_path(campaign_id: @campaign.public_id, q: 1, r: 1),
+      params: { action_type: "goto", goto_target: "20-A" },
+      as: :json
+
+    choices = response.parsed_body["next_event"]["choices"]
+    pump_choice = choices.find { |c| c["label"].include?("SYS-PUMP") }
+    assert_equal true, pump_choice["locked"], "SYS-PUMP purchase should be locked out after buying it once"
+  end
+
+  test "PATCH buying fuel repeatedly accumulates fuel and spends scrap each time" do
+    @campaign.update_columns(scrap: 20, fuel: 0)
+
+    3.times do
+      patch campaign_hex_event_update_path(campaign_id: @campaign.public_id, q: 1, r: 1),
+        params: { action_type: "orbit", scrap_delta: -4, fuel_delta: 1 },
+        as: :json
+      assert_response :ok
+    end
+
+    @campaign.reload
+    assert_equal 3, @campaign.fuel
+    assert_equal 8, @campaign.scrap
+  end
+
+  test "PATCH completing the Luxury Food mission requires the item and consumes it" do
+    patch campaign_hex_event_update_path(campaign_id: @campaign.public_id, q: 1, r: 1),
+      params: { action_type: "goto", goto_target: "20-C" },
+      as: :json
+
+    choices = response.parsed_body["next_event"]["choices"]
+    mission = choices.find { |c| c["label"].include?("Luxury Food") }
+    assert_equal true, mission["locked"], "should be locked without [Lux Food]"
+
+    @campaign.gain_item!("Lux Food")
+    @campaign.update_columns(scrap: 0)
+
+    patch campaign_hex_event_update_path(campaign_id: @campaign.public_id, q: 1, r: 1),
+      params: { action_type: "orbit", scrap_delta: 15, lose_item: "Lux Food" },
+      as: :json
+
+    assert_response :ok
+    @campaign.reload
+    assert_equal 15, @campaign.scrap
+    assert_not @campaign.has_item?("Lux Food")
+  end
+
   private
 
   def with_die_roll(value)
