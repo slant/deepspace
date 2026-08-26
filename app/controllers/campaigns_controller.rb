@@ -58,7 +58,11 @@ class CampaignsController < ApplicationController
       ship_q: campaign.ship_q,
       ship_r: campaign.ship_r,
       cargo_sequence: campaign.cargo_sequence,
-      status: campaign.status
+      current_hex_label: campaign.current_hex_label,
+      status: campaign.status,
+      journal_entries: campaign.journal_entries.limit(20).map { |e|
+        { created_at: e.created_at.strftime("%b %d %H:%M"), body: e.body }
+      }
     }
   end
 end

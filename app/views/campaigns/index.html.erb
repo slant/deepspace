@@ -13,12 +13,21 @@
     <% @campaigns.each do |campaign| %>
       <li class="card flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 class="font-semibold text-space-100"><%= campaign.display_name %></h2>
+          <h2 class="font-semibold text-space-100">
+            <%= campaign.display_name %>
+            <% if campaign.completed? || campaign.failed? %>
+              <span class="ml-2 rounded border border-space-700 bg-space-800 px-2 py-0.5 text-xs font-semibold uppercase tracking-wider text-space-300">
+                <%= campaign.completed? ? "Victory" : "Failed" %>
+              </span>
+            <% end %>
+          </h2>
           <p class="mt-1 text-sm text-space-400"><%= campaign.progress_summary %></p>
         </div>
         <div class="flex gap-2">
           <% if campaign.draft? %>
             <%= link_to "Continue setup", edit_campaign_character_path(campaign), class: "btn-secondary" %>
+          <% elsif campaign.completed? || campaign.failed? %>
+            <%= link_to "Show Results", campaign_path(campaign), class: "btn-secondary" %>
           <% else %>
             <%= link_to "Continue", campaign_path(campaign), class: "btn-primary" %>
           <% end %>

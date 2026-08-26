@@ -31,6 +31,7 @@ export default class extends Controller {
     this.currentEventLabel = data.hex?.label || null
     this.show(data)
     Turbo.visit(window.location.href, { frame: "campaign_map" })
+    window.dispatchEvent(new CustomEvent("campaign:updated"))
   }
 
   show(data) {

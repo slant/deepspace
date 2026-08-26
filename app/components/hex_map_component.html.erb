@@ -14,7 +14,7 @@
              data-q="<%= hex['q'] %>"
              data-r="<%= hex['r'] %>"
              data-label="<%= hex['label'] %>"
-             data-action="click->hex-map#selectHex">
+             <% if campaign.active? %>data-action="click->hex-map#selectHex"<% end %>>
             <polygon points="<%= points_string(verts) %>" class="hex-polygon" />
 
             <% if hex["note"].present? %>
