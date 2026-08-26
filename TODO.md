@@ -17,7 +17,7 @@ Items are grouped by game system. Checked items are already implemented.
 11. ~~Special combat variants (Dreadship, The Shadow, Endless, etc.)~~ — done, see Combat section
 12. Starmap extras (jump points, Jump Drive, engine repair movement bonus)
 13. Win/loss screens (end-game presentation)
-14. Expansion content flag (Endless Expansion gating)
+14. ~~Expansion content flag (Endless Expansion gating)~~ — done; re-scoped to clear labeling, not gating
 15. Quality of life (journal notes, undo)
 
 ---
@@ -64,7 +64,20 @@ Items are grouped by game system. Checked items are already implemented.
 - [x] **Multi-action store UI**: choices carry `stay_open: true` metadata — the event modal applies the choice's effects via the normal metadata pipeline, then re-fetches and re-renders the same event (fresh `locked` states) instead of closing/navigating away, so the player can perform any number of actions in one visit before clicking "Return to Orbit". Reuses the existing choice/requirement/metadata machinery entirely; no new interaction pattern needed.
 - [x] **Fuel depot — buy fuel for scrap**: wired for 20-A (1 fuel/4 scrap), 20-B (1 fuel/6 scrap), 20-C (1 fuel/5 scrap), all repeatable `stay_open` choices. **Known simplification**: the "limit 5" per-visit caps on 20-A/20-C are not enforced (repeatable indefinitely, limited only by available scrap) — enforcing a true per-visit limit would need a way to reset a counter each time the player returns to the store, which isn't obviously well-defined for a hex you can revisit anytime; flagged in the event body text and left as a judgment call.
 - [x] **Store — buy items for scrap**: 20-A sells `[SYS-PUMP]` for 5 scrap (`stay_open` choice, gated `requires: { excludes_item: "SYS-PUMP" }` so it locks itself out once bought — one-time purchase for free). 20-C's Luxury Food mission (lose `[Lux Food]`, gain 15 scrap) works the same way via its own `requires: { item: "Lux Food" }`.
-- [ ] **Expansion content flag**: events tagged `expansion: endless` in `events.yml` (currently 16-A, 17-A) carry the rulebook's "EE" icon and per pages 2 & 5 should be ignored entirely for players without the Endless Expansion — not shown, not resolved, treated as if the hex/roll did nothing. Also applies to Open Space combat rolls 2–6 in Sector Zeta (see Open Space section). Needs a campaign setting ("owns Endless Expansion") and filtering in `EventCatalog`/`HexEventsController`. We do not have real Endless Expansion card data, so even when a campaign is flagged as owning it, there's currently nothing to actually run — until real card data is supplied, treat all `expansion: endless` content as ignored regardless of the flag. Do not confuse with 44-E, which is unmarked in the rulebook and always resolves against the page-74 demo deck for everyone — see `docs/reference/deep-space-d6-mechanics.md`.
+- [x] **Expansion content flag** (re-scoped 2026-08-26): originally planned as a campaign-level
+  "owns Endless Expansion" toggle that would hide `expansion: endless` content entirely for
+  non-owners. Dropped that plan — with no real Endless card data, there'd be nothing to actually
+  run for an owner either, and a silent toggle can't be inspected by the player to know why
+  content vanished. Instead, per user direction, every relevant spot clearly states which threat
+  deck applies rather than hiding anything:
+  - **16-A, 17-A** (`events.yml`): body opens with a ⚠ notice ("this encounter uses the Endless
+    Expansion's own threat deck") plus an explicit "Don't own the expansion — Return to Orbit"
+    choice with no consequence.
+  - **Zeta Open Space rolls 2–6** (`EventCatalog::OPEN_SPACE_CHARTS`): roll result text states
+    the same, via `endless_open_space_body`.
+  - **44-E** (unmarked, not expansion-gated): body explicitly names the page-74 demo card set so
+    it's never confused with the standard or Endless deck. See
+    `docs/reference/deep-space-d6-mechanics.md`.
 - [x]/[ ] **Dice roll mechanics within events**: crew dice face data is now known (`CrewDice`, see CLAUDE.md), so the clean/repeatable pattern is done. The bespoke multi-stage mini-games below are NOT attempted — each needs real interactive UI (hand display, hidden opponent dice, re-roll boxes, multi-stage challenge selection) beyond a simple roll-and-apply, which is a much bigger scope than the data gap that used to block them:
   - [x] Event 22-A: threat die → asteroid outcome. Implemented generically via `EventCatalog`'s new `threat_die_table` support (declare a 1-6 outcome table in an event's YAML; rolls once, appends the outcome text to the body, merges scrap/fuel deltas into every choice) — reusable for any future single-roll-then-choose event, not a 22-A special case.
   - [x] Events 39-B, 42-A, 51-B, 61-B, 70-A, 72-A: "Rising Waters" pattern — roll 2 crew dice per living officer, any Threat Detected result adds an X (fatigue) mark. `Campaign#roll_fatigue_check!`, applied automatically via `crew_dice_fatigue_check: true` choice metadata on all of these events' path choices. 43-A's threshold check (`Officer#fatigue_threshold`/`#fatigued?`, 3/4/5 depending on attributes) is wired via `apply_fatigue_threshold: true` — an officer past their threshold is crossed out (reuses the existing dead/kill! exclusion).
@@ -113,9 +126,12 @@ drive `goto`/`game_over`/`scrap_delta`/`fuel_delta` exactly like any other branc
 - [x] **Special combat — event 67-A (Dreadship)**: fixed, see above — no combat-layout UI needed,
   it's narrative body text like every other combat event.
 - [x] **Special combat — event 58-C**: fixed, see above.
-- [x] **Special combat — events 44-E / 16-A / 17-A (Endless)**: 44-E fixed above; 16-A already
-  wired; 17-A is EE-gated and ignored outright per "Expansion content flag" below, so its
-  single-choice state doesn't matter until real expansion data exists.
+- [x] **Special combat — events 44-E / 16-A / 17-A (Endless)**: 44-E's body now explicitly names
+  the page-74 demo card set so it's unmistakable it's not the standard or Endless deck. 16-A and
+  17-A (both EE-marked) now open with a ⚠ notice that they require the Endless Expansion's own
+  threat deck, plus an explicit "Don't own the expansion — Return to Orbit" choice alongside the
+  real outcome choices (17-A's missing scrap_delta on its win path was also fixed). See
+  "Expansion content flag" below.
 - Kinetic Recycler / Promotion / Cloaking Device / Bio-Manipulator "track uses" effects
   (see R&D below) happen entirely during physical combat the app never sees — not app-tracked,
   same as hull/shield. Nothing to build here.

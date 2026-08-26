@@ -14,8 +14,13 @@
 #
 # expansion: endless — event is marked with the printed "EE" (Endless Expansion)
 # icon in the rulebook (16-A, 17-A). Per rulebook pages 2 & 5: "If you do not have
-# the [Endless] expansion, ignore these events." Not yet enforced at runtime — see
-# TODO.md "Expansion content flag". Do not confuse with 44-E, which is unmarked and
+# the [Endless] expansion, ignore these events." We have no real Endless card data,
+# so this app doesn't gate these events behind an ownership toggle (there'd be
+# nothing to actually run even for an owner) — instead, per user direction
+# (2026-08-26), the body text and choices clearly flag that this specific
+# encounter requires the Endless Expansion's own threat deck, with an explicit
+# choice for players who don't own it to skip with no consequence. See TODO.md
+# "Expansion content flag". Do not confuse with 44-E, which is unmarked and
 # always resolves against the page-74 demo card set regardless of expansion
 # ownership — see docs/reference/deep-space-d6-mechanics.md.
 
@@ -312,6 +317,7 @@
   title: "Heart of the Swarm"
   expansion: endless
   body: |
+    ⚠ ENDLESS EXPANSION REQUIRED: this encounter uses the Endless Expansion's own threat deck, not the standard deck. If you don't own the expansion, per the rulebook, ignore this event — pick "Don't own the expansion" below.
     This is where the Endless Ships seem to be originating from. There's no time to report them to the UEF — we must stop them now. You hope you and your crew are ready.
     COMBAT: 2 threats, draw deck of 15.
   choices:
@@ -321,17 +327,23 @@
     - label: "Defeated by the Endless Threat → 26-B"
       action: goto
       metadata: { goto: "26-B" }
+    - label: "Don't own the expansion — Return to Orbit"
+      action: orbit
   resolvable: true
 
 "17-A":
   title: "Resistance"
   expansion: endless
   body: |
+    ⚠ ENDLESS EXPANSION REQUIRED: this encounter uses the Endless Expansion's own threat deck, not the standard deck. If you don't own the expansion, per the rulebook, ignore this event — pick "Don't own the expansion" below.
     The Endless have consumed all the neighboring planets but pockets of resistance scrape by. Assist them until they are able to evacuate.
     COMBAT: 1 threat, draw deck of 10. When the last threat card is drawn, you win the encounter.
     Gain 3 scrap.
   choices:
-    - label: "Return to Orbit"
+    - label: "Assisted the resistance — Gain 3 scrap, Return to Orbit"
+      action: orbit
+      metadata: { scrap_delta: 3 }
+    - label: "Don't own the expansion — Return to Orbit"
       action: orbit
   resolvable: true
 
@@ -1309,7 +1321,7 @@
   title: "The Endless Advance"
   body: |
     The Endless are a new threat that endanger the galaxy. They attack in a single hive mind. They've been spreading out from their home-world in [15-A]. Hold them back!
-    Use the Endless cards from page 74 of the rulebook.
+    ⚠ DECK NOTE: use the page-74 demo card set (4× Spore: Attack, 2× Swarmling, Spore: Guard, Mothership, Infecter) for this fight, whether or not you own the Endless Expansion — this event does not use the standard threat deck or the expansion's own deck.
     COMBAT: 3 threats, draw deck of 6.
     If defeated, you narrowly escape — lose 3 fuel.
     If victorious, gain 6 scrap.

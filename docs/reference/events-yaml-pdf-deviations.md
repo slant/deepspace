@@ -76,6 +76,8 @@ Intentional re-presentations of PDF content that change structure but not meanin
 | **37-B title** | PDF titles both 37-A and 37-B "Odd Jobs." YAML titles 37-B "The Card Game Resolution" for clarity. |
 | **73-C** | PDF uses lowercase `[vortex]`. YAML uses `[Vortex]` for consistency with item name conventions throughout the file. |
 | **16-A, 17-A** | Added `expansion: endless` field (not present in the PDF's own data model, since the PDF just prints an icon). Represents the printed "EE" icon programmatically. See `docs/reference/deep-space-d6-mechanics.md`. |
+| **16-A, 17-A** | Added a ⚠ "ENDLESS EXPANSION REQUIRED" notice to the start of the body and a "Don't own the expansion — Return to Orbit" choice, neither present in the PDF. User direction (2026-08-26): since there's no real Endless card data to gate behind an ownership toggle, make the deck requirement unmistakable in the text itself instead. 17-A's "Gain 3 scrap" was also wired as `scrap_delta` on its win choice (previously unwired, like 34-B). |
+| **44-E** | Body's existing "Use the Endless cards from page 74" line expanded to explicitly name the 9-card set and state it's used regardless of expansion ownership, to rule out confusion with the standard or real Endless deck. |
 | **34-B, 58-C, 67-A** | Added a "Game Over" choice for combat defeat. The PDF body states no defeat consequence for either event (unlike e.g. 15-A/44-E/51-C, which explicitly state one) — user-confirmed default (2026-08-26): a combat event silent on defeat ends the campaign, consistent with the physical game's own "Hull hits 0 = lose" rule. Apply this same default to any future combat event found to be silent on defeat. |
 
 ## Minor Phrasing Differences (low priority)

@@ -111,10 +111,14 @@ Zeta — both its two numbered story events and its Open Space rolls — is
 expansion-gated, not just flavor-themed.
 
 We have no need for real Endless Expansion card data (see the top of this
-doc — the app never runs combat). The correct behavior for Category 2
-content is to ignore it outright — treat it as if the encounter never
-happened. See `config/events.yml`'s `expansion: endless` field and
-TODO.md's "Expansion content flag" item.
+doc — the app never runs combat). Since a "do you own the expansion"
+toggle would have nothing real to gate anyway, the app doesn't hide this
+content — per user direction (2026-08-26), it's always shown, with body
+text and an explicit choice making unmistakably clear that it requires
+the Endless Expansion's own threat deck, and offering a no-consequence
+"don't own the expansion" way out for players who don't have it. See
+`config/events.yml`'s `expansion: endless` field, the ⚠ marker in 16-A's
+and 17-A's body text, and TODO.md's "Expansion content flag" item.
 
 ## Licensing note
 
