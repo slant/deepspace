@@ -30,7 +30,7 @@
       metadata: { goto: "41-A" }
     - label: "[Requires: SYS-PUMP] Already have the pump → 53-B"
       action: goto
-      metadata: { goto: "53-B" }
+      metadata: { goto: "53-B", requires: { item: "SYS-PUMP" } }
     - label: "Solve the power problem → 29-A"
       action: goto
       metadata: { goto: "29-A" }
@@ -269,16 +269,16 @@
   choices:
     - label: "[Requires: Sequence L + Sequence 711] → 40-A"
       action: goto
-      metadata: { goto: "40-A" }
+      metadata: { goto: "40-A", requires: { sequence_all: [ "L", "711" ] } }
     - label: "[Requires: Sequence L only] → 26-A"
       action: goto
-      metadata: { goto: "26-A" }
+      metadata: { goto: "26-A", requires: { sequence: "L", exclude_sequence: "711" } }
     - label: "[Requires: Sequence 711 only] → 48-B"
       action: goto
-      metadata: { goto: "48-B" }
+      metadata: { goto: "48-B", requires: { sequence: "711", exclude_sequence: "L" } }
     - label: "[No qualifying sequences] → 63-B"
       action: goto
-      metadata: { goto: "63-B" }
+      metadata: { goto: "63-B", requires: { exclude_sequence_any: [ "L", "711" ] } }
   resolvable: true
 
 "15-A":
@@ -353,7 +353,7 @@
   choices:
     - label: "[Requires: Sequence 521] → 26-C"
       action: goto
-      metadata: { goto: "26-C" }
+      metadata: { goto: "26-C", requires: { sequence: "521" } }
     - label: "Return to Orbit"
       action: orbit
   resolvable: true
@@ -385,7 +385,7 @@
       metadata: { goto: "27-C" }
     - label: "[Requires: Flower Locket] → 50-C"
       action: goto
-      metadata: { goto: "50-C" }
+      metadata: { goto: "50-C", requires: { item: "Flower Locket" } }
   resolvable: true
 
 "18-B":
@@ -419,34 +419,34 @@
   choices:
     - label: "[Circled sequence 000] → 38-B"
       action: goto
-      metadata: { goto: "38-B" }
+      metadata: { goto: "38-B", requires: { sequence: "000", state: "circled" } }
     - label: "[Underlined sequence 99] → 24-A"
       action: goto
-      metadata: { goto: "24-A" }
+      metadata: { goto: "24-A", requires: { sequence: "99", state: "underlined" } }
     - label: "[Underlined sequence 761] → 28-A"
       action: goto
-      metadata: { goto: "28-A" }
+      metadata: { goto: "28-A", requires: { sequence: "761", state: "underlined" } }
     - label: "[Underlined sequence 182] → 39-C"
       action: goto
-      metadata: { goto: "39-C" }
+      metadata: { goto: "39-C", requires: { sequence: "182", state: "underlined" } }
     - label: "[Underlined sequence 364] → 23-B"
       action: goto
-      metadata: { goto: "23-B" }
+      metadata: { goto: "23-B", requires: { sequence: "364", state: "underlined" } }
     - label: "[Underlined sequence 182947] → 32-B"
       action: goto
-      metadata: { goto: "32-B" }
+      metadata: { goto: "32-B", requires: { sequence: "182947", state: "underlined" } }
     - label: "[Underlined sequence 000] → 47-B"
       action: goto
-      metadata: { goto: "47-B" }
+      metadata: { goto: "47-B", requires: { sequence: "000", state: "underlined" } }
     - label: "[Item: CARGO13] → 64-C"
       action: goto
-      metadata: { goto: "64-C" }
+      metadata: { goto: "64-C", requires: { item: "CARGO13" } }
     - label: "[Item: ORB1] → 34-C"
       action: goto
-      metadata: { goto: "34-C" }
+      metadata: { goto: "34-C", requires: { item: "ORB1" } }
     - label: "[Item: EE7] → 68-B"
       action: goto
-      metadata: { goto: "68-B" }
+      metadata: { goto: "68-B", requires: { item: "EE7" } }
     - label: "Journey complete"
       action: complete
   resolvable: true
@@ -595,7 +595,7 @@
   choices:
     - label: "[Requires: Sequence Z underlined] → 64-B"
       action: goto
-      metadata: { goto: "64-B" }
+      metadata: { goto: "64-B", requires: { sequence: "Z", state: "underlined" } }
     - label: "Gain 100 scrap — Return to Orbit"
       action: orbit
       metadata: { scrap_delta: 100 }
@@ -629,12 +629,13 @@
   choices:
     - label: "Spend 1 fuel — seek side jobs → 33-B"
       action: goto
-      metadata: { goto: "33-B", fuel_delta: -1 }
+      metadata: { goto: "33-B", fuel_delta: -1, gain_item: "CARGO13" }
     - label: "Spend 1 fuel — visit the local tavern → 51-A"
       action: goto
-      metadata: { goto: "51-A", fuel_delta: -1 }
+      metadata: { goto: "51-A", fuel_delta: -1, gain_item: "CARGO13" }
     - label: "Return to Orbit"
       action: orbit
+      metadata: { gain_item: "CARGO13" }
   resolvable: true
 
 "27-B":
@@ -749,10 +750,10 @@
   choices:
     - label: "[Requires: HACKER] Follow the digital trail → 31-A"
       action: goto
-      metadata: { goto: "31-A" }
+      metadata: { goto: "31-A", requires: { specialty_or_attribute: [ "HACKER" ] } }
     - label: "[Requires: OBSERVANT] You notice something suspicious → 35-A"
       action: goto
-      metadata: { goto: "35-A" }
+      metadata: { goto: "35-A", requires: { specialty_or_attribute: [ "OBSERVANT" ] } }
     - label: "No special skills → 52-A"
       action: goto
       metadata: { goto: "52-A" }
@@ -797,7 +798,7 @@
   choices:
     - label: "Survived and captured a pirate (underline sequence 711) → 43-C"
       action: goto
-      metadata: { goto: "43-C" }
+      metadata: { goto: "43-C", mark_sequence: "711", mark_type: "underline" }
     - label: "Survived but no capture → 44-C"
       action: goto
       metadata: { goto: "44-C" }
@@ -1059,6 +1060,7 @@
   choices:
     - label: "Return to Orbit"
       action: orbit
+      metadata: { lose_items: [ "Q-BOMB", "Vortex" ] }
   resolvable: true
 
 "40-B":
@@ -1069,8 +1071,10 @@
   choices:
     - label: "Capture a specimen — gain item [EE7] → Orbit"
       action: orbit
+      metadata: { gain_item: "EE7" }
     - label: "Destroy all traces of the Endless forever — circle sequence 000 → Orbit"
       action: orbit
+      metadata: { mark_sequence: "000", mark_type: "circle" }
   resolvable: true
 
 "40-C":
@@ -1155,7 +1159,7 @@
   choices:
     - label: "Continue → 52-A"
       action: goto
-      metadata: { goto: "52-A" }
+      metadata: { goto: "52-A", mark_sequence: "313", mark_type: "underline" }
   resolvable: true
 
 "42-C":
@@ -1183,6 +1187,7 @@
   choices:
     - label: "Return to Orbit"
       action: orbit
+      metadata: { scrap_delta: 20, fuel_delta: 2, gain_item: "Flower Locket" }
   resolvable: true
 
 "43-B":
@@ -1269,7 +1274,7 @@
   choices:
     - label: "Continue → 52-C"
       action: goto
-      metadata: { goto: "52-C" }
+      metadata: { goto: "52-C", scrap_delta: -1, gain_item: "Fluffy Creature" }
   resolvable: true
 
 "44-E":
@@ -1317,7 +1322,7 @@
   choices:
     - label: "Continue → 52-C"
       action: goto
-      metadata: { goto: "52-C" }
+      metadata: { goto: "52-C", gain_item: "ORB1" }
   resolvable: true
 
 "45-D":
@@ -1400,10 +1405,10 @@
       metadata: { scrap_delta: 15 }
     - label: "Keep the AI — gain 15 scrap, acquire item [AI-System], Return to Orbit"
       action: orbit
-      metadata: { scrap_delta: 15 }
+      metadata: { scrap_delta: 15, gain_item: "AI-System" }
     - label: "[Requires: GREEDY or ROBOTICIST] Underline sequence 99, gain 15 scrap — Return to Orbit"
       action: orbit
-      metadata: { scrap_delta: 15 }
+      metadata: { scrap_delta: 15, mark_sequence: "99", mark_type: "underline", requires: { specialty_or_attribute: [ "GREEDY", "ROBOTICIST" ] } }
   resolvable: true
 
 "48-B":
@@ -1416,6 +1421,7 @@
   choices:
     - label: "Return to Orbit"
       action: orbit
+      metadata: { gain_item: "Q-BOMB" }
   resolvable: true
 
 "48-C":
@@ -1447,16 +1453,16 @@
   choices:
     - label: "Visit the vendor hall → 43-D"
       action: goto
-      metadata: { goto: "43-D" }
+      metadata: { goto: "43-D", gain_item: "Lux Food" }
     - label: "Visit the refueling depot → 72-B"
       action: goto
-      metadata: { goto: "72-B" } # PDF says 44-D but that's the Fluffy Creature entry — apparent PDF typo; 72-B is the actual refueling depot
+      metadata: { goto: "72-B", gain_item: "Lux Food" } # PDF says 44-D but that's the Fluffy Creature entry — apparent PDF typo; 72-B is the actual refueling depot
     - label: "Visit the research center → 41-B"
       action: goto
-      metadata: { goto: "41-B" }
+      metadata: { goto: "41-B", gain_item: "Lux Food" }
     - label: "Leave Manaport → 59-A"
       action: goto
-      metadata: { goto: "59-A" }
+      metadata: { goto: "59-A", gain_item: "Lux Food" }
   resolvable: true
 
 "49-C":
@@ -1470,7 +1476,7 @@
       metadata: { goto: "59-B" }
     - label: "[Requires: AI-System] Upload it to combat the android → 64-B"
       action: goto
-      metadata: { goto: "64-B" }
+      metadata: { goto: "64-B", requires: { item: "AI-System" } }
   resolvable: true
 
 "50-A":
@@ -1481,7 +1487,7 @@
   choices:
     - label: "[Requires: Q-BOMB] → 60-A"
       action: goto
-      metadata: { goto: "60-A" }
+      metadata: { goto: "60-A", requires: { item: "Q-BOMB" } }
     - label: "Return to Orbit"
       action: orbit
   resolvable: true
@@ -1522,13 +1528,13 @@
   choices:
     - label: "[Requires: SMUGGLER, PSYCHIC, or CHARMING] Use your skills → 42-B"
       action: goto
-      metadata: { goto: "42-B" }
+      metadata: { goto: "42-B", requires: { specialty_or_attribute: [ "SMUGGLER", "PSYCHIC", "CHARMING" ] } }
     - label: "[Requires: ARTISAN, CHEF, or MUSICIAN] Use your skills → 43-B"
       action: goto
-      metadata: { goto: "43-B" }
+      metadata: { goto: "43-B", requires: { specialty_or_attribute: [ "ARTISAN", "CHEF", "MUSICIAN" ] } }
     - label: "[Requires: ASTRONOMER, CHEMIST, DOCTOR, or PILOT] Use your skills → 44-B"
       action: goto
-      metadata: { goto: "44-B" }
+      metadata: { goto: "44-B", requires: { specialty_or_attribute: [ "ASTRONOMER", "CHEMIST", "DOCTOR", "PILOT" ] } }
     - label: "No matching skills → 52-A"
       action: goto
       metadata: { goto: "52-A" }
@@ -1689,14 +1695,21 @@
   choices:
     - label: "Suggest humans use resources in the Miras' absence — underline sequence 761, Return to Orbit"
       action: orbit
+      metadata: { mark_sequence: "761", mark_type: "underline" }
     - label: "Suggest humans stay away from Mira land for 50 years — underline sequence 182, Return to Orbit"
       action: orbit
+      metadata: { mark_sequence: "182", mark_type: "underline" }
     - label: "Suggest humans redistribute current wealth and leave Mira land untouched — underline sequence 364, Return to Orbit"
       action: orbit
+      metadata: { mark_sequence: "364", mark_type: "underline" }
+    # NOTE: PDF also grants two officers MISTRUSTING here — not wired, no
+    # officer-attribute-mutation system exists yet (see TODO.md Officer State).
     - label: "[LIE] Tell humans to stay away but privately tell them to use the land — underline sequence 182947, give two officers MISTRUSTING, Return to Orbit"
       action: orbit
+      metadata: { mark_sequence: "182947", mark_type: "underline" }
     - label: "Say nothing at the council — underline sequence 000, Return to Orbit"
       action: orbit
+      metadata: { mark_sequence: "000", mark_type: "underline" }
   resolvable: true
 
 "54-B":
@@ -1755,7 +1768,10 @@
       metadata: { scrap_delta: 15 }
     - label: "Keep the AI — gain 15 scrap, acquire item [AI-System], Return to Orbit"
       action: orbit
-      metadata: { scrap_delta: 15 }
+      metadata: { scrap_delta: 15, gain_item: "AI-System" }
+    - label: "[Requires: GREEDY or ROBOTICIST] Underline sequence 99, gain 15 scrap — Return to Orbit"
+      action: orbit
+      metadata: { scrap_delta: 15, mark_sequence: "99", mark_type: "underline", requires: { specialty_or_attribute: [ "GREEDY", "ROBOTICIST" ] } }
   resolvable: true
 
 "56-B":
@@ -1843,7 +1859,7 @@
   choices:
     - label: "[Requires: Lux Food AND Fluffy Creature] → 61-D"
       action: goto
-      metadata: { goto: "61-D" }
+      metadata: { goto: "61-D", requires: { items_all: [ "Lux Food", "Fluffy Creature" ] } }
     - label: "Return to Orbit"
       action: orbit
   resolvable: true
@@ -2047,6 +2063,7 @@
   choices:
     - label: "Return to Orbit"
       action: orbit
+      metadata: { gain_item: "DATALOG-9" }
   resolvable: true
 
 "64-A":
@@ -2058,7 +2075,7 @@
   choices:
     - label: "Follow after the boy → 65-A"
       action: goto
-      metadata: { goto: "65-A" }
+      metadata: { goto: "65-A", requires: { excludes_specialty_or_attribute: [ "COWARD" ] } }
     - label: "Leave and go back to the fuel station → 54-D"
       action: goto
       metadata: { goto: "54-D" }
@@ -2072,6 +2089,7 @@
   choices:
     - label: "Return to Orbit"
       action: orbit
+      metadata: { lose_item: "Vortex", lose_item_unless: { specialty_or_attribute: [ "DARK MATTER SPECIALIST", "ASSASSIN", "LOYAL" ] } }
   resolvable: true
 
 "64-C":
@@ -2124,6 +2142,7 @@
   choices:
     - label: "Return to Orbit"
       action: orbit
+      metadata: { gain_item: "ANDY", scrap_delta: 5 }
   resolvable: true
 
 "66-B":
@@ -2199,8 +2218,10 @@
   choices:
     - label: "Defeated — lose [PandoraBox], Return to Orbit"
       action: orbit
+      metadata: { gain_item: "PandoraBox", lose_item: "PandoraBox" }
     - label: "Victorious — Return to Orbit"
       action: orbit
+      metadata: { gain_item: "PandoraBox" }
   resolvable: true
 
 "70-A":
@@ -2227,6 +2248,7 @@
   choices:
     - label: "Return to Orbit"
       action: orbit
+      metadata: { lose_item: "Lux Food" }
   resolvable: true
 
 "71-B":
@@ -2318,4 +2340,5 @@
   choices:
     - label: "Return to Orbit"
       action: orbit
+      metadata: { gain_item: "Vortex", mark_sequence: "L", mark_type: "underline" }
   resolvable: true
