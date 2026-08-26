@@ -58,7 +58,7 @@ class EventCatalog
       return open_space_event(hex) if label.blank?
 
       stored = events[label]
-      return normalize(stored) if stored
+      return normalize(stored, label) if stored
 
       default_event(label, hex)
     end
@@ -72,41 +72,53 @@ class EventCatalog
 
     def for_event(id)
       stored = events[id]
-      stored ? normalize(stored) : nil
+      stored ? normalize(stored, id) : nil
+    end
+
+    # Performs an explicit, player-triggered dice roll (the "Roll Dice"
+    # button — see event_modal_controller.js) for the story-check patterns
+    # below, and returns display text plus any resource deltas to apply.
+    # Deliberately does NOT cover full combat/R&D — those stay on the
+    # player's physical Deep Space D-6 copy; this is only for simple
+    # story-driven checks the PDF calls for.
+    def roll_dice_for(kind, label: nil, sector: nil)
+      case kind
+      when "threat_die_table"
+        roll_threat_die_table(label)
+      when "open_space_chart"
+        roll_open_space_chart(sector)
+      end
     end
 
     private
 
-    # Generic support for a single-roll-then-choose event shape (e.g. 22-A):
-    # roll a plain threat die once, append the rolled outcome's text to the
-    # body, and merge its scrap_delta/fuel_delta into every choice (so
-    # whichever path the player picks afterward still carries the roll's
-    # consequence). Declared in events.yml as a `threat_die_table` hash of
-    # roll (1-6) => { "text" =>, "scrap_delta" =>, "fuel_delta" => }.
-    def normalize(data)
-      body = data["body"].to_s.strip
+    def normalize(data, label)
       choices = (data["choices"] || []).map { |c| c.slice("label", "action", "metadata") }
-
-      if data["threat_die_table"].present?
-        roll = roll_die
-        outcome = data["threat_die_table"][roll] || {}
-        body = [ body, "Threat die: #{roll} — #{outcome['text']}" ].reject(&:blank?).join("\n\n")
-        choices = choices.map { |choice| apply_die_outcome(choice, outcome) }
-      end
-
-      {
+      result = {
         title: data["title"],
-        body: body,
+        body: data["body"].to_s.strip,
         choices: choices,
         resolvable: data.fetch("resolvable", true)
       }
+      if data["threat_die_table"].present?
+        result[:dice_roll] = { "kind" => "threat_die_table", "label" => label }
+      elsif data["dice_roll"].present?
+        result[:dice_roll] = data["dice_roll"]
+      end
+      result
     end
 
-    def apply_die_outcome(choice, outcome)
-      metadata = (choice["metadata"] || {}).dup
-      metadata["scrap_delta"] = metadata.fetch("scrap_delta", 0).to_i + outcome["scrap_delta"].to_i if outcome["scrap_delta"]
-      metadata["fuel_delta"] = metadata.fetch("fuel_delta", 0).to_i + outcome["fuel_delta"].to_i if outcome["fuel_delta"]
-      choice.merge("metadata" => metadata)
+    def roll_threat_die_table(label)
+      data = events[label]
+      return { text: "" } unless data && data["threat_die_table"]
+
+      roll = roll_die
+      outcome = data["threat_die_table"][roll] || {}
+      {
+        text: "Threat die: #{roll} — #{outcome['text']}",
+        scrap_delta: outcome["scrap_delta"].to_i,
+        fuel_delta: outcome["fuel_delta"].to_i
+      }
     end
 
     def roll_die
@@ -114,25 +126,24 @@ class EventCatalog
     end
 
     def open_space_event(hex)
-      chart = OPEN_SPACE_CHARTS[hex["sector"]] || {}
+      {
+        title: "Open Space",
+        body: "Open space. Consult your scanners.",
+        dice_roll: { "kind" => "open_space_chart", "sector" => hex["sector"] },
+        choices: [ { "label" => "Return to Orbit", "action" => "orbit", "metadata" => {} } ],
+        resolvable: false
+      }
+    end
+
+    def roll_open_space_chart(sector)
+      chart = OPEN_SPACE_CHARTS[sector] || {}
       roll = roll_die
       outcome = chart[roll] || { type: "empty" }
       # Expansion-gated (Zeta) combat rows: no real Endless card data, so
       # treat as ignored/Empty for everyone until that content exists.
       outcome = { type: "empty" } if outcome[:expansion].present?
 
-      {
-        title: "Open Space",
-        body: open_space_body(outcome),
-        choices: [
-          {
-            "label" => "Return to Orbit",
-            "action" => "orbit",
-            "metadata" => outcome[:scrap] ? { "scrap_delta" => outcome[:scrap] } : {}
-          }
-        ],
-        resolvable: false
-      }
+      { text: open_space_body(outcome), scrap_delta: outcome[:scrap].to_i, fuel_delta: 0 }
     end
 
     def open_space_body(outcome)

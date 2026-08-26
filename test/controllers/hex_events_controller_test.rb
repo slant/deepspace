@@ -143,45 +143,50 @@ class HexEventsControllerTest < ActionDispatch::IntegrationTest
   end
 
   # --- Open Space encounters (end-to-end) ---
+  # Rolling is an explicit "Roll Dice" button (action_type: roll_dice) — GET
+  # just exposes the dice_roll descriptor, unrolled. See CLAUDE.md "Crew Dice".
 
-  test "GET an Open Space hex rolls the sector chart and moving there costs 1 fuel" do
+  test "GET an Open Space hex exposes a dice_roll descriptor and costs 1 fuel to move there" do
     @campaign.update_columns(scrap: 0, fuel: 5)
 
-    with_die_roll(3) do
-      get campaign_hex_event_path(campaign_id: @campaign.public_id, q: 2, r: 1), as: :json
-    end
+    get campaign_hex_event_path(campaign_id: @campaign.public_id, q: 2, r: 1), as: :json
 
     assert_response :ok
     json = response.parsed_body
     assert_equal "Open Space", json["title"]
-    assert_match(/Gain 3 scrap/, json["body"])
+    assert_equal "open_space_chart", json["dice_roll"]["kind"]
     assert_equal 4, @campaign.reload.fuel
   end
 
-  test "PATCH orbit on an Open Space hex applies the rolled scrap reward" do
+  test "PATCH roll_dice on an Open Space hex applies the rolled scrap reward" do
     @campaign.update_columns(scrap: 0, fuel: 5, ship_q: 2, ship_r: 1)
 
-    patch campaign_hex_event_update_path(campaign_id: @campaign.public_id, q: 2, r: 1),
-      params: { action_type: "orbit", scrap_delta: 3 },
-      as: :json
+    with_die_roll(6) do
+      patch campaign_hex_event_update_path(campaign_id: @campaign.public_id, q: 2, r: 1),
+        params: { action_type: "roll_dice", dice_roll_kind: "open_space_chart", dice_roll_sector: "alpha" },
+        as: :json
+    end
 
     assert_response :ok
-    assert_equal 3, @campaign.reload.scrap
+    json = response.parsed_body
+    assert_match(/Hostile contact/, json["dice_result"])
+    assert_equal 2, @campaign.reload.scrap
   end
 
-  test "Zeta Open Space combat rolls never grant scrap or resolve as combat (Endless-gated, no card data)" do
+  test "PATCH roll_dice for Zeta combat rolls never grants scrap or resolves as combat (Endless-gated, no card data)" do
     @campaign.update_columns(scrap: 0, fuel: 5)
 
     (2..6).each do |roll|
       with_die_roll(roll) do
-        get campaign_hex_event_path(campaign_id: @campaign.public_id, q: 0, r: 1), as: :json
+        patch campaign_hex_event_update_path(campaign_id: @campaign.public_id, q: 1, r: 1),
+          params: { action_type: "roll_dice", dice_roll_kind: "open_space_chart", dice_roll_sector: "zeta" },
+          as: :json
       end
 
       assert_response :ok
       json = response.parsed_body
-      assert_no_match(/Hostile contact/, json["body"], "roll #{roll} should be ignored")
-
-      @campaign.update_columns(ship_q: 1, ship_r: 1, fuel: 5) # reset adjacency for next iteration
+      assert_no_match(/Hostile contact/, json["dice_result"], "roll #{roll} should be ignored")
+      assert_equal 0, @campaign.reload.scrap
     end
   end
 
@@ -379,15 +384,24 @@ class HexEventsControllerTest < ActionDispatch::IntegrationTest
 
   # --- Crew dice fatigue check (39-B/42-A/51-B/61-B/70-A/72-A pattern, 43-A threshold) ---
 
-  test "PATCH goto through a Rising Waters event applies fatigue marks via crew_dice_fatigue_check" do
+  test "PATCH goto to a Rising Waters event exposes a crew_dice_fatigue_check dice_roll, then rolling applies marks" do
+    patch campaign_hex_event_update_path(campaign_id: @campaign.public_id, q: 1, r: 1),
+      params: { action_type: "goto", goto_target: "42-A" },
+      as: :json
+
+    assert_response :ok
+    json = response.parsed_body
+    assert_equal "crew_dice_fatigue_check", json["next_event"]["dice_roll"]["kind"]
+
     original = CrewDice.method(:roll)
     CrewDice.define_singleton_method(:roll) { |_count| [ "threat_detected", "commander" ] }
 
     patch campaign_hex_event_update_path(campaign_id: @campaign.public_id, q: 1, r: 1),
-      params: { action_type: "goto", goto_target: "42-A", crew_dice_fatigue_check: true },
+      params: { action_type: "roll_dice", dice_roll_kind: "crew_dice_fatigue_check" },
       as: :json
 
     assert_response :ok
+    assert_match(/Threat Detected/, response.parsed_body["dice_result"])
     assert_equal 1, @campaign.character.officers.reload.first.fatigue_marks
   ensure
     CrewDice.define_singleton_method(:roll, original)

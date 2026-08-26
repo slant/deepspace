@@ -15,5 +15,8 @@ Rails.application.routes.draw do
   get "campaigns/:campaign_id/hex/:q/:r", to: "hex_events#show", as: :campaign_hex_event
   patch "campaigns/:campaign_id/hex/:q/:r", to: "hex_events#update", as: :campaign_hex_event_update
 
+  patch "campaigns/:campaign_id/upgrades/:track/boxes/:box", to: "upgrades#toggle_box", as: :campaign_upgrade_toggle_box
+  patch "campaigns/:campaign_id/upgrades/:track/complete", to: "upgrades#complete", as: :campaign_upgrade_complete
+
   get "up" => "rails/health#show", as: :rails_health_check
 end

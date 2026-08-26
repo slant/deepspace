@@ -1049,16 +1049,17 @@
   body: |
     The water levels feel like they're rising. For each officer on your crew, roll 2 crew dice. Any officer with a result containing at least one Threat Detected result — place an X in their box.
     You press onward until you come upon a split in the path.
+  dice_roll: { kind: "crew_dice_fatigue_check" }
   choices:
     - label: "Take the path on the left → 61-B"
       action: goto
-      metadata: { goto: "61-B", crew_dice_fatigue_check: true }
+      metadata: { goto: "61-B" }
     - label: "Take the path on the right → 70-A"
       action: goto
-      metadata: { goto: "70-A", crew_dice_fatigue_check: true }
+      metadata: { goto: "70-A" }
     - label: "Turn back — Return to Orbit"
       action: orbit
-      metadata: { crew_dice_fatigue_check: true }
+      metadata: {}
   resolvable: true
 
 "39-C":
@@ -1163,13 +1164,14 @@
   body: |
     The water levels feel like they're rising. For each officer on your crew, roll 2 crew dice. Any officer with a result containing at least one Threat Detected result — place an X in their box.
     You press onward until you come upon a split in the path.
+  dice_roll: { kind: "crew_dice_fatigue_check" }
   choices:
     - label: "Take the path on the left → 61-B"
       action: goto
-      metadata: { goto: "61-B", crew_dice_fatigue_check: true }
+      metadata: { goto: "61-B" }
     - label: "Take the path on the right → 70-A"
       action: goto
-      metadata: { goto: "70-A", crew_dice_fatigue_check: true }
+      metadata: { goto: "70-A" }
   resolvable: true
 
 "42-B":
@@ -1565,13 +1567,14 @@
   body: |
     The water levels feel like they're rising. For each officer on your crew, roll 2 crew dice. Any officer with a result containing at least one Threat Detected result — place an X in their box.
     You press onward until you come upon a split in the path.
+  dice_roll: { kind: "crew_dice_fatigue_check" }
   choices:
     - label: "Take the path on the left → 39-B"
       action: goto
-      metadata: { goto: "39-B", crew_dice_fatigue_check: true }
+      metadata: { goto: "39-B" }
     - label: "Take the path on the right → 70-A"
       action: goto
-      metadata: { goto: "70-A", crew_dice_fatigue_check: true }
+      metadata: { goto: "70-A" }
   resolvable: true
 
 "51-C":
@@ -1953,13 +1956,14 @@
   body: |
     The water levels feel like they're rising. For each officer on your crew, roll 2 crew dice. Any officer with a result containing at least one Threat Detected result — place an X in their box.
     You press onward until you come upon a split in the path.
+  dice_roll: { kind: "crew_dice_fatigue_check" }
   choices:
     - label: "Take the path on the left → 39-B"
       action: goto
-      metadata: { goto: "39-B", crew_dice_fatigue_check: true }
+      metadata: { goto: "39-B" }
     - label: "Take the path on the right → 70-A"
       action: goto
-      metadata: { goto: "70-A", crew_dice_fatigue_check: true }
+      metadata: { goto: "70-A" }
   resolvable: true
 
 "61-C":
@@ -2247,16 +2251,17 @@
   body: |
     The water levels feel like they're rising. For each officer on your crew, roll 2 crew dice. Any officer with a result containing at least one Threat Detected result — place an X in their box.
     You press onward until you come upon a split in the path.
+  dice_roll: { kind: "crew_dice_fatigue_check" }
   choices:
     - label: "Take the path on the left → 39-B"
       action: goto
-      metadata: { goto: "39-B", crew_dice_fatigue_check: true }
+      metadata: { goto: "39-B" }
     - label: "Take the path on the right → 72-A"
       action: goto
-      metadata: { goto: "72-A", crew_dice_fatigue_check: true }
+      metadata: { goto: "72-A" }
     - label: "Turn back — Return to Orbit"
       action: orbit
-      metadata: { crew_dice_fatigue_check: true }
+      metadata: {}
   resolvable: true
 
 "71-A":
@@ -2288,16 +2293,17 @@
   body: |
     The water levels feel like they're rising. For each officer on your crew, roll 2 crew dice. Any officer with a result containing at least one Threat Detected result — place an X in their box.
     You press onward until you come upon a split in the path.
+  dice_roll: { kind: "crew_dice_fatigue_check" }
   choices:
     - label: "Take the path on the left → 39-B"
       action: goto
-      metadata: { goto: "39-B", crew_dice_fatigue_check: true }
+      metadata: { goto: "39-B" }
     - label: "Take the path on the right → 43-A"
       action: goto
-      metadata: { goto: "43-A", crew_dice_fatigue_check: true }
+      metadata: { goto: "43-A" }
     - label: "Turn back — Return to Orbit"
       action: orbit
-      metadata: { crew_dice_fatigue_check: true }
+      metadata: {}
   resolvable: true
 
 "72-B":

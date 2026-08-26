@@ -37,7 +37,13 @@
             <div class="text-xs text-space-400/80">
               <%= officer.all_attributes.join(", ") %>
               <% if officer.fatigue_marks.positive? %>
-                <span class="text-red-400/80">· X×<%= officer.fatigue_marks %>/<%= officer.fatigue_threshold %></span>
+                <div class="mt-1 flex items-center gap-1.5">
+                  <span class="text-space-400">Fatigue</span>
+                  <div class="relative h-3 w-16 overflow-hidden rounded-sm border border-red-900/60 bg-space-800">
+                    <div class="h-full bg-red-500/70" style="width: <%= (officer.fatigue_marks.to_f / officer.fatigue_threshold * 100).round %>%"></div>
+                    <span class="absolute inset-0 flex items-center justify-center font-mono text-[10px] leading-none text-space-100"><%= officer.fatigue_marks %>/<%= officer.fatigue_threshold %></span>
+                  </div>
+                </div>
               <% end %>
             </div>
           </li>
@@ -104,10 +110,29 @@
     </section>
   </aside>
 
-  <div class="flex flex-1 flex-col p-4 min-h-0">
-    <%= turbo_frame_tag "campaign_map", class: "flex flex-1 flex-col min-h-0" do %>
-      <%= render HexMapComponent.new(campaign: @campaign) %>
-    <% end %>
+  <div class="flex flex-1 flex-col min-h-0">
+    <div class="shrink-0 border-b border-space-800 bg-space-900/70"
+         data-controller="upgrades-panel"
+         data-upgrades-panel-campaign-id-value="<%= @campaign.public_id %>"
+         data-upgrades-panel-tracks-value="<%= Campaign::RND_TRACKS.to_json %>"
+         data-upgrades-panel-progress-value="<%= @campaign.researched_upgrades.to_json %>"
+         data-upgrades-panel-scrap-value="<%= @campaign.scrap %>">
+      <button type="button"
+              class="flex w-full items-center justify-between px-4 py-2 text-xs font-semibold uppercase tracking-wider text-space-300 hover:text-cyan-300"
+              data-action="click->upgrades-panel#toggle">
+        <span>Upgrades</span>
+        <span data-upgrades-panel-target="chevron" class="transition-transform">▾</span>
+      </button>
+      <div class="hidden border-t border-space-800 px-4 py-3" data-upgrades-panel-target="panel">
+        <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-3" data-upgrades-panel-target="tracks"></div>
+      </div>
+    </div>
+
+    <div class="flex flex-1 flex-col p-4 min-h-0">
+      <%= turbo_frame_tag "campaign_map", class: "flex flex-1 flex-col min-h-0" do %>
+        <%= render HexMapComponent.new(campaign: @campaign) %>
+      <% end %>
+    </div>
   </div>
 
   <div class="modal-backdrop hidden" data-event-modal-target="backdrop" data-action="click->event-modal#close"></div>

@@ -6,6 +6,47 @@ class Campaign < ApplicationRecord
   PLANET_COUNT = 30
   PLANET_ICON_TYPES = %w[circle beacon_store].freeze
 
+  # R&D upgrade tracks (character sheet, PDF p.6). Box labels are the exact
+  # crew-die result(s) required to fill that box, pre-abbreviated for display;
+  # a box with more than one requirement (e.g. Bio-Manipulator's 3rd box) is
+  # paid all at once, per the user — modeled as a single box, not two. Boxes
+  # are self-reported (tap to mark) rather than rolled by the app — see
+  # CLAUDE.md "Crew Dice"/dice-roll scope: R&D dice are rolled physically
+  # during combat/Duty Phase, the app only tracks progress the player already
+  # made. scrap_cost (if any) is paid once, when the last box is marked.
+  RND_TRACKS = {
+    "engine_repair" => {
+      name: "Engine Repair",
+      boxes: [ "1 ENG", "1 ENG", "2 ENG", "1 ENG", "1 ENG", "2 ENG", "1 ENG", "1 ENG", "3 ENG" ],
+      scrap_cost: 10
+    },
+    "promotion" => {
+      name: "Promotion",
+      boxes: [ "1 CMD", "1 CMD", "2 CMD" ],
+      scrap_cost: 0
+    },
+    "kinetic_recycler" => {
+      name: "Kinetic Recycler",
+      boxes: [ "2 ENG", "1 ENG", "1 ENG" ],
+      scrap_cost: 0
+    },
+    "lr_scanners" => {
+      name: "LR Scanners",
+      boxes: [ "1 ENG", "1 CMD", "2 CMD" ],
+      scrap_cost: 0
+    },
+    "bio_manipulator" => {
+      name: "Bio-Manipulator",
+      boxes: [ "1 MED", "1 MED", "1 MED + 1 ENG" ],
+      scrap_cost: 0
+    },
+    "cloaking_device" => {
+      name: "Cloaking Device",
+      boxes: [ "1 ANY", "1 ENG", "2 ENG", "1 ENG", "1 SCI", "2 SCI" ],
+      scrap_cost: 25
+    }
+  }.freeze
+
   belongs_to :user
   belongs_to :character, optional: true
   has_many :journal_entries, -> { order(created_at: :desc) }, dependent: :destroy
@@ -223,11 +264,9 @@ class Campaign < ApplicationRecord
       marked << officer.name
     end
 
-    if marked.any?
-      log!("#{marked.join(', ')} rattled by a Threat Detected result (X mark)", entry_type: "officer")
-    else
-      log!("Crew dice rolled clean — no X marks", entry_type: "officer")
-    end
+    text = marked.any? ? "#{marked.join(', ')} rattled by a Threat Detected result (X mark)." : "Crew dice rolled clean — no X marks."
+    log!(text.chomp("."), entry_type: "officer")
+    text
   end
 
   # Applies the fatigue threshold check (event 43-A): any officer at or past
@@ -241,6 +280,55 @@ class Campaign < ApplicationRecord
     return if fatigued.empty?
 
     log!("#{fatigued.map(&:name).join(', ')} fatigued past their limit — crossed out", entry_type: "officer")
+  end
+
+  # --- Research & Development ---
+  # researched_upgrades: { track_id => { "marked_boxes" => [Boolean], "researched" => Boolean } }
+
+  def upgrade_marked_boxes(track)
+    stored = researched_upgrades.dig(track, "marked_boxes")
+    stored.presence || Array.new(RND_TRACKS.fetch(track)[:boxes].size, false)
+  end
+
+  def upgrade_researched?(track)
+    researched_upgrades.dig(track, "researched") == true
+  end
+
+  def toggle_upgrade_box!(track, index)
+    return if upgrade_researched?(track)
+
+    boxes = RND_TRACKS.fetch(track)[:boxes]
+    return unless index.between?(0, boxes.size - 1)
+
+    marked = upgrade_marked_boxes(track).dup
+    marked[index] = !marked[index]
+    update!(researched_upgrades: researched_upgrades.merge(
+      track => (researched_upgrades[track] || {}).merge("marked_boxes" => marked)
+    ))
+
+    complete_upgrade!(track) if marked.all? && RND_TRACKS.fetch(track)[:scrap_cost].zero?
+  end
+
+  # Deducts the track's scrap cost (if any) and marks it permanently
+  # researched. Called automatically when a free track's last box is marked;
+  # called explicitly (via the Upgrades panel's "Complete" button) for a
+  # track with a scrap cost, since that's a resource spend the player should
+  # confirm rather than have triggered as a side effect of a tap.
+  def complete_upgrade!(track)
+    return false if upgrade_researched?(track)
+    return false unless upgrade_marked_boxes(track).all?
+
+    cost = RND_TRACKS.fetch(track)[:scrap_cost]
+    return false if scrap < cost
+
+    transaction do
+      update!(scrap: scrap - cost) if cost.positive?
+      update!(researched_upgrades: researched_upgrades.merge(
+        track => (researched_upgrades[track] || {}).merge("researched" => true)
+      ))
+    end
+    log!("Research complete: #{RND_TRACKS.fetch(track)[:name]}", entry_type: "milestone")
+    true
   end
 
   def generate_sector!(sector)

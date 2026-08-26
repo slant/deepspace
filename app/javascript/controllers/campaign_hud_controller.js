@@ -71,7 +71,17 @@ export default class extends Controller {
             <span class="text-space-400"> — ${this.escape(o.title)}, ${this.escape(o.specialty)}</span>
             <div class="text-xs text-space-400/80">
               ${this.escape((o.attributes || []).join(", "))}
-              ${o.fatigue_marks > 0 ? `<span class="text-red-400/80">· X×${o.fatigue_marks}/${o.fatigue_threshold}</span>` : ""}
+              ${
+                o.fatigue_marks > 0
+                  ? `<div class="mt-1 flex items-center gap-1.5">
+                      <span class="text-space-400">Fatigue</span>
+                      <div class="relative h-3 w-16 overflow-hidden rounded-sm border border-red-900/60 bg-space-800">
+                        <div class="h-full bg-red-500/70" style="width: ${Math.round((o.fatigue_marks / o.fatigue_threshold) * 100)}%"></div>
+                        <span class="absolute inset-0 flex items-center justify-center font-mono text-[10px] leading-none text-space-100">${o.fatigue_marks}/${o.fatigue_threshold}</span>
+                      </div>
+                    </div>`
+                  : ""
+              }
             </div>
           </li>
         `

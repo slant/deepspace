@@ -363,6 +363,87 @@ class CampaignTest < ActiveSupport::TestCase
     assert_not officer.reload.dead?
   end
 
+  # --- Research & Development ---
+
+  test "upgrade_marked_boxes defaults to all-false for an untouched track" do
+    campaign = campaigns(:one)
+    assert_equal [ false, false, false ], campaign.upgrade_marked_boxes("promotion")
+  end
+
+  test "toggle_upgrade_box! flips a single box and persists it" do
+    campaign = campaigns(:one)
+
+    campaign.toggle_upgrade_box!("promotion", 1)
+
+    assert_equal [ false, true, false ], campaign.reload.upgrade_marked_boxes("promotion")
+  end
+
+  test "toggle_upgrade_box! toggling twice unmarks the box again" do
+    campaign = campaigns(:one)
+
+    campaign.toggle_upgrade_box!("kinetic_recycler", 0)
+    campaign.toggle_upgrade_box!("kinetic_recycler", 0)
+
+    assert_equal [ false, false, false ], campaign.reload.upgrade_marked_boxes("kinetic_recycler")
+  end
+
+  test "toggle_upgrade_box! auto-completes a zero-cost track once every box is marked" do
+    campaign = campaigns(:one)
+
+    3.times { |i| campaign.toggle_upgrade_box!("kinetic_recycler", i) }
+
+    assert campaign.reload.upgrade_researched?("kinetic_recycler")
+  end
+
+  test "toggle_upgrade_box! does not auto-complete a track with a scrap cost" do
+    campaign = campaigns(:one)
+    campaign.update_columns(scrap: 100)
+
+    9.times { |i| campaign.toggle_upgrade_box!("engine_repair", i) }
+
+    assert_not campaign.reload.upgrade_researched?("engine_repair")
+    assert_equal 100, campaign.scrap
+  end
+
+  test "complete_upgrade! deducts scrap and marks the track researched once all boxes are marked" do
+    campaign = campaigns(:one)
+    campaign.update_columns(scrap: 30)
+    6.times { |i| campaign.toggle_upgrade_box!("cloaking_device", i) }
+
+    assert campaign.complete_upgrade!("cloaking_device")
+
+    campaign.reload
+    assert campaign.upgrade_researched?("cloaking_device")
+    assert_equal 5, campaign.scrap
+  end
+
+  test "complete_upgrade! fails without enough scrap" do
+    campaign = campaigns(:one)
+    campaign.update_columns(scrap: 5)
+    6.times { |i| campaign.toggle_upgrade_box!("cloaking_device", i) }
+
+    assert_not campaign.complete_upgrade!("cloaking_device")
+    assert_not campaign.reload.upgrade_researched?("cloaking_device")
+  end
+
+  test "complete_upgrade! fails if not all boxes are marked" do
+    campaign = campaigns(:one)
+    campaign.update_columns(scrap: 100)
+    campaign.toggle_upgrade_box!("cloaking_device", 0)
+
+    assert_not campaign.complete_upgrade!("cloaking_device")
+  end
+
+  test "toggle_upgrade_box! is a no-op once a track is researched" do
+    campaign = campaigns(:one)
+    3.times { |i| campaign.toggle_upgrade_box!("kinetic_recycler", i) }
+    assert campaign.reload.upgrade_researched?("kinetic_recycler")
+
+    campaign.toggle_upgrade_box!("kinetic_recycler", 0)
+
+    assert_equal [ true, true, true ], campaign.reload.upgrade_marked_boxes("kinetic_recycler")
+  end
+
   private
 
   def with_crew_dice(faces)

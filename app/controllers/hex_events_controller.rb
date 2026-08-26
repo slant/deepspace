@@ -48,6 +48,8 @@ class HexEventsController < ApplicationController
     fuel_delta  = params[:fuel_delta].to_i
 
     case params[:action_type]
+    when "roll_dice"
+      return roll_dice
     when "goto"
       goto_target = params[:goto_target].to_s
       next_event = EventCatalog.for_event(goto_target)
@@ -98,6 +100,24 @@ class HexEventsController < ApplicationController
 
   private
 
+  # Explicit, player-triggered "Roll Dice" button (see event_modal_controller.js).
+  # Covers only simple story-driven checks the PDF calls for — never full
+  # combat/R&D, which stay on the player's physical Deep Space D-6 copy.
+  def roll_dice
+    kind = params[:dice_roll_kind].to_s
+
+    if kind == "crew_dice_fatigue_check"
+      text = @campaign.roll_fatigue_check!
+      return render json: { ok: true, dice_result: text, campaign: campaign_state }
+    end
+
+    result = EventCatalog.roll_dice_for(kind, label: params[:dice_roll_label], sector: params[:dice_roll_sector])
+    return render json: { error: "Unknown dice_roll_kind" }, status: :unprocessable_entity unless result
+
+    @campaign.apply_resource_delta!(scrap_delta: result[:scrap_delta].to_i, fuel_delta: result[:fuel_delta].to_i)
+    render json: { ok: true, dice_result: result[:text], campaign: campaign_state }
+  end
+
   def set_campaign
     @campaign = current_user.campaigns.active.find_by!(public_id: params[:campaign_id])
   end
@@ -133,7 +153,6 @@ class HexEventsController < ApplicationController
     end
     @campaign.add_all_officers_attribute!(params[:gain_all_officers_attribute]) if params[:gain_all_officers_attribute].present?
     @campaign.kill_random_officer! if ActiveModel::Type::Boolean.new.cast(params[:kill_random_officer])
-    @campaign.roll_fatigue_check! if ActiveModel::Type::Boolean.new.cast(params[:crew_dice_fatigue_check])
     @campaign.apply_fatigue_threshold! if ActiveModel::Type::Boolean.new.cast(params[:apply_fatigue_threshold])
   end
 

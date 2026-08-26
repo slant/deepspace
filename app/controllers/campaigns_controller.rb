@@ -65,6 +65,7 @@ class CampaignsController < ApplicationController
       },
       items: campaign.items,
       cargo_marks: campaign.cargo_marks,
+      researched_upgrades: campaign.researched_upgrades,
       officers: campaign.character.officers.map { |o|
         {
           name: o.name, title: o.effective_title, specialty: o.specialty, attributes: o.all_attributes, dead: o.dead?,

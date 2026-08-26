@@ -37,10 +37,26 @@ export default class extends Controller {
   show(data) {
     this.titleTarget.textContent = data.title || data.hex?.label || "Event"
     this.bodyTarget.innerHTML = this.formatBody(data.body)
-    this.choicesTarget.innerHTML = ""
 
     const hex = data.hex || this.currentHex
-    ;(data.choices || []).forEach((choice) => {
+
+    // Story-driven dice checks (see CLAUDE.md "Crew Dice") get an explicit
+    // "Roll Dice" button — the app never rolls on the player's behalf for
+    // these. The real choices stay hidden until the roll happens.
+    if (data.dice_roll) {
+      this.renderRollButton(hex, data.dice_roll, data.choices || [])
+    } else {
+      this.renderChoices(hex, data.choices || [])
+    }
+
+    this.dialogTarget.classList.remove("hidden")
+    this.backdropTarget.classList.remove("hidden")
+    document.body.classList.add("modal-open")
+  }
+
+  renderChoices(hex, choices) {
+    this.choicesTarget.innerHTML = ""
+    choices.forEach((choice) => {
       const btn = document.createElement("button")
       btn.type = "button"
       btn.className = "btn btn-secondary w-full"
@@ -54,10 +70,52 @@ export default class extends Controller {
       }
       this.choicesTarget.appendChild(btn)
     })
+  }
 
-    this.dialogTarget.classList.remove("hidden")
-    this.backdropTarget.classList.remove("hidden")
-    document.body.classList.add("modal-open")
+  renderRollButton(hex, diceRoll, choices) {
+    this.choicesTarget.innerHTML = ""
+    const btn = document.createElement("button")
+    btn.type = "button"
+    btn.className = "btn btn-primary w-full"
+    btn.textContent = "🎲 Roll Dice"
+    btn.addEventListener("click", () => this.rollDice(hex, diceRoll, choices))
+    this.choicesTarget.appendChild(btn)
+  }
+
+  async rollDice(hex, diceRoll, choices) {
+    const url = `/campaigns/${this.campaignIdValue}/hex/${hex.q}/${hex.r}`
+    let response
+
+    try {
+      response = await fetch(url, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          "X-CSRF-Token": this.csrfToken
+        },
+        body: JSON.stringify({
+          action_type: "roll_dice",
+          dice_roll_kind: diceRoll.kind,
+          dice_roll_label: diceRoll.label || null,
+          dice_roll_sector: diceRoll.sector || null
+        })
+      })
+    } catch {
+      this.bodyTarget.innerHTML += "<p>Connection error. Please try again.</p>"
+      return
+    }
+
+    if (!response.ok) {
+      this.bodyTarget.innerHTML += "<p>Something went wrong. Please try again.</p>"
+      return
+    }
+
+    const data = await response.json()
+    window.dispatchEvent(new CustomEvent("campaign:updated"))
+
+    this.bodyTarget.innerHTML += `<p class="text-cyan-300">${this.escape(data.dice_result)}</p>`
+    this.renderChoices(hex, choices)
   }
 
   async choose(hex, choice) {
@@ -88,7 +146,6 @@ export default class extends Controller {
           gain_random_officer_attribute_count: choice.metadata?.gain_random_officer_attribute_count || null,
           gain_all_officers_attribute: choice.metadata?.gain_all_officers_attribute || null,
           kill_random_officer: choice.metadata?.kill_random_officer || false,
-          crew_dice_fatigue_check: choice.metadata?.crew_dice_fatigue_check || false,
           apply_fatigue_threshold: choice.metadata?.apply_fatigue_threshold || false
         })
       })
@@ -158,6 +215,12 @@ export default class extends Controller {
       .filter((line) => line.trim())
       .map((p) => `<p>${p}</p>`)
       .join("")
+  }
+
+  escape(text) {
+    const div = document.createElement("div")
+    div.textContent = text ?? ""
+    return div.innerHTML
   }
 
   get csrfToken() {
