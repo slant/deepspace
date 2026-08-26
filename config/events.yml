@@ -458,7 +458,14 @@
     • Purchase [SYS-PUMP] for 5 scrap.
     • Research: spend 3 scrap per roll on available crew dice.
     • Purchase 1 fuel for every 4 scrap (limit 5).
+    (Research is not yet available — no crew dice / R&D system exists yet. Fuel purchases here aren't capped at 5 per visit yet either — see TODO.md Store UI.)
   choices:
+    - label: "Purchase [SYS-PUMP] for 5 scrap"
+      action: orbit
+      metadata: { stay_open: true, scrap_delta: -5, gain_item: "SYS-PUMP", requires: { excludes_item: "SYS-PUMP" } }
+    - label: "Purchase 1 fuel for 4 scrap"
+      action: orbit
+      metadata: { stay_open: true, scrap_delta: -4, fuel_delta: 1 }
     - label: "Return to Orbit"
       action: orbit
   resolvable: false
@@ -469,7 +476,11 @@
     Choose to perform any number of the following actions.
     • Research: spend 5 scrap per roll on available crew dice.
     • Purchase 1 fuel for every 6 scrap (no limit).
+    (Research is not yet available — no crew dice / R&D system exists yet.)
   choices:
+    - label: "Purchase 1 fuel for 6 scrap"
+      action: orbit
+      metadata: { stay_open: true, scrap_delta: -6, fuel_delta: 1 }
     - label: "Return to Orbit"
       action: orbit
   resolvable: false
@@ -481,7 +492,14 @@
     • Research: spend 3 scrap per roll on available crew dice.
     • Purchase 1 fuel for every 5 scrap (limit 5).
     • Complete Luxury Food mission: lose [Lux Food], gain 15 scrap.
+    (Research is not yet available — no crew dice / R&D system exists yet. Fuel purchases here aren't capped at 5 per visit yet either — see TODO.md Store UI.)
   choices:
+    - label: "Purchase 1 fuel for 5 scrap"
+      action: orbit
+      metadata: { stay_open: true, scrap_delta: -5, fuel_delta: 1 }
+    - label: "Complete Luxury Food mission — lose [Lux Food], gain 15 scrap"
+      action: orbit
+      metadata: { stay_open: true, scrap_delta: 15, lose_item: "Lux Food", requires: { item: "Lux Food" } }
     - label: "Return to Orbit"
       action: orbit
   resolvable: false
