@@ -155,3 +155,21 @@ Unblocked — the user supplied the exact per-track box requirements (see `Campa
 - [x] **Officer details visible during play**: sidebar "Officers" section (see Character Creation section above) — same feature, was tracked in two places.
 - [x] **Freeform journal notes**: small form under the Journal list (active campaigns only) posts to `POST /campaigns/:id/journal_entries` (`JournalEntriesController`), logged as `entry_type: "note"`, live-synced like everything else in the sidebar.
 - [ ] **Undo last action**: roll back the most recent game state change. Deliberately not attempted — would need state snapshotting across Campaign + Officer + JournalEntry, and interacts awkwardly with "everything auto-saved instantly" as a design principle (what does undoing a fuel-cost move even mean once sector generation/journal entries have already happened downstream?). Worth a real design discussion before building, not a quick add.
+
+## Pre-Publish Regression Pass (2026-08-26)
+Full manual playthrough (fresh character creation through all 5 ships, movement incl. Engine
+Repair/Jump Drive, event resolution incl. combat/Open Space/R&D, win/loss screens, campaigns
+list) plus the full automated suite (151 tests). Two real bugs found and fixed, both the same
+root cause:
+- [x] **Race condition on rapid double-clicks**: any Stimulus controller doing a read-then-write
+  PATCH (R&D box toggling, event choices, Jump Drive, journal notes) had no guard against firing
+  a second request before the first resolved — reproduced via a scripted rapid-click burst that
+  silently clobbered R&D box state, and confirmed the same pattern could double-apply a choice's
+  scrap/fuel/item/officer effects. Fixed with an in-flight busy guard in each controller
+  (`upgrades_panel_controller.js`, `event_modal_controller.js`, `campaign_hud_controller.js`,
+  `journal_note_controller.js`) — sufficient for this app's solo-play trust boundary, no
+  server-side locking needed.
+No other issues found — all systems (character creation, movement/map, event branching,
+conditional requirements, items/cargo, officer state, R&D, combat win/lose reporting, Open Space
+incl. LR Scanners and Endless labeling, journal, win/loss summary screens, campaigns list) behave
+as expected end-to-end.
