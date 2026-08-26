@@ -125,10 +125,17 @@ reflecting only campaign/narrative state — fuel, scrap, cargo, choices,
 journal — not reimplement or redistribute the base game's own rules,
 components, or card text.
 
-`public/docs/DSD6v061.pdf` and `public/ships/*.jpeg` are base-game physical
-component references (Threat deck, Quick Rules, ship boards) the user
-photographed/collected — not used as engine source data (the app doesn't
-have a combat engine), just kept for the user's own reference. The user has
-explicitly decided (2026-08-26) to keep these in `public/` despite being
-web-servable, on the basis that this content is already publicly
-distributed by the game's publisher. Do not re-flag this.
+`public/docs/DSD6v061.pdf` is a base-game physical component reference
+(Threat deck, Quick Rules) — not used as engine source data (the app
+doesn't have a combat engine), just kept for the user's own reference. The
+user has explicitly decided (2026-08-26) to keep it in `public/` and
+committed to git, despite being web-servable, on the basis that this
+content is already publicly distributed by the game's publisher. Do not
+re-flag this.
+
+`docs/reference/ships/*.jpeg` are the user's own photos of the 5 ship
+boards (Halcyon, Athena Mk. II, AG-8, Mononoaware, Project Union). Kept
+outside `public/` (not web-served) and gitignored — not committed, since
+unlike the PDF above these are the user's personal photography rather than
+publisher-distributed material. Purely for reference; nothing in the app
+reads or displays these.
