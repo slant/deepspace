@@ -8,6 +8,11 @@ class Officer < ApplicationRecord
     lieutenant_junior_grade: 3
   }.freeze
 
+  # Fatigue threshold (event 43-A): default 4 X marks, 3 if WEAK/IMPULSIVE/
+  # STUBBORN, 5 if OPTIMISTIC/IMPROVISER/PERSISTENT.
+  LOW_FATIGUE_TRAITS = %w[weak impulsive stubborn].freeze
+  HIGH_FATIGUE_TRAITS = %w[optimistic improviser persistent].freeze
+
   belongs_to :character
 
   enum :title, TITLES, validate: { allow_nil: true }
@@ -41,6 +46,22 @@ class Officer < ApplicationRecord
 
   def kill!
     update!(dead: true)
+  end
+
+  def fatigue_threshold
+    traits = all_attributes.map { |a| a.to_s.downcase }
+    return 3 if traits.any? { |t| LOW_FATIGUE_TRAITS.include?(t) }
+    return 5 if traits.any? { |t| HIGH_FATIGUE_TRAITS.include?(t) }
+
+    4
+  end
+
+  def fatigued?
+    fatigue_marks >= fatigue_threshold
+  end
+
+  def add_fatigue_mark!
+    increment!(:fatigue_marks)
   end
 
   private

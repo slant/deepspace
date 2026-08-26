@@ -313,4 +313,63 @@ class CampaignTest < ActiveSupport::TestCase
     assert_equal 1, summary[:sequences_marked]
     assert_equal 1, summary[:officers_lost]
   end
+
+  # --- Crew dice fatigue check ---
+
+  test "roll_fatigue_check! adds a mark to every officer when dice always hit Threat Detected" do
+    campaign = campaigns(:one)
+
+    with_crew_dice([ "threat_detected", "commander" ]) { campaign.roll_fatigue_check! }
+
+    assert_equal 1, campaign.character.officers.reload.first.fatigue_marks
+  end
+
+  test "roll_fatigue_check! adds no marks when dice never hit Threat Detected" do
+    campaign = campaigns(:one)
+
+    with_crew_dice([ "commander", "science" ]) { campaign.roll_fatigue_check! }
+
+    assert_equal 0, campaign.character.officers.reload.first.fatigue_marks
+  end
+
+  test "roll_fatigue_check! skips dead officers" do
+    campaign = campaigns(:one)
+    campaign.character.officers.first.kill!
+
+    with_crew_dice([ "threat_detected", "commander" ]) { campaign.roll_fatigue_check! }
+
+    assert_equal 0, campaign.character.officers.reload.first.fatigue_marks
+  end
+
+  test "apply_fatigue_threshold! crosses out officers at or past their threshold" do
+    campaign = campaigns(:one)
+    officer = campaign.character.officers.first
+    officer.update!(attribute_a: "MyString", attribute_b: "MyString")
+    4.times { officer.add_fatigue_mark! }
+
+    campaign.apply_fatigue_threshold!
+
+    assert officer.reload.dead?
+  end
+
+  test "apply_fatigue_threshold! leaves officers under their threshold alone" do
+    campaign = campaigns(:one)
+    officer = campaign.character.officers.first
+    officer.update!(attribute_a: "MyString", attribute_b: "MyString")
+    3.times { officer.add_fatigue_mark! }
+
+    campaign.apply_fatigue_threshold!
+
+    assert_not officer.reload.dead?
+  end
+
+  private
+
+  def with_crew_dice(faces)
+    original = CrewDice.method(:roll)
+    CrewDice.define_singleton_method(:roll) { |_count| faces }
+    yield
+  ensure
+    CrewDice.define_singleton_method(:roll, original)
+  end
 end

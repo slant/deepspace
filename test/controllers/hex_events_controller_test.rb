@@ -377,6 +377,35 @@ class HexEventsControllerTest < ActionDispatch::IntegrationTest
     assert_not @campaign.has_item?("Lux Food")
   end
 
+  # --- Crew dice fatigue check (39-B/42-A/51-B/61-B/70-A/72-A pattern, 43-A threshold) ---
+
+  test "PATCH goto through a Rising Waters event applies fatigue marks via crew_dice_fatigue_check" do
+    original = CrewDice.method(:roll)
+    CrewDice.define_singleton_method(:roll) { |_count| [ "threat_detected", "commander" ] }
+
+    patch campaign_hex_event_update_path(campaign_id: @campaign.public_id, q: 1, r: 1),
+      params: { action_type: "goto", goto_target: "42-A", crew_dice_fatigue_check: true },
+      as: :json
+
+    assert_response :ok
+    assert_equal 1, @campaign.character.officers.reload.first.fatigue_marks
+  ensure
+    CrewDice.define_singleton_method(:roll, original)
+  end
+
+  test "PATCH reaching 43-A applies the fatigue threshold and crosses out an over-threshold officer" do
+    officer = @campaign.character.officers.first
+    officer.update!(attribute_a: "MyString", attribute_b: "MyString")
+    4.times { officer.add_fatigue_mark! }
+
+    patch campaign_hex_event_update_path(campaign_id: @campaign.public_id, q: 1, r: 1),
+      params: { action_type: "orbit", apply_fatigue_threshold: true },
+      as: :json
+
+    assert_response :ok
+    assert officer.reload.dead?
+  end
+
   private
 
   def with_die_roll(value)

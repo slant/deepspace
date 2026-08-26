@@ -34,7 +34,12 @@
           <li class="<%= 'text-space-400 line-through' if officer.dead? %>">
             <span class="text-space-100"><%= officer.name %></span>
             <span class="text-space-400"> — <%= officer.effective_title %>, <%= officer.specialty %></span>
-            <div class="text-xs text-space-400/80"><%= officer.all_attributes.join(", ") %></div>
+            <div class="text-xs text-space-400/80">
+              <%= officer.all_attributes.join(", ") %>
+              <% if officer.fatigue_marks.positive? %>
+                <span class="text-red-400/80">· X×<%= officer.fatigue_marks %>/<%= officer.fatigue_threshold %></span>
+              <% end %>
+            </div>
           </li>
         <% end %>
       </ul>

@@ -133,6 +133,8 @@ class HexEventsController < ApplicationController
     end
     @campaign.add_all_officers_attribute!(params[:gain_all_officers_attribute]) if params[:gain_all_officers_attribute].present?
     @campaign.kill_random_officer! if ActiveModel::Type::Boolean.new.cast(params[:kill_random_officer])
+    @campaign.roll_fatigue_check! if ActiveModel::Type::Boolean.new.cast(params[:crew_dice_fatigue_check])
+    @campaign.apply_fatigue_threshold! if ActiveModel::Type::Boolean.new.cast(params[:apply_fatigue_threshold])
   end
 
   def requirement_met?(requires_param)

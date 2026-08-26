@@ -66,7 +66,10 @@ class CampaignsController < ApplicationController
       items: campaign.items,
       cargo_marks: campaign.cargo_marks,
       officers: campaign.character.officers.map { |o|
-        { name: o.name, title: o.effective_title, specialty: o.specialty, attributes: o.all_attributes, dead: o.dead? }
+        {
+          name: o.name, title: o.effective_title, specialty: o.specialty, attributes: o.all_attributes, dead: o.dead?,
+          fatigue_marks: o.fatigue_marks, fatigue_threshold: o.fatigue_threshold
+        }
       }
     }
   end

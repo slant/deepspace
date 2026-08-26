@@ -87,7 +87,9 @@ export default class extends Controller {
           gain_random_officer_attribute: choice.metadata?.gain_random_officer_attribute || null,
           gain_random_officer_attribute_count: choice.metadata?.gain_random_officer_attribute_count || null,
           gain_all_officers_attribute: choice.metadata?.gain_all_officers_attribute || null,
-          kill_random_officer: choice.metadata?.kill_random_officer || false
+          kill_random_officer: choice.metadata?.kill_random_officer || false,
+          crew_dice_fatigue_check: choice.metadata?.crew_dice_fatigue_check || false,
+          apply_fatigue_threshold: choice.metadata?.apply_fatigue_threshold || false
         })
       })
     } catch {

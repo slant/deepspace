@@ -209,6 +209,40 @@ class Campaign < ApplicationRecord
     log!("Officer #{officer.name} was lost", entry_type: "officer")
   end
 
+  # Rolls 2 crew dice per living officer; any officer whose pair includes a
+  # Threat Detected result gains an X mark (event pattern: 39-B, 42-A, 51-B,
+  # 61-B, 70-A, 72-A). Marks accumulate silently — they're only checked
+  # against the fatigue threshold when a specific event calls for it (43-A).
+  def roll_fatigue_check!(dice_per_officer: 2)
+    marked = []
+    character.officers.reload.reject(&:dead?).each do |officer|
+      roll = CrewDice.roll(dice_per_officer)
+      next unless roll.include?("threat_detected")
+
+      officer.add_fatigue_mark!
+      marked << officer.name
+    end
+
+    if marked.any?
+      log!("#{marked.join(', ')} rattled by a Threat Detected result (X mark)", entry_type: "officer")
+    else
+      log!("Crew dice rolled clean — no X marks", entry_type: "officer")
+    end
+  end
+
+  # Applies the fatigue threshold check (event 43-A): any officer at or past
+  # their threshold is crossed out — "may no longer be used." Reuses the
+  # existing dead/kill! exclusion machinery rather than a parallel state,
+  # since the gameplay effect (excluded from ChoiceRequirement, from other
+  # officer-mutation sampling, etc.) is identical to death.
+  def apply_fatigue_threshold!
+    fatigued = character.officers.reload.reject(&:dead?).select(&:fatigued?)
+    fatigued.each(&:kill!)
+    return if fatigued.empty?
+
+    log!("#{fatigued.map(&:name).join(', ')} fatigued past their limit — crossed out", entry_type: "officer")
+  end
+
   def generate_sector!(sector)
     roll_count = MapLoader.sector_rolls[sector].to_i
     activated = activated_hexes.dup

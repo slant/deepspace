@@ -69,7 +69,10 @@ export default class extends Controller {
           <li class="${o.dead ? "text-space-400 line-through" : ""}">
             <span class="text-space-100">${this.escape(o.name)}</span>
             <span class="text-space-400"> — ${this.escape(o.title)}, ${this.escape(o.specialty)}</span>
-            <div class="text-xs text-space-400/80">${this.escape((o.attributes || []).join(", "))}</div>
+            <div class="text-xs text-space-400/80">
+              ${this.escape((o.attributes || []).join(", "))}
+              ${o.fatigue_marks > 0 ? `<span class="text-red-400/80">· X×${o.fatigue_marks}/${o.fatigue_threshold}</span>` : ""}
+            </div>
           </li>
         `
       )

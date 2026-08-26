@@ -40,4 +40,55 @@ class OfficerTest < ActiveSupport::TestCase
 
     assert officer.reload.dead?
   end
+
+  # --- Fatigue ---
+
+  test "fatigue_threshold defaults to 4" do
+    officer = officers(:one)
+    officer.update!(attribute_a: "MyString", attribute_b: "MyString")
+
+    assert_equal 4, officer.fatigue_threshold
+  end
+
+  test "fatigue_threshold is 3 for WEAK/IMPULSIVE/STUBBORN" do
+    officer = officers(:one)
+    officer.update!(attribute_a: "Impulsive", attribute_b: "MyString")
+
+    assert_equal 3, officer.fatigue_threshold
+  end
+
+  test "fatigue_threshold is 5 for OPTIMISTIC/IMPROVISER/PERSISTENT" do
+    officer = officers(:one)
+    officer.update!(attribute_a: "MyString", attribute_b: "Persistent")
+
+    assert_equal 5, officer.fatigue_threshold
+  end
+
+  test "fatigue_threshold checks bonus_attributes too" do
+    officer = officers(:one)
+    officer.update!(attribute_a: "MyString", attribute_b: "MyString")
+    officer.add_attribute!("Optimistic")
+
+    assert_equal 5, officer.fatigue_threshold
+  end
+
+  test "fatigued? compares fatigue_marks to the threshold" do
+    officer = officers(:one)
+    officer.update!(attribute_a: "MyString", attribute_b: "MyString")
+
+    3.times { officer.add_fatigue_mark! }
+    assert_not officer.reload.fatigued?
+
+    officer.add_fatigue_mark!
+    assert officer.reload.fatigued?
+  end
+
+  test "add_fatigue_mark! increments the counter" do
+    officer = officers(:one)
+
+    officer.add_fatigue_mark!
+    officer.add_fatigue_mark!
+
+    assert_equal 2, officer.reload.fatigue_marks
+  end
 end
