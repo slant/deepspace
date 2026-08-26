@@ -172,4 +172,81 @@ class CampaignTest < ActiveSupport::TestCase
     campaign.update!(status: :failed)
     assert campaign.reload.failed?
   end
+
+  # --- Items ---
+
+  test "gain_item! adds a new item and has_item? becomes true" do
+    campaign = campaigns(:one)
+
+    campaign.gain_item!("AI-System")
+
+    assert campaign.reload.has_item?("AI-System")
+    assert_equal [ { "name" => "AI-System", "lost" => false } ], campaign.items
+  end
+
+  test "gain_item! is idempotent for an already-held item" do
+    campaign = campaigns(:one)
+    campaign.gain_item!("Vortex")
+
+    assert_no_difference "campaign.reload.items.size" do
+      campaign.gain_item!("Vortex")
+    end
+  end
+
+  test "lose_item! marks an item lost and has_item? becomes false" do
+    campaign = campaigns(:one)
+    campaign.gain_item!("Q-BOMB")
+
+    campaign.lose_item!("Q-BOMB")
+
+    campaign.reload
+    assert_not campaign.has_item?("Q-BOMB")
+    assert_equal true, campaign.items.find { |i| i["name"] == "Q-BOMB" }["lost"]
+  end
+
+  test "lose_item! on an item never held is a no-op" do
+    campaign = campaigns(:one)
+
+    assert_no_difference "campaign.reload.items.size" do
+      campaign.lose_item!("Nonexistent")
+    end
+  end
+
+  test "gain_item! after lose_item! un-loses the same entry instead of duplicating" do
+    campaign = campaigns(:one)
+    campaign.gain_item!("Lux Food")
+    campaign.lose_item!("Lux Food")
+
+    campaign.gain_item!("Lux Food")
+
+    campaign.reload
+    assert campaign.has_item?("Lux Food")
+    assert_equal 1, campaign.items.count { |i| i["name"] == "Lux Food" }
+  end
+
+  # --- Cargo sequence marks ---
+
+  test "mark_sequence! sets the token's state" do
+    campaign = campaigns(:one)
+
+    campaign.mark_sequence!("711", "underline")
+
+    campaign.reload
+    assert campaign.sequence_marked?("711")
+    assert_equal "underline", campaign.sequence_state("711")
+  end
+
+  test "sequence_marked? is false for an unmarked token" do
+    campaign = campaigns(:one)
+    assert_not campaign.sequence_marked?("000")
+  end
+
+  test "mark_sequence! can circle a token that was previously underlined" do
+    campaign = campaigns(:one)
+    campaign.mark_sequence!("000", "underline")
+
+    campaign.mark_sequence!("000", "circle")
+
+    assert_equal "circle", campaign.reload.sequence_state("000")
+  end
 end

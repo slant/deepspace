@@ -45,7 +45,13 @@ export default class extends Controller {
       btn.type = "button"
       btn.className = "btn btn-secondary w-full"
       btn.textContent = choice.label
-      btn.addEventListener("click", () => this.choose(hex, choice))
+      if (choice.locked) {
+        btn.disabled = true
+        btn.classList.add("opacity-40", "cursor-not-allowed")
+        btn.title = "Requirements not met"
+      } else {
+        btn.addEventListener("click", () => this.choose(hex, choice))
+      }
       this.choicesTarget.appendChild(btn)
     })
 
@@ -71,7 +77,13 @@ export default class extends Controller {
           goto_target: choice.metadata?.goto || null,
           scrap_delta: choice.metadata?.scrap_delta || 0,
           fuel_delta:  choice.metadata?.fuel_delta  || 0,
-          current_event_label: this.currentEventLabel
+          current_event_label: this.currentEventLabel,
+          gain_item: choice.metadata?.gain_item || null,
+          lose_item: choice.metadata?.lose_item || null,
+          lose_items: choice.metadata?.lose_items || null,
+          lose_item_unless: choice.metadata?.lose_item_unless || null,
+          mark_sequence: choice.metadata?.mark_sequence || null,
+          mark_type: choice.metadata?.mark_type || null
         })
       })
     } catch {

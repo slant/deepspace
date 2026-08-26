@@ -185,6 +185,99 @@ class HexEventsControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
+  # --- Items & cargo sequence marks (end-to-end) ---
+
+  test "PATCH orbit with gain_item adds the item to the campaign" do
+    patch campaign_hex_event_update_path(campaign_id: @campaign.public_id, q: 1, r: 1),
+      params: { action_type: "orbit", gain_item: "AI-System" },
+      as: :json
+
+    assert_response :ok
+    assert @campaign.reload.has_item?("AI-System")
+    assert_equal [ { "name" => "AI-System", "lost" => false } ], response.parsed_body["campaign"]["items"]
+  end
+
+  test "PATCH orbit with lose_item marks a held item lost" do
+    @campaign.gain_item!("Vortex")
+
+    patch campaign_hex_event_update_path(campaign_id: @campaign.public_id, q: 1, r: 1),
+      params: { action_type: "orbit", lose_item: "Vortex" },
+      as: :json
+
+    assert_response :ok
+    assert_not @campaign.reload.has_item?("Vortex")
+  end
+
+  test "PATCH orbit with lose_item_unless skips the loss when the officer condition is met" do
+    @campaign.gain_item!("Vortex")
+    officers(:one).update!(specialty: "Assassin")
+
+    patch campaign_hex_event_update_path(campaign_id: @campaign.public_id, q: 1, r: 1),
+      params: {
+        action_type: "orbit",
+        lose_item: "Vortex",
+        lose_item_unless: { specialty_or_attribute: [ "DARK MATTER SPECIALIST", "ASSASSIN", "LOYAL" ] }
+      },
+      as: :json
+
+    assert_response :ok
+    assert @campaign.reload.has_item?("Vortex"), "item should survive — officer qualifies for the exemption"
+  end
+
+  test "PATCH orbit with lose_item_unless applies the loss when the officer condition is not met" do
+    @campaign.gain_item!("Vortex")
+    officers(:one).update!(specialty: "Pilot", attribute_a: "MyString", attribute_b: "MyString")
+
+    patch campaign_hex_event_update_path(campaign_id: @campaign.public_id, q: 1, r: 1),
+      params: {
+        action_type: "orbit",
+        lose_item: "Vortex",
+        lose_item_unless: { specialty_or_attribute: [ "DARK MATTER SPECIALIST", "ASSASSIN", "LOYAL" ] }
+      },
+      as: :json
+
+    assert_response :ok
+    assert_not @campaign.reload.has_item?("Vortex")
+  end
+
+  test "PATCH orbit with mark_sequence marks the cargo token" do
+    patch campaign_hex_event_update_path(campaign_id: @campaign.public_id, q: 1, r: 1),
+      params: { action_type: "orbit", mark_sequence: "711", mark_type: "underline" },
+      as: :json
+
+    assert_response :ok
+    assert_equal "underline", @campaign.reload.sequence_state("711")
+    assert_equal({ "711" => "underline" }, response.parsed_body["campaign"]["cargo_marks"])
+  end
+
+  test "PATCH goto to a gated event returns locked:false for a choice whose requirement is met" do
+    officers(:one).update!(specialty: "Greedy")
+
+    patch campaign_hex_event_update_path(campaign_id: @campaign.public_id, q: 1, r: 1),
+      params: { action_type: "goto", goto_target: "48-A" },
+      as: :json
+
+    assert_response :ok
+    choices = response.parsed_body["next_event"]["choices"]
+    gated = choices.find { |c| c["label"].include?("GREEDY") }
+    assert_equal false, gated["locked"]
+  end
+
+  test "PATCH goto to a gated event returns locked:true for a choice whose requirement is not met" do
+    officers(:one).update!(specialty: "Pilot", attribute_a: "MyString", attribute_b: "MyString")
+
+    patch campaign_hex_event_update_path(campaign_id: @campaign.public_id, q: 1, r: 1),
+      params: { action_type: "goto", goto_target: "48-A" },
+      as: :json
+
+    assert_response :ok
+    choices = response.parsed_body["next_event"]["choices"]
+    gated = choices.find { |c| c["label"].include?("GREEDY") }
+    assert_equal true, gated["locked"]
+    ungated = choices.find { |c| c["label"].start_with?("Destroy the AI") }
+    assert_equal false, ungated["locked"]
+  end
+
   private
 
   def with_die_roll(value)

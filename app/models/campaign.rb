@@ -119,6 +119,56 @@ class Campaign < ApplicationRecord
     )
   end
 
+  # --- Items ---
+  # items is an array of { "name" => String, "lost" => Boolean }. Re-gaining a
+  # previously-lost item un-loses it rather than adding a duplicate entry.
+
+  def has_item?(name)
+    items.any? { |i| i["name"] == name && !i["lost"] }
+  end
+
+  def gain_item!(name)
+    return if has_item?(name)
+
+    updated = items.dup
+    existing = updated.find { |i| i["name"] == name }
+    if existing
+      existing["lost"] = false
+    else
+      updated << { "name" => name, "lost" => false }
+    end
+    update!(items: updated)
+    log!("Acquired [#{name}]", entry_type: "item")
+  end
+
+  def lose_item!(name)
+    return unless has_item?(name)
+
+    updated = items.dup
+    updated.find { |i| i["name"] == name && !i["lost"] }["lost"] = true
+    update!(items: updated)
+    log!("Lost [#{name}]", entry_type: "item")
+  end
+
+  # --- Cargo sequence marks ---
+  # cargo_marks maps a printed cargo token (e.g. "711", "L", "000") to
+  # "underline" or "circle". Absence means unmarked.
+
+  def sequence_state(token)
+    cargo_marks[token]
+  end
+
+  def sequence_marked?(token)
+    cargo_marks.key?(token)
+  end
+
+  def mark_sequence!(token, type)
+    return if cargo_marks[token] == type
+
+    update!(cargo_marks: cargo_marks.merge(token => type))
+    log!("Marked sequence #{token} (#{type}d)", entry_type: "sequence")
+  end
+
   def generate_sector!(sector)
     roll_count = MapLoader.sector_rolls[sector].to_i
     activated = activated_hexes.dup

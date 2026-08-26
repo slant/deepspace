@@ -16,6 +16,8 @@ one:
   resolved_events: []
   planet_sprites: {}
   activated_hexes: []
+  items: []
+  cargo_marks: {}
   draft_step: 1
 
 two:
@@ -34,4 +36,6 @@ two:
   resolved_events: []
   planet_sprites: {}
   activated_hexes: []
+  items: []
+  cargo_marks: {}
   draft_step: 1

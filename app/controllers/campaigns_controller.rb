@@ -62,7 +62,9 @@ class CampaignsController < ApplicationController
       status: campaign.status,
       journal_entries: campaign.journal_entries.limit(20).map { |e|
         { created_at: e.created_at.strftime("%b %d %H:%M"), body: e.body }
-      }
+      },
+      items: campaign.items,
+      cargo_marks: campaign.cargo_marks
     }
   end
 end
