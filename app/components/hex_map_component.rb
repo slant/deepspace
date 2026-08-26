@@ -39,8 +39,12 @@ class HexMapComponent < ApplicationComponent
     campaign.at_hex?(hex["q"], hex["r"])
   end
 
+  # Despite the CSS class name (hex-adjacent — currently unstyled, kept as
+  # the existing hook rather than a cosmetic rename), this reflects the
+  # player's full move range: 2 hexes away counts too once Engine Repair
+  # is researched, not just literal adjacency.
   def adjacent?(hex)
-    campaign.adjacent_to?(hex["q"], hex["r"])
+    campaign.within_move_range?(hex["q"], hex["r"])
   end
 
   def resolved?(hex)

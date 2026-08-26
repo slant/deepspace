@@ -173,6 +173,74 @@ class CampaignTest < ActiveSupport::TestCase
     assert campaign.reload.failed?
   end
 
+  # --- Movement range (Engine Repair) / Jump Drive ---
+
+  test "move_range is 1 without Engine Repair and 2 once researched" do
+    campaign = campaigns(:one)
+    assert_equal 1, campaign.move_range
+
+    campaign.update!(researched_upgrades: { "engine_repair" => { "researched" => true } })
+    assert_equal 2, campaign.move_range
+  end
+
+  test "within_move_range? allows distance 2 only with Engine Repair researched" do
+    campaign = campaigns(:one)
+    campaign.update!(ship_q: 1, ship_r: 1)
+
+    assert campaign.within_move_range?(2, 1) # distance 1
+    assert_not campaign.within_move_range?(3, 1) # distance 2
+
+    campaign.update!(researched_upgrades: { "engine_repair" => { "researched" => true } })
+    assert campaign.within_move_range?(3, 1)
+    assert_not campaign.within_move_range?(4, 1) # distance 3
+  end
+
+  test "move_to! tracks the previous ship position" do
+    campaign = campaigns(:one)
+    campaign.update!(ship_q: 1, ship_r: 1, fuel: 5)
+
+    campaign.move_to!(2, 1)
+
+    assert_equal [ 1, 1 ], [ campaign.previous_ship_q, campaign.previous_ship_r ]
+    assert_equal [ 2, 1 ], [ campaign.ship_q, campaign.ship_r ]
+  end
+
+  test "can_jump_drive? requires Engine Repair, fuel, and a previous position" do
+    campaign = campaigns(:one)
+    campaign.update!(ship_q: 1, ship_r: 1, fuel: 5, previous_ship_q: nil, previous_ship_r: nil)
+    assert_not campaign.can_jump_drive?, "no previous position yet"
+
+    campaign.update!(previous_ship_q: 0, previous_ship_r: 1)
+    assert_not campaign.can_jump_drive?, "Engine Repair not researched"
+
+    campaign.update!(researched_upgrades: { "engine_repair" => { "researched" => true } })
+    assert campaign.can_jump_drive?
+
+    campaign.update!(fuel: 0)
+    assert_not campaign.can_jump_drive?, "no fuel"
+  end
+
+  test "jump_drive! returns to the previous position, costs 1 fuel, and swaps positions" do
+    campaign = campaigns(:one)
+    campaign.update!(
+      ship_q: 2, ship_r: 1, previous_ship_q: 1, previous_ship_r: 1, fuel: 5,
+      researched_upgrades: { "engine_repair" => { "researched" => true } }
+    )
+
+    campaign.jump_drive!
+
+    assert_equal [ 1, 1 ], [ campaign.ship_q, campaign.ship_r ]
+    assert_equal [ 2, 1 ], [ campaign.previous_ship_q, campaign.previous_ship_r ]
+    assert_equal 4, campaign.fuel
+  end
+
+  test "jump_drive! raises when unavailable" do
+    campaign = campaigns(:one)
+    campaign.update!(previous_ship_q: nil, previous_ship_r: nil)
+
+    assert_raises(RuntimeError) { campaign.jump_drive! }
+  end
+
   # --- Items ---
 
   test "gain_item! adds a new item and has_item? becomes true" do

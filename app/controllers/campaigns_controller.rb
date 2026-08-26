@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class CampaignsController < ApplicationController
-  before_action :set_campaign, only: %i[show update destroy]
+  before_action :set_campaign, only: %i[show update destroy jump_drive]
 
   def index
     @campaigns = current_user.campaigns.includes(:character).order(updated_at: :desc)
@@ -37,6 +37,15 @@ class CampaignsController < ApplicationController
     redirect_to campaigns_path, notice: "Campaign deleted."
   end
 
+  def jump_drive
+    if @campaign.can_jump_drive?
+      @campaign.jump_drive!
+      render json: { ok: true, campaign: campaign_json(@campaign) }
+    else
+      render json: { ok: false, error: "Jump Drive unavailable" }, status: :unprocessable_entity
+    end
+  end
+
   private
 
   def set_campaign
@@ -66,6 +75,7 @@ class CampaignsController < ApplicationController
       items: campaign.items,
       cargo_marks: campaign.cargo_marks,
       researched_upgrades: campaign.researched_upgrades,
+      can_jump_drive: campaign.can_jump_drive?,
       officers: campaign.character.officers.map { |o|
         {
           name: o.name, title: o.effective_title, specialty: o.specialty, attributes: o.all_attributes, dead: o.dead?,

@@ -115,7 +115,7 @@ export default class extends Controller {
     window.dispatchEvent(new CustomEvent("campaign:updated"))
 
     this.bodyTarget.innerHTML += `<p class="text-cyan-300">${this.escape(data.dice_result)}</p>`
-    this.renderChoices(hex, choices)
+    this.renderChoices(hex, data.choices || choices)
   }
 
   async choose(hex, choice) {

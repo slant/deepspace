@@ -28,6 +28,10 @@ class HexGrid
       DIRECTIONS.any? { |dq, dr| q1 + dq == q2 && r1 + dr == r2 }
     end
 
+    def distance(q1, r1, q2, r2)
+      (( q1 - q2 ).abs + ( q1 + r1 - q2 - r2 ).abs + ( r1 - r2 ).abs) / 2
+    end
+
     def neighbor(q, r, dir)
       dq, dr = DIRECTIONS[dir]
       [ q + dq, r + dr ]

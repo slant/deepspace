@@ -158,7 +158,7 @@ class HexEventsControllerTest < ActionDispatch::IntegrationTest
     assert_equal 4, @campaign.reload.fuel
   end
 
-  test "PATCH roll_dice on an Open Space hex applies the rolled scrap reward" do
+  test "PATCH roll_dice on an Open Space combat hex returns Victory/Defeat choices; Victory applies the scrap reward" do
     @campaign.update_columns(scrap: 0, fuel: 5, ship_q: 2, ship_r: 1)
 
     with_die_roll(6) do
@@ -170,10 +170,19 @@ class HexEventsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
     json = response.parsed_body
     assert_match(/Hostile contact/, json["dice_result"])
+    assert_equal 0, @campaign.reload.scrap
+    victory = json["choices"].find { |c| c["label"].start_with?("Victory") }
+    assert_equal 2, victory["metadata"]["scrap_delta"]
+
+    patch campaign_hex_event_update_path(campaign_id: @campaign.public_id, q: 2, r: 1),
+      params: { action_type: "orbit", scrap_delta: victory["metadata"]["scrap_delta"] },
+      as: :json
+
+    assert_response :ok
     assert_equal 2, @campaign.reload.scrap
   end
 
-  test "PATCH roll_dice for Zeta combat rolls never grants scrap or resolves as combat (Endless-gated, no card data)" do
+  test "PATCH roll_dice for Zeta combat rolls never auto-grants scrap and clearly labels the Endless deck requirement" do
     @campaign.update_columns(scrap: 0, fuel: 5)
 
     (2..6).each do |roll|
@@ -185,7 +194,7 @@ class HexEventsControllerTest < ActionDispatch::IntegrationTest
 
       assert_response :ok
       json = response.parsed_body
-      assert_no_match(/Hostile contact/, json["dice_result"], "roll #{roll} should be ignored")
+      assert_match(/ENDLESS EXPANSION/, json["dice_result"], "roll #{roll} should flag the Endless deck")
       assert_equal 0, @campaign.reload.scrap
     end
   end

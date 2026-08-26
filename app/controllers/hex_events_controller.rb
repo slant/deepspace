@@ -7,7 +7,7 @@ class HexEventsController < ApplicationController
     hex = MapLoader.hex_at(params[:q].to_i, params[:r].to_i)
     return head :not_found unless hex
 
-    if !@campaign.at_hex?(hex["q"], hex["r"]) && @campaign.adjacent_to?(hex["q"], hex["r"]) && @campaign.fuel <= 0
+    if !@campaign.at_hex?(hex["q"], hex["r"]) && @campaign.within_move_range?(hex["q"], hex["r"]) && @campaign.fuel <= 0
       adrift = EventCatalog.for_event("21-A")
       return render json: adrift.merge(
         choices: annotate_choices(adrift[:choices]),
@@ -111,11 +111,13 @@ class HexEventsController < ApplicationController
       return render json: { ok: true, dice_result: text, campaign: campaign_state }
     end
 
-    result = EventCatalog.roll_dice_for(kind, label: params[:dice_roll_label], sector: params[:dice_roll_sector])
+    result = EventCatalog.roll_dice_for(kind, label: params[:dice_roll_label], sector: params[:dice_roll_sector], campaign: @campaign)
     return render json: { error: "Unknown dice_roll_kind" }, status: :unprocessable_entity unless result
 
     @campaign.apply_resource_delta!(scrap_delta: result[:scrap_delta].to_i, fuel_delta: result[:fuel_delta].to_i)
-    render json: { ok: true, dice_result: result[:text], campaign: campaign_state }
+    response = { ok: true, dice_result: result[:text], campaign: campaign_state }
+    response[:choices] = annotate_choices(result[:choices]) if result[:choices]
+    render json: response
   end
 
   def set_campaign

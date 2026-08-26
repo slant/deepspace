@@ -1,11 +1,27 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["fuel", "scrap", "cargo", "position", "journal", "items", "sequences", "officers"]
-  static values = { updateUrl: String }
+  static targets = ["fuel", "scrap", "cargo", "position", "journal", "items", "sequences", "officers", "jumpDrive"]
+  static values = { updateUrl: String, jumpDriveUrl: String }
 
   connect() {
     window.addEventListener("campaign:updated", () => this.reload())
+  }
+
+  get csrfToken() {
+    return document.querySelector('meta[name="csrf-token"]')?.content
+  }
+
+  async jumpDrive() {
+    if (!this.hasJumpDriveUrlValue) return
+    const response = await fetch(this.jumpDriveUrlValue, {
+      method: "PATCH",
+      headers: { Accept: "application/json", "X-CSRF-Token": this.csrfToken }
+    })
+    if (!response.ok) return
+
+    window.dispatchEvent(new CustomEvent("campaign:updated"))
+    Turbo.visit(window.location.href, { frame: "campaign_map" })
   }
 
   async reload() {
@@ -22,6 +38,7 @@ export default class extends Controller {
       if (this.hasItemsTarget) this.renderItems(data.campaign.items || [])
       if (this.hasSequencesTarget) this.renderSequences(data.campaign.cargo_marks || {})
       if (this.hasOfficersTarget) this.renderOfficers(data.campaign.officers || [])
+      if (this.hasJumpDriveTarget) this.jumpDriveTarget.classList.toggle("hidden", !data.campaign.can_jump_drive)
     }
   }
 

@@ -23,7 +23,8 @@
        data-event-modal-campaign-id-value="<%= @campaign.public_id %>">
   <aside class="border-b border-space-800 bg-space-900/50 p-4 lg:w-80 lg:border-b-0 lg:border-r"
          data-controller="campaign-hud"
-         data-campaign-hud-update-url-value="<%= campaign_path(@campaign, format: :json) %>">
+         data-campaign-hud-update-url-value="<%= campaign_path(@campaign, format: :json) %>"
+         data-campaign-hud-jump-drive-url-value="<%= jump_drive_campaign_path(@campaign) %>">
     <h1 class="font-display text-lg font-semibold text-cyan-300"><%= @campaign.character.ship_name %></h1>
     <p class="text-sm text-space-400">Captain <%= @campaign.character.name %></p>
 
@@ -69,6 +70,14 @@
         <dd class="mt-1 break-all text-xs leading-relaxed" data-campaign-hud-target="cargo"><%= @campaign.cargo_sequence %></dd>
       </div>
     </dl>
+
+    <button type="button"
+            class="btn-secondary mt-3 w-full text-xs <%= 'hidden' unless @campaign.can_jump_drive? %>"
+            data-campaign-hud-target="jumpDrive"
+            data-action="click->campaign-hud#jumpDrive"
+            title="Return to your previous position — costs 1 fuel">
+      Jump Drive — Return to Previous Position
+    </button>
 
     <section class="mt-8">
       <h2 class="text-xs font-semibold uppercase tracking-wider text-space-400">Cargo Manifest</h2>

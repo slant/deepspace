@@ -11,16 +11,20 @@ class EventCatalog
   ].freeze
 
   # Open Space Encounter Chart (PDF page 8). Roll a d6 on entering a blank hex.
-  # "combat" rows can't run real combat yet (priority #10 — no Hull/Shield
-  # tracking exists on Campaign at all), so they resolve as an automatic,
-  # unharmed win: any listed scrap reward is still granted, but no damage is
-  # simulated since there's nothing to apply it to. Replace with real combat
-  # resolution once that system exists.
+  # "combat" rows are resolved by the player on their physical copy of the
+  # game (this app never simulates combat — see the top of
+  # docs/reference/deep-space-d6-mechanics.md); after the roll, the player
+  # reports Victory or Defeat and the app applies the matching reward, same
+  # pattern as the COMBAT: story events in events.yml. Defeat on an Open
+  # Space roll means no reward, not game_over — unlike a scripted story
+  # combat, there's no source text describing a harsher consequence for
+  # losing a random encounter, so this is a deliberate conservative default.
   #
   # Zeta's combat rows (2-6) all carry the rulebook's "EE" (Endless Expansion)
-  # icon — see docs/reference/deep-space-d6-mechanics.md. We have no real
-  # Endless card data, so they're treated as ignored/Empty for every player
-  # regardless of expansion ownership, per TODO.md "Expansion content flag".
+  # icon — see docs/reference/deep-space-d6-mechanics.md and TODO.md's
+  # "Expansion content flag". They still resolve (never silently skipped),
+  # but are clearly labeled as requiring the Endless Expansion's own threat
+  # deck, which we don't have card data for — see open_space_body.
   OPEN_SPACE_CHARTS = {
     "alpha" => {
       1 => { type: "empty" }, 2 => { type: "empty" }, 3 => { type: "empty" }, 4 => { type: "empty" },
@@ -81,12 +85,12 @@ class EventCatalog
     # Deliberately does NOT cover full combat/R&D — those stay on the
     # player's physical Deep Space D-6 copy; this is only for simple
     # story-driven checks the PDF calls for.
-    def roll_dice_for(kind, label: nil, sector: nil)
+    def roll_dice_for(kind, label: nil, sector: nil, campaign: nil)
       case kind
       when "threat_die_table"
         roll_threat_die_table(label)
       when "open_space_chart"
-        roll_open_space_chart(sector)
+        roll_open_space_chart(sector, campaign: campaign)
       end
     end
 
@@ -135,27 +139,53 @@ class EventCatalog
       }
     end
 
-    def roll_open_space_chart(sector)
+    def roll_open_space_chart(sector, campaign: nil)
       chart = OPEN_SPACE_CHARTS[sector] || {}
-      roll = roll_die
+      raw_roll = roll_die
+      roll = raw_roll
+      if campaign&.upgrade_researched?("lr_scanners")
+        roll = [ raw_roll - 2, 1 ].max
+      end
       outcome = chart[roll] || { type: "empty" }
-      # Expansion-gated (Zeta) combat rows: no real Endless card data, so
-      # treat as ignored/Empty for everyone until that content exists.
-      outcome = { type: "empty" } if outcome[:expansion].present?
 
-      { text: open_space_body(outcome), scrap_delta: outcome[:scrap].to_i, fuel_delta: 0 }
+      prefix = roll == raw_roll ? "" : "Long Range Scanners reduce the threat (rolled #{raw_roll} → #{roll}). "
+
+      if outcome[:expansion].present?
+        {
+          text: prefix + endless_open_space_body(outcome),
+          scrap_delta: 0,
+          fuel_delta: 0,
+          choices: [ { "label" => "Return to Orbit", "action" => "orbit", "metadata" => {} } ]
+        }
+      elsif outcome[:type] == "combat"
+        {
+          text: prefix + open_space_body(outcome),
+          scrap_delta: 0,
+          fuel_delta: 0,
+          choices: [
+            { "label" => "Victory — Return to Orbit", "action" => "orbit", "metadata" => { "scrap_delta" => outcome[:scrap].to_i } },
+            { "label" => "Defeat — Return to Orbit", "action" => "orbit", "metadata" => {} }
+          ]
+        }
+      else
+        { text: prefix + open_space_body(outcome), scrap_delta: outcome[:scrap].to_i, fuel_delta: 0 }
+      end
     end
 
     def open_space_body(outcome)
       case outcome[:type]
       when "combat"
-        parts = [ "Hostile contact — #{outcome[:threats]} threat(s), #{outcome[:deck]}-card wave. " \
-                  "Your crew scrambles to stations and fights it off without incident." ]
-        parts << "Gain #{outcome[:scrap]} scrap." if outcome[:scrap]
-        parts.join(" ")
+        "Hostile contact — #{outcome[:threats]} threat(s), #{outcome[:deck]}-card wave. Resolve this on your " \
+        "physical copy using the standard Threat deck, then report the outcome below."
       else
         outcome[:scrap] ? "#{EMPTY_FLAVOR.sample} Gain #{outcome[:scrap]} scrap." : EMPTY_FLAVOR.sample
       end
+    end
+
+    def endless_open_space_body(outcome)
+      "Hostile contact — #{outcome[:threats]} threat(s), #{outcome[:deck]}-card wave. This is an ENDLESS EXPANSION " \
+      "encounter: if you own the Endless Expansion, resolve it with the Endless threat deck (not the standard " \
+      "deck). If you don't own the expansion, treat this as empty space — no encounter."
     end
 
     def default_event(label, hex)

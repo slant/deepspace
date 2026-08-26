@@ -101,9 +101,20 @@ class Campaign < ApplicationRecord
     HexGrid.adjacent?(ship_q, ship_r, q, r)
   end
 
+  # 2 with Engine Repair researched, 1 otherwise. Still costs a flat 1 fuel
+  # per move regardless of distance covered — Engine Repair extends reach,
+  # not fuel efficiency. See docs/reference/deep-space-d6-mechanics.md.
+  def move_range
+    upgrade_researched?("engine_repair") ? 2 : 1
+  end
+
+  def within_move_range?(q, r)
+    HexGrid.distance(ship_q, ship_r, q, r).between?(1, move_range)
+  end
+
   def can_move_to?(q, r)
     return false unless active?
-    return false unless adjacent_to?(q, r)
+    return false unless within_move_range?(q, r)
     return false if fuel <= 0
 
     true
@@ -113,8 +124,32 @@ class Campaign < ApplicationRecord
     raise ArgumentError, "Invalid move" unless can_move_to?(q, r)
 
     transaction do
-      update!(ship_q: q, ship_r: r, fuel: fuel - 1)
+      update!(ship_q: q, ship_r: r, previous_ship_q: ship_q, previous_ship_r: ship_r, fuel: fuel - 1)
       log!("Moved to #{MapLoader.hex_at(q, r)&.dig('label') || "#{q},#{r}"}", entry_type: "movement")
+    end
+  end
+
+  # Jump Drive (requires Engine Repair, costs 1 fuel): return to the
+  # immediately-previous hex position — not a special map location, just an
+  # undo of the last move. Bypasses EventCatalog entirely (no Open Space
+  # encounter triggers on return), per docs/reference/deep-space-d6-mechanics.md.
+  # The combat-escape use of Jump Drive happens entirely on the player's
+  # physical copy of the game and has nothing for this app to track.
+  def can_jump_drive?
+    return false unless active?
+    return false unless upgrade_researched?("engine_repair")
+    return false if fuel <= 0
+
+    previous_ship_q.present? && previous_ship_r.present?
+  end
+
+  def jump_drive!
+    raise "Jump Drive unavailable" unless can_jump_drive?
+
+    transaction do
+      target_q, target_r = previous_ship_q, previous_ship_r
+      update!(ship_q: target_q, ship_r: target_r, previous_ship_q: ship_q, previous_ship_r: ship_r, fuel: fuel - 1)
+      log!("Jump Drive — returned to #{MapLoader.hex_at(target_q, target_r)&.dig('label') || "#{target_q},#{target_r}"}", entry_type: "movement")
     end
   end
 

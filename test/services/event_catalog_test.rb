@@ -41,11 +41,15 @@ class EventCatalogTest < ActiveSupport::TestCase
     end
   end
 
-  test "alpha roll 6 grants scrap on top of the combat outcome" do
+  test "alpha roll 6 is a combat encounter resolved physically, with Victory/Defeat choices reported back" do
     with_die_roll(6) do
       result = EventCatalog.roll_dice_for("open_space_chart", sector: "alpha")
       assert_match(/Hostile contact/, result[:text])
-      assert_equal 2, result[:scrap_delta]
+      assert_equal 0, result[:scrap_delta]
+      assert_equal "Victory — Return to Orbit", result[:choices][0]["label"]
+      assert_equal 2, result[:choices][0]["metadata"]["scrap_delta"]
+      assert_equal "Defeat — Return to Orbit", result[:choices][1]["label"]
+      assert_nil result[:choices][1]["metadata"]["scrap_delta"]
     end
   end
 
@@ -66,12 +70,13 @@ class EventCatalogTest < ActiveSupport::TestCase
     end
   end
 
-  test "zeta combat rolls (2-6) are treated as ignored/empty (Endless-gated, no card data)" do
+  test "zeta combat rolls (2-6) clearly label the Endless Expansion deck requirement (Endless-gated, no card data)" do
     (2..6).each do |roll|
       with_die_roll(roll) do
         result = EventCatalog.roll_dice_for("open_space_chart", sector: "zeta")
-        assert_no_match(/Hostile contact/, result[:text], "roll #{roll} should be ignored")
-        assert_equal 0, result[:scrap_delta], "roll #{roll} should grant no scrap"
+        assert_match(/ENDLESS EXPANSION/, result[:text], "roll #{roll} should clearly flag the Endless deck")
+        assert_match(/if you don.t own the expansion, treat this as empty space/i, result[:text])
+        assert_equal 0, result[:scrap_delta], "roll #{roll} should grant no scrap (no real Endless card data)"
       end
     end
   end
@@ -83,10 +88,37 @@ class EventCatalogTest < ActiveSupport::TestCase
     end
   end
 
-  test "delta roll 6 grants the largest scrap reward" do
+  test "delta roll 6 grants the largest scrap reward on Victory" do
     with_die_roll(6) do
       result = EventCatalog.roll_dice_for("open_space_chart", sector: "delta")
-      assert_equal 5, result[:scrap_delta]
+      assert_equal 5, result[:choices][0]["metadata"]["scrap_delta"]
+    end
+  end
+
+  test "LR Scanners reduces the open space roll by 2 (min 1) when researched" do
+    scanner_campaign = Campaign.new(researched_upgrades: { "lr_scanners" => { "researched" => true } })
+
+    with_die_roll(6) do
+      result = EventCatalog.roll_dice_for("open_space_chart", sector: "alpha", campaign: scanner_campaign)
+      # raw roll 6 -> reduced to 4, alpha's row 4 is empty (row 6 would have been combat)
+      assert_no_match(/Hostile contact/, result[:text])
+      assert_match(/Long Range Scanners reduce the threat \(rolled 6 → 4\)/, result[:text])
+    end
+  end
+
+  test "LR Scanners has no effect without the upgrade researched" do
+    with_die_roll(6) do
+      result = EventCatalog.roll_dice_for("open_space_chart", sector: "alpha", campaign: campaigns(:one))
+      assert_no_match(/Long Range Scanners/, result[:text])
+    end
+  end
+
+  test "LR Scanners floors the reduced roll at 1" do
+    scanner_campaign = Campaign.new(researched_upgrades: { "lr_scanners" => { "researched" => true } })
+
+    with_die_roll(2) do
+      result = EventCatalog.roll_dice_for("open_space_chart", sector: "alpha", campaign: scanner_campaign)
+      assert_match(/rolled 2 → 1/, result[:text])
     end
   end
 
