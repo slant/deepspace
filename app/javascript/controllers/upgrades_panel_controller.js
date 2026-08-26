@@ -41,7 +41,16 @@ export default class extends Controller {
     await this.patch(`/campaigns/${this.campaignIdValue}/upgrades/${track}/complete`)
   }
 
+  // Box toggles read-then-write researched_upgrades server-side (see
+  // Campaign#toggle_upgrade_box!). Firing several PATCHes before the first
+  // resolves (rapid clicks/taps) lets a later request read a stale snapshot
+  // and clobber an earlier toggle. A single in-flight guard is enough here —
+  // this app has no concurrent-editor scenario to defend against beyond that
+  // (solo-play trust boundary, see CLAUDE.md).
   async patch(url) {
+    if (this.busy) return
+    this.busy = true
+
     let response
     try {
       response = await fetch(url, {
@@ -50,6 +59,8 @@ export default class extends Controller {
       })
     } catch {
       return
+    } finally {
+      this.busy = false
     }
     if (!response.ok) return
 
