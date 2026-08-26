@@ -35,11 +35,11 @@ Items are grouped by game system. Checked items are already implemented.
 - [x] Sector discovery: d12 rolled the correct number of times per sector, trigger hexes activated
 - [x] Hex icon types: home, start, circle (planet), square (store), beacon_store, jump
 - [x] Planet sprites from spritesheet, deterministic per hex
-- [ ] **BLOCKED — Jump points**: checked `config/map.yml` and `config/events.yml` directly — neither has any hex or event referencing "jump" at all, despite the `jump` icon type existing in `HexIconComponent`/`CLAUDE.md`'s documented icon list. Can't build "travel between two points" without knowing which hexes are jump points and which pairs connect — that's real starmap data from the PDF we don't have, and per `CLAUDE.md` this shouldn't be derived analytically from PDF text extraction. Needs the user to provide the jump point hex coordinates and their pairings.
-- [ ] **Engine Repair upgrade effect**: when unlocked, allow moving 2 spaces per turn instead of 1. Blocked on R&D (below) existing as a way to ever unlock it.
-- [ ] **BLOCKED — Jump Drive** (requires Engine Repair upgrade): activated by rolling crew dice and assigning 3 Engineering results, costs 1 fuel. Blocked on in-event dice rolls (below) and R&D. Has two use contexts once unlocked:
-  - *Map navigation*: return to previous hex. Needs a HUD button, and campaign must track the last position.
-  - *Combat escape*: flee a combat encounter as a station action. Does NOT trigger an Open Space encounter on return.
+- [x] ~~**Jump points**~~ — corrected: this was never a real thing. Earlier sessions wrongly assumed a "jump point" hex type needing map coordinate/pairing data (no such hex exists anywhere in `map.yml`/`events.yml`). There is no jump-point mechanic at all — see Engine Repair/Jump Drive below, which is what "jump" actually refers to. See `docs/reference/deep-space-d6-mechanics.md`.
+- [ ] **BLOCKED (R&D) — Engine Repair upgrade effect**: when unlocked, allow moving 2 spaces per turn instead of 1. Blocked on R&D existing as a way to ever unlock it — which is blocked on the R&D tracks' exact per-box icon requirements (see CLAUDE.md "Crew Dice" section).
+- [ ] **BLOCKED (R&D) — Jump Drive** (requires Engine Repair upgrade): costs 1 fuel. Crew dice face data is now known (`CrewDice`), so the *mechanic itself* is buildable — this is blocked purely on Engine Repair ever being unlockable via R&D. Two use contexts:
+  - *Map navigation*: return to the immediately-previous hex position (not a special "jump point" hex — see above). Needs a HUD button, and campaign must track the last position.
+  - *Combat escape*: flee a combat encounter by assigning 3 Engineering crew as a station action. Does NOT trigger an Open Space encounter on return.
 
 ## Open Space
 - [x] Blank/unactivated hexes are recognized as Open Space
@@ -66,14 +66,15 @@ Items are grouped by game system. Checked items are already implemented.
 - [x] **Fuel depot — buy fuel for scrap**: wired for 20-A (1 fuel/4 scrap), 20-B (1 fuel/6 scrap), 20-C (1 fuel/5 scrap), all repeatable `stay_open` choices. **Known simplification**: the "limit 5" per-visit caps on 20-A/20-C are not enforced (repeatable indefinitely, limited only by available scrap) — enforcing a true per-visit limit would need a way to reset a counter each time the player returns to the store, which isn't obviously well-defined for a hex you can revisit anytime; flagged in the event body text and left as a judgment call.
 - [x] **Store — buy items for scrap**: 20-A sells `[SYS-PUMP]` for 5 scrap (`stay_open` choice, gated `requires: { excludes_item: "SYS-PUMP" }` so it locks itself out once bought — one-time purchase for free). 20-C's Luxury Food mission (lose `[Lux Food]`, gain 15 scrap) works the same way via its own `requires: { item: "Lux Food" }`.
 - [ ] **Expansion content flag**: events tagged `expansion: endless` in `events.yml` (currently 16-A, 17-A) carry the rulebook's "EE" icon and per pages 2 & 5 should be ignored entirely for players without the Endless Expansion — not shown, not resolved, treated as if the hex/roll did nothing. Also applies to Open Space combat rolls 2–6 in Sector Zeta (see Open Space section). Needs a campaign setting ("owns Endless Expansion") and filtering in `EventCatalog`/`HexEventsController`. We do not have real Endless Expansion card data, so even when a campaign is flagged as owning it, there's currently nothing to actually run — until real card data is supplied, treat all `expansion: endless` content as ignored regardless of the flag. Do not confuse with 44-E, which is unmarked in the rulebook and always resolves against the page-74 demo deck for everyone — see `docs/reference/deep-space-d6-mechanics.md`.
-- [ ] **BLOCKED — Dice roll mechanics within events**: the *threat die* rolls (plain d6, e.g. 22-A) are buildable now — no missing data. But most of the events below need *crew dice* results (skulls, Tactical/Engineering/Science/Medical/Commander icons), and we don't have the base game's crew die face composition (how many of each icon per die) anywhere — the Long Way Home PDF assumes you own the physical dice and never states it, and the BGG mechanics review (`docs/reference/deep-space-d6-mechanics.md`) only describes icon *types*, not face counts. Can't fabricate this without guessing game rules, which `CLAUDE.md` rules out. This also blocks Combat, R&D, and Jump Drive below, all of which depend on crew dice. Needs the user to supply the actual die face layout (from the physical dice or box insert).
-  - Event 22-A: Roll threat die → asteroid outcome (1=no damage, 2=lose 5 scrap, 3=lose 1 fuel, 4–6=varying damage)
-  - Event 27-B: Roll 3 crew dice (player hand) vs 2 hidden dice (opponent) for card game
-  - Event 31-A: Roll threat die +2 → place in RE-ROLLS box; then roll 6 crew dice
-  - Events 39-B, 42-A, 51-B, 61-B, 70-A, 72-A: Roll 2 crew dice per officer — any skull places an X on that officer
-  - Event 47-A: Roll threat die to pick mining section, then roll crew dice (modified by attributes) for scrap yield
-  - Event 52-B: Roll 3 crew dice vs defense system
-  - Event 62-A: Multi-stage trap challenge using crew dice
+- [x]/[ ] **Dice roll mechanics within events**: crew dice face data is now known (`CrewDice`, see CLAUDE.md), so the clean/repeatable pattern is done. The bespoke multi-stage mini-games below are NOT attempted — each needs real interactive UI (hand display, hidden opponent dice, re-roll boxes, multi-stage challenge selection) beyond a simple roll-and-apply, which is a much bigger scope than the data gap that used to block them:
+  - [x] Event 22-A: threat die → asteroid outcome. Buildable (plain d6, never blocked) but not yet wired — flagging as still open, unlike the crew-dice items below.
+  - [x] Events 39-B, 42-A, 51-B, 61-B, 70-A, 72-A: "Rising Waters" pattern — roll 2 crew dice per living officer, any Threat Detected result adds an X (fatigue) mark. `Campaign#roll_fatigue_check!`, applied automatically via `crew_dice_fatigue_check: true` choice metadata on all of these events' path choices. 43-A's threshold check (`Officer#fatigue_threshold`/`#fatigued?`, 3/4/5 depending on attributes) is wired via `apply_fatigue_threshold: true` — an officer past their threshold is crossed out (reuses the existing dead/kill! exclusion).
+  - [ ] Event 27-B: Roll 3 crew dice (player hand) vs 2 hidden dice (opponent) for card game. Not attempted — bespoke UI.
+  - [ ] Event 31-A: Roll threat die +2 → place in RE-ROLLS box; then roll 6 crew dice, match symbols with re-roll mechanic. Not attempted — bespoke UI.
+  - [ ] Event 47-A: Roll threat die to pick mining section, then roll crew dice (modified by attributes) for scrap yield. Not attempted — bespoke UI.
+  - [ ] Event 52-B: Roll 3 crew dice vs defense system. Not attempted — bespoke UI.
+  - [ ] Event 62-A: Multi-stage trap challenge using crew dice. Not attempted — bespoke UI.
+  - [ ] Event 21-B: Gladiator fights — pick 1 of 6 challenges, roll all 6 crew dice, various win conditions (match N symbols, no Threat Detected, etc.), title override to GLADIATOR, cross out officer on failure. Not attempted — the biggest bespoke UI of the set. `Officer#title_override` data layer already exists and is ready for this whenever it's built.
 
 ## Resources & HUD
 - [x] Fuel tracked, decremented on move, shown in HUD
@@ -94,7 +95,7 @@ Officers can be permanently modified by events — this needs to be tracked in t
 
 ## Combat
 The app currently has no combat system. Combat is triggered by Open Space encounters and many events.
-**BLOCKED on crew dice face data — see "Dice roll mechanics within events" above.** Real combat needs the crew dice to assign to stations; can't build it without knowing what's actually on those dice.
+**Crew dice face data is now known** (see CLAUDE.md "Crew Dice"), but combat also needs the base game's actual Threat Card deck contents (which enemies exist, their Health/damage values, special rules) — we only have the Endless demo substitute deck (page 74, used by 44-E) and the Ouroboros/Apex mega-boss descriptions, not the ordinary Threat deck used by every other "Combat: X+Y" instance in the game. Still a real data gap, just a narrower one than before.
 - [ ] **Combat UI**: display the active threat cards in the scanner positions (Deep Space D6 board layout)
 - [ ] **Draw deck**: randomly draw the specified number of cards from the main threat deck to form the combat draw deck
 - [ ] **Threat card resolution**: step through the standard Deep Space D6 rules (draw → place → resolve)
@@ -114,7 +115,7 @@ The app currently has no combat system. Combat is triggered by Open Space encoun
 - [ ] **Bio-Manipulator upgrade effect**: return a crew die from infirmary / prevent sending crew to infirmary (track uses)
 
 ## Research & Development
-**BLOCKED on crew dice face data — see "Dice roll mechanics within events" above.** Research assigns crew dice results to upgrade tracks; same missing data.
+**BLOCKED on R&D track requirements.** Crew dice face data is now known, but each of the 6 tracks (Engine Repair, Promotion, Kinetic Recycler, LR Scanners, Bio-Manipulator, Cloaking Device) has multiple boxes each requiring a specific *count* of a specific crew-die face to fill — e.g. Engine Repair's boxes look like 2, 2, 3, 2, 2, 3, 2, 2(+more) Engineering results in sequence, per a zoomed read of the character sheet (PDF page 6), but reading exact icon counts off a small printed diagram is error-prone in the same way hex coordinates are — didn't want to build 6 tracks' worth of progression logic on an unconfirmed pixel-count. Ask the user to confirm the real per-track box requirements before building this.
 - [x] `researched_upgrades` column exists on campaigns table
 - [ ] **R&D UI on character sheet / sidebar**: show all 6 upgrade tracks with their progress boxes
 - [ ] **Research during combat**: assign crew dice to R&D tracks (crew must match the next required icon on the track)

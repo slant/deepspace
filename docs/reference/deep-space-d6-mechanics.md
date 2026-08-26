@@ -12,6 +12,28 @@ narrative campaign state (fuel, scrap, cargo, choices) per `CLAUDE.md`. This
 doc exists purely so future combat-system work has real mechanical grounding
 instead of guessing.
 
+## Crew dice (confirmed — user-supplied photo of the physical dice, 2026-08-26)
+
+The 6 crew dice are identical: each die has one of each of these 6 faces
+(uniform 1/6 per face per die). This is real, confirmed data — not from the
+PDF (which assumes ownership of the physical dice and never states it) or
+the BGG review (which only described icon *types*, not the exact face set).
+
+| Color | Face |
+|---|---|
+| Silver | Threat Detected! |
+| Blue (shield) | Commander |
+| Green (hexagon) | Science |
+| Orange (gears) | Engineering |
+| Red (arrow) | Tactical |
+| Purple (square) | Medical |
+
+**There is no skull face.** Several events in `events.yml` referenced
+"skull" for an icon `pdftotext` couldn't extract as text — a previous
+session guessed at it without visual confirmation. Corrected to "Threat
+Detected" throughout; see `docs/reference/events-yaml-pdf-deviations.md`.
+Implemented in `app/services/crew_dice.rb`.
+
 ## Core round structure (base game)
 
 1. **Roll crew dice** — 6 custom icon dice (Tactical/weapons, Engineering/hull
@@ -39,6 +61,28 @@ instead of guessing.
 
 If the Threat deck runs out before win/lose and a full scan completes, the
 ship takes 1 damage instead of drawing a card (there's nothing left to draw).
+
+## Engine Repair / Jump Drive (corrected 2026-08-26)
+
+An earlier version of this doc and `TODO.md` conflated this with a
+hypothetical "jump point" hex type needing map coordinate data — that was
+wrong, and no such thing exists (checked `config/map.yml`/`events.yml`
+directly, neither has any "jump" reference at all). The real mechanic,
+per the user directly quoting rulebook page 4: **Engine Repair** is an R&D
+upgrade (see the character sheet's R&D tracks) that, once complete, lets
+the player move 2 spaces per turn instead of 1. **Jump Drive** requires
+Engine Repair and has two separate uses, both costing 1 fuel:
+- *In combat*: leave a combat encounter by assigning 3 Engineering crew as
+  a station action. No Open Space encounter triggers on return.
+- *On the starmap*: "Return to the previous point" — i.e. undo your last
+  move, not travel to a special map location. Needs the campaign to track
+  its immediately-previous hex position.
+
+Both uses are gated on Engine Repair being unlocked via R&D, which needs
+the exact per-track box requirements (see "Blocked" note in `CLAUDE.md`) —
+zoomed into the R&D section of the character sheet (page 6) and could read
+gear-icon counts per box, but didn't want to build on an error-prone visual
+pixel-count without confirmation.
 
 ## Ship classes (4, matching `CLAUDE.md`'s character-creation options)
 

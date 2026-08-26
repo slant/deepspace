@@ -21,6 +21,7 @@ committed — `CLAUDE.md` referenced it as a repo-relative path
 | Entry | Description |
 |-------|-------------|
 | **16-A** | Removed an unsourced line, "Use the Endless cards from page 74 of the rulebook," that a previous session added to the body. The actual PDF page has no such instruction — 16-A carries the rulebook's printed "EE" (Endless Expansion) icon instead (missed originally because `pdftotext` silently drops that icon graphic; confirmed by rendering the page as an image). 16-A is expansion-gated content (see `docs/reference/deep-space-d6-mechanics.md`), unrelated to the page-74 demo deck, which is specific to event 44-E. Fixed 2026-08-25. |
+| **21-B, 39-B, 42-A, 51-B, 61-B, 70-A, 72-A** | "skull" → "Threat Detected result" throughout. A previous session wrote "skull" for an icon `pdftotext` couldn't extract (rendered as a blank gap in the text), guessing at the icon without visual confirmation. Rendered the actual page as a high-resolution crop and confirmed the icon is the gray "Threat Detected!" crew die face (per the user's photo of the physical dice), not a skull — the crew dice have no skull face at all. Fixed 2026-08-26. |
 
 ## PDF Error Corrections (wrong/missing content in the PDF itself)
 

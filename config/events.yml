@@ -521,11 +521,11 @@
   title: "Gladiator Fights"
   body: |
     You are confident in the abilities of your officers. The gladiator fights have the largest payout. Pick one of your officers. Cross out their title and replace it with GLADIATOR. If the officer fails any challenge, cross out the entire officer and lose any scrap gained from this event.
-    Using all 6 crew dice, pick one of the following challenges (crew symbols are any face except the skull):
+    Using all 6 crew dice, pick one of the following challenges (crew symbols are any face except Threat Detected):
     • Roll 3 matching crew symbols in 3 rolls — gain 3 scrap.
     • Roll 5 matching symbols in less than 6 rolls — gain 5 scrap.
     • Roll 1 of each symbol in less than 10 rolls (duplicates must be re-rolled) — gain 25 scrap.
-    • Roll no skulls in a single roll — gain 15 scrap.
+    • Roll no Threat Detected results in a single roll — gain 15 scrap.
     • Roll 3 matching crew symbols in 1 roll — gain 10 scrap.
     • Roll 2 pairs of any symbol in 2 rolls — gain 5 scrap.
     If successful, you may pick a different challenge or return to Orbit.
@@ -1046,17 +1046,18 @@
 "39-B":
   title: "Rising Waters"
   body: |
-    The water levels feel like they're rising. For each officer on your crew, roll 2 crew dice. Any officer with a result containing at least one skull — place an X in their box.
+    The water levels feel like they're rising. For each officer on your crew, roll 2 crew dice. Any officer with a result containing at least one Threat Detected result — place an X in their box.
     You press onward until you come upon a split in the path.
   choices:
     - label: "Take the path on the left → 61-B"
       action: goto
-      metadata: { goto: "61-B" }
+      metadata: { goto: "61-B", crew_dice_fatigue_check: true }
     - label: "Take the path on the right → 70-A"
       action: goto
-      metadata: { goto: "70-A" }
+      metadata: { goto: "70-A", crew_dice_fatigue_check: true }
     - label: "Turn back — Return to Orbit"
       action: orbit
+      metadata: { crew_dice_fatigue_check: true }
   resolvable: true
 
 "39-C":
@@ -1159,15 +1160,15 @@
 "42-A":
   title: "Rising Waters"
   body: |
-    The water levels feel like they're rising. For each officer on your crew, roll 2 crew dice. Any officer with a result containing at least one skull — place an X in their box.
+    The water levels feel like they're rising. For each officer on your crew, roll 2 crew dice. Any officer with a result containing at least one Threat Detected result — place an X in their box.
     You press onward until you come upon a split in the path.
   choices:
     - label: "Take the path on the left → 61-B"
       action: goto
-      metadata: { goto: "61-B" }
+      metadata: { goto: "61-B", crew_dice_fatigue_check: true }
     - label: "Take the path on the right → 70-A"
       action: goto
-      metadata: { goto: "70-A" }
+      metadata: { goto: "70-A", crew_dice_fatigue_check: true }
   resolvable: true
 
 "42-B":
@@ -1205,7 +1206,7 @@
   choices:
     - label: "Return to Orbit"
       action: orbit
-      metadata: { scrap_delta: 20, fuel_delta: 2, gain_item: "Flower Locket" }
+      metadata: { scrap_delta: 20, fuel_delta: 2, gain_item: "Flower Locket", apply_fatigue_threshold: true }
   resolvable: true
 
 "43-B":
@@ -1561,15 +1562,15 @@
 "51-B":
   title: "Rising Waters"
   body: |
-    The water levels feel like they're rising. For each officer on your crew, roll 2 crew dice. Any officer with a result containing at least one skull — place an X in their box.
+    The water levels feel like they're rising. For each officer on your crew, roll 2 crew dice. Any officer with a result containing at least one Threat Detected result — place an X in their box.
     You press onward until you come upon a split in the path.
   choices:
     - label: "Take the path on the left → 39-B"
       action: goto
-      metadata: { goto: "39-B" }
+      metadata: { goto: "39-B", crew_dice_fatigue_check: true }
     - label: "Take the path on the right → 70-A"
       action: goto
-      metadata: { goto: "70-A" }
+      metadata: { goto: "70-A", crew_dice_fatigue_check: true }
   resolvable: true
 
 "51-C":
@@ -1949,15 +1950,15 @@
 "61-B":
   title: "Rising Waters"
   body: |
-    The water levels feel like they're rising. For each officer on your crew, roll 2 crew dice. Any officer with a result containing at least one skull — place an X in their box.
+    The water levels feel like they're rising. For each officer on your crew, roll 2 crew dice. Any officer with a result containing at least one Threat Detected result — place an X in their box.
     You press onward until you come upon a split in the path.
   choices:
     - label: "Take the path on the left → 39-B"
       action: goto
-      metadata: { goto: "39-B" }
+      metadata: { goto: "39-B", crew_dice_fatigue_check: true }
     - label: "Take the path on the right → 70-A"
       action: goto
-      metadata: { goto: "70-A" }
+      metadata: { goto: "70-A", crew_dice_fatigue_check: true }
   resolvable: true
 
 "61-C":
@@ -2243,17 +2244,18 @@
 "70-A":
   title: "Rising Waters"
   body: |
-    The water levels feel like they're rising. For each officer on your crew, roll 2 crew dice. Any officer with a result containing at least one skull — place an X in their box.
+    The water levels feel like they're rising. For each officer on your crew, roll 2 crew dice. Any officer with a result containing at least one Threat Detected result — place an X in their box.
     You press onward until you come upon a split in the path.
   choices:
     - label: "Take the path on the left → 39-B"
       action: goto
-      metadata: { goto: "39-B" }
+      metadata: { goto: "39-B", crew_dice_fatigue_check: true }
     - label: "Take the path on the right → 72-A"
       action: goto
-      metadata: { goto: "72-A" }
+      metadata: { goto: "72-A", crew_dice_fatigue_check: true }
     - label: "Turn back — Return to Orbit"
       action: orbit
+      metadata: { crew_dice_fatigue_check: true }
   resolvable: true
 
 "71-A":
@@ -2283,17 +2285,18 @@
 "72-A":
   title: "Rising Waters"
   body: |
-    The water levels feel like they're rising. For each officer on your crew, roll 2 crew dice. Any officer with a result containing at least one skull — place an X in their box.
+    The water levels feel like they're rising. For each officer on your crew, roll 2 crew dice. Any officer with a result containing at least one Threat Detected result — place an X in their box.
     You press onward until you come upon a split in the path.
   choices:
     - label: "Take the path on the left → 39-B"
       action: goto
-      metadata: { goto: "39-B" }
+      metadata: { goto: "39-B", crew_dice_fatigue_check: true }
     - label: "Take the path on the right → 43-A"
       action: goto
-      metadata: { goto: "43-A" }
+      metadata: { goto: "43-A", crew_dice_fatigue_check: true }
     - label: "Turn back — Return to Orbit"
       action: orbit
+      metadata: { crew_dice_fatigue_check: true }
   resolvable: true
 
 "72-B":
