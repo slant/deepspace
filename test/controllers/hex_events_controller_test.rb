@@ -141,4 +141,58 @@ class HexEventsControllerTest < ActionDispatch::IntegrationTest
     assert_equal 5, @campaign.reload.scrap
     assert_equal 3, @campaign.reload.fuel
   end
+
+  # --- Open Space encounters (end-to-end) ---
+
+  test "GET an Open Space hex rolls the sector chart and moving there costs 1 fuel" do
+    @campaign.update_columns(scrap: 0, fuel: 5)
+
+    with_die_roll(3) do
+      get campaign_hex_event_path(campaign_id: @campaign.public_id, q: 2, r: 1), as: :json
+    end
+
+    assert_response :ok
+    json = response.parsed_body
+    assert_equal "Open Space", json["title"]
+    assert_match(/Gain 3 scrap/, json["body"])
+    assert_equal 4, @campaign.reload.fuel
+  end
+
+  test "PATCH orbit on an Open Space hex applies the rolled scrap reward" do
+    @campaign.update_columns(scrap: 0, fuel: 5, ship_q: 2, ship_r: 1)
+
+    patch campaign_hex_event_update_path(campaign_id: @campaign.public_id, q: 2, r: 1),
+      params: { action_type: "orbit", scrap_delta: 3 },
+      as: :json
+
+    assert_response :ok
+    assert_equal 3, @campaign.reload.scrap
+  end
+
+  test "Zeta Open Space combat rolls never grant scrap or resolve as combat (Endless-gated, no card data)" do
+    @campaign.update_columns(scrap: 0, fuel: 5)
+
+    (2..6).each do |roll|
+      with_die_roll(roll) do
+        get campaign_hex_event_path(campaign_id: @campaign.public_id, q: 0, r: 1), as: :json
+      end
+
+      assert_response :ok
+      json = response.parsed_body
+      assert_no_match(/Hostile contact/, json["body"], "roll #{roll} should be ignored")
+
+      @campaign.update_columns(ship_q: 1, ship_r: 1, fuel: 5) # reset adjacency for next iteration
+    end
+  end
+
+  private
+
+  def with_die_roll(value)
+    original = EventCatalog.method(:roll_die)
+    EventCatalog.define_singleton_method(:roll_die) { value }
+    yield
+  ensure
+    EventCatalog.define_singleton_method(:roll_die, original)
+    EventCatalog.singleton_class.send(:private, :roll_die)
+  end
 end

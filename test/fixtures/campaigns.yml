@@ -11,11 +11,11 @@ one:
   fuel: 1
   scrap: 1
   cargo_sequence: MyString
-  discovered_sectors: "[]"
-  researched_upgrades: "{}"
-  resolved_events: "[]"
-  planet_sprites: "{}"
-  activated_hexes: "[]"
+  discovered_sectors: []
+  researched_upgrades: {}
+  resolved_events: []
+  planet_sprites: {}
+  activated_hexes: []
   draft_step: 1
 
 two:
@@ -29,9 +29,9 @@ two:
   fuel: 1
   scrap: 1
   cargo_sequence: MyString
-  discovered_sectors: "[]"
-  researched_upgrades: "{}"
-  resolved_events: "[]"
-  planet_sprites: "{}"
-  activated_hexes: "[]"
+  discovered_sectors: []
+  researched_upgrades: {}
+  resolved_events: []
+  planet_sprites: {}
+  activated_hexes: []
   draft_step: 1

@@ -43,12 +43,7 @@ Items are grouped by game system. Checked items are already implemented.
 
 ## Open Space
 - [x] Blank/unactivated hexes are recognized as Open Space
-- [ ] **Roll d6 and consult sector-specific encounter chart** (currently just shows placeholder text; the actual chart from PDF page 8 needs to be implemented):
-  - Alpha: 1–4 Empty, 5–6 Combat 2+5
-  - Beta: 1–3 Empty, 4 Combat 2+4, 5 Combat 3+2, 6 Combat 3+5
-  - Delta: 1–2 Empty, 3 Combat 2+6 +3 scrap, 4 Combat 4+5 +3 scrap, 5 Combat 2+6 +4 scrap, 6 Combat 4+5 +5 scrap
-  - Zeta: 1 Empty, 2 Combat 3+0, 3 Combat 2+5, 4 Combat 2+5, 5 Combat 3+6, 6 Combat 4+7 — **all 5 combat rows (2–6) carry the "EE" (Endless Expansion) icon in the rulebook.** Per pages 2 & 5, if the player doesn't own the expansion, these should be ignored (treated as Empty Space) rather than resolved as combat. See "Expansion content flag" below — until that's built, all Zeta combat rolls should be treated as ignored/Empty for every player, since we have no real Endless card data to run genuine combat with.
-  - Tau: No encounters
+- [x] **Roll d6 and consult sector-specific encounter chart**: implemented in `EventCatalog::OPEN_SPACE_CHARTS`/`open_space_event`. Zeta's combat rows (2–6, all EE-marked) resolve as ignored/Empty per the "Expansion content flag" note below. **Combat rows for Alpha/Beta/Delta resolve as an automatic, unharmed win** (any listed scrap reward is still granted) — there's no Hull/Shield tracking on Campaign yet for real combat to apply damage to. Replace with real dice/threat-card resolution once the combat system (priority #10) exists.
 - [ ] **Long Range Scanners upgrade effect**: during Open Space roll, reduce the d6 result by 2 (min 1)
 
 ## Events & Choices
