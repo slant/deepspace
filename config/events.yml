@@ -750,13 +750,13 @@
   choices:
     - label: "[Requires: HACKER] Follow the digital trail → 31-A"
       action: goto
-      metadata: { goto: "31-A", requires: { specialty_or_attribute: [ "HACKER" ] } }
+      metadata: { goto: "31-A", requires: { specialty_or_attribute: [ "HACKER" ] }, gain_random_officer_attribute: "Restless" }
     - label: "[Requires: OBSERVANT] You notice something suspicious → 35-A"
       action: goto
-      metadata: { goto: "35-A", requires: { specialty_or_attribute: [ "OBSERVANT" ] } }
+      metadata: { goto: "35-A", requires: { specialty_or_attribute: [ "OBSERVANT" ] }, gain_random_officer_attribute: "Restless" }
     - label: "No special skills → 52-A"
       action: goto
-      metadata: { goto: "52-A" }
+      metadata: { goto: "52-A", gain_random_officer_attribute: "Restless" }
   resolvable: true
 
 "30-C":
@@ -1135,7 +1135,7 @@
   choices:
     - label: "Engage the ruthless criminal → 57-A"
       action: goto
-      metadata: { goto: "57-A" }
+      metadata: { goto: "57-A", kill_random_officer: true }
   resolvable: true
 
 "42-A":
@@ -1576,7 +1576,7 @@
   choices:
     - label: "Continue → 52-C"
       action: goto
-      metadata: { goto: "52-C" }
+      metadata: { goto: "52-C", scrap_delta: -2, gain_all_officers_attribute: "Lucky" }
   resolvable: true
 
 "52-A":
@@ -1702,11 +1702,9 @@
     - label: "Suggest humans redistribute current wealth and leave Mira land untouched — underline sequence 364, Return to Orbit"
       action: orbit
       metadata: { mark_sequence: "364", mark_type: "underline" }
-    # NOTE: PDF also grants two officers MISTRUSTING here — not wired, no
-    # officer-attribute-mutation system exists yet (see TODO.md Officer State).
     - label: "[LIE] Tell humans to stay away but privately tell them to use the land — underline sequence 182947, give two officers MISTRUSTING, Return to Orbit"
       action: orbit
-      metadata: { mark_sequence: "182947", mark_type: "underline" }
+      metadata: { mark_sequence: "182947", mark_type: "underline", gain_random_officer_attribute: "Mistrusting", gain_random_officer_attribute_count: 2 }
     - label: "Say nothing at the council — underline sequence 000, Return to Orbit"
       action: orbit
       metadata: { mark_sequence: "000", mark_type: "underline" }

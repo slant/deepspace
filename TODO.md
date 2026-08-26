@@ -27,7 +27,7 @@ Items are grouped by game system. Checked items are already implemented.
 - [x] 4 officers with name, title, specialty, attribute A, attribute B
 - [x] Officer randomize button
 - [x] Lock character on campaign start
-- [ ] Display character sheet (officers + attributes) somewhere accessible during play — the sidebar currently only shows ship name/captain, not officer details or their specialties
+- [x] Display character sheet (officers + attributes) during play — sidebar "Officers" section, live-synced (name, effective title, specialty, all attributes including gained ones; dead officers shown struck through).
 
 ## Starmap & Navigation
 - [x] SVG hex map rendered (flat-top, axial coordinates)
@@ -86,11 +86,11 @@ Items are grouped by game system. Checked items are already implemented.
 
 ## Officer State
 Officers can be permanently modified by events — this needs to be tracked in the DB and reflected in the UI.
-- [ ] **Infirmary tracking**: crew dice can be sent to the infirmary during combat and some events (e.g., event 52-D places two crew in the infirmary before combat begins). Track which officers are in the infirmary per campaign.
-- [ ] **Officer attribute additions**: events can permanently add attributes to officers (event 30-B adds RESTLESS to a random officer; event 51-D adds LUCKY to all officers). Needs a mutable attributes list per officer, separate from the initial locked attributes.
-- [ ] **Officer death / removal**: events can permanently kill or remove an officer (event 41-D: cross out an officer; event 21-B: if GLADIATOR officer fails a challenge, cross out the entire officer). Need a `dead` or `removed` flag per officer and to exclude them from conditionals and dice rolls.
-- [ ] **Officer title change**: event 21-B temporarily changes an officer's title to GLADIATOR. Needs a mutable title field (or override) tracked per officer.
-- [ ] **Skill exchange at tavern**: event 51-A allows swapping an officer's specialty with another. Needs a UI step and must update the officer record.
+- [ ] **Infirmary tracking**: crew dice can be sent to the infirmary during combat and some events (e.g., event 52-D places two crew in the infirmary before combat begins). Track which officers are in the infirmary per campaign. Blocked on the combat system (priority #10) existing at all.
+- [x] **Officer attribute additions**: `Officer#bonus_attributes` (json array) + `add_attribute!`, separate from the locked creation attributes. Wired for event 30-B (`gain_random_officer_attribute: "Restless"`, one random living officer), 51-D (`gain_all_officers_attribute: "Lucky"`, all officers), and 54-A's `[LIE]` branch (`gain_random_officer_attribute: "Mistrusting", gain_random_officer_attribute_count: 2`). `ChoiceRequirement` and conditional checks now see bonus attributes too, via `Officer#all_attributes`.
+- [x] **Officer death / removal**: `Officer#dead` (boolean) + `kill!`. Wired for event 41-D (`kill_random_officer: true`, since the PDF doesn't specify which officer is lost). Dead officers are excluded from `ChoiceRequirement` matching and from random-selection for other officer mutations. Event 21-B's conditional kill (on a failed gladiator challenge) is still unwired — blocked on in-event dice rolls (priority #8) existing to know success/failure.
+- [x] **Officer title change**: `Officer#title_override` (string) + `effective_title` (falls back to the titleized enum value). Data layer exists; not yet wired to event 21-B specifically, since that event's title change only matters alongside its (unbuilt) dice challenge.
+- [ ] **Skill exchange at tavern**: event 51-A allows swapping an officer's specialty with another. Needs a UI step (pick officer, pick new specialty) and must update the officer record — `Officer#specialty` is currently locked-at-creation only; would need to become mutable too, unlike the other creation fields.
 
 ## Combat
 The app currently has no combat system. Combat is triggered by Open Space encounters and many events.
