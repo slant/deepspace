@@ -85,7 +85,7 @@ class CampaignTest < ActiveSupport::TestCase
 
   test "hex_active? returns true for an activated hex" do
     campaign = campaigns(:one)
-    campaign.update_column(:activated_hexes, ["2,6"])
+    campaign.update_column(:activated_hexes, [ "2,6" ])
 
     assert campaign.hex_active?(2, 6)
   end
@@ -162,7 +162,7 @@ class CampaignTest < ActiveSupport::TestCase
     campaign = campaigns(:one)
     campaign.update_columns(scrap: 5, fuel: 3)
 
-    assert_no_difference ["campaign.reload.scrap", "campaign.reload.fuel"] do
+    assert_no_difference [ "campaign.reload.scrap", "campaign.reload.fuel" ] do
       campaign.apply_resource_delta!(scrap_delta: 0, fuel_delta: 0)
     end
   end

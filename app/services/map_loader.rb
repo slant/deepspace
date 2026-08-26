@@ -61,7 +61,7 @@ class MapLoader
 
     def parse_trigger(str)
       parts = str.split("-").map(&:to_i)
-      parts.size == 1 ? [parts.first] : (parts.first..parts.last).to_a
+      parts.size == 1 ? [ parts.first ] : (parts.first..parts.last).to_a
     end
 
     def hex_for_roll(sector, roll)

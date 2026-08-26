@@ -202,8 +202,8 @@ class Campaign < ApplicationRecord
   def apply_resource_delta!(scrap_delta: 0, fuel_delta: 0)
     return if scrap_delta.zero? && fuel_delta.zero?
     update!(
-      scrap: [scrap + scrap_delta, 0].max,
-      fuel:  [fuel  + fuel_delta,  0].max
+      scrap: [ scrap + scrap_delta, 0 ].max,
+      fuel:  [ fuel  + fuel_delta,  0 ].max
     )
   end
 

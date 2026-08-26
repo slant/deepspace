@@ -29,7 +29,7 @@ class HexGrid
     end
 
     def distance(q1, r1, q2, r2)
-      (( q1 - q2 ).abs + ( q1 + r1 - q2 - r2 ).abs + ( r1 - r2 ).abs) / 2
+      ((q1 - q2).abs + (q1 + r1 - q2 - r2).abs + (r1 - r2).abs) / 2
     end
 
     def neighbor(q, r, dir)

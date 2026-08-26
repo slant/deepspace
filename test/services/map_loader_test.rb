@@ -2,19 +2,19 @@ require "test_helper"
 
 class MapLoaderTest < ActiveSupport::TestCase
   test "parse_trigger handles a single value" do
-    assert_equal [10], MapLoader.parse_trigger("10")
+    assert_equal [ 10 ], MapLoader.parse_trigger("10")
   end
 
   test "parse_trigger handles a two-digit single value" do
-    assert_equal [12], MapLoader.parse_trigger("12")
+    assert_equal [ 12 ], MapLoader.parse_trigger("12")
   end
 
   test "parse_trigger handles a short range" do
-    assert_equal [3, 4, 5, 6], MapLoader.parse_trigger("3-6")
+    assert_equal [ 3, 4, 5, 6 ], MapLoader.parse_trigger("3-6")
   end
 
   test "parse_trigger handles a multi-digit range" do
-    assert_equal [10, 11, 12], MapLoader.parse_trigger("10-12")
+    assert_equal [ 10, 11, 12 ], MapLoader.parse_trigger("10-12")
   end
 
   test "hex_for_roll returns the trigger hex matching the roll in a sector" do

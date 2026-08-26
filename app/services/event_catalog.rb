@@ -191,13 +191,13 @@ class EventCatalog
     def default_event(label, hex)
       icon = hex["icon"]
       kind = case icon
-             when "circle" then "beacon"
-             when "square" then "store"
-             when "beacon_store" then "beacon & store"
-             when "home" then "homeworld"
-             when "jump" then "jump point"
-             else "space"
-             end
+      when "circle" then "beacon"
+      when "square" then "store"
+      when "beacon_store" then "beacon & store"
+      when "home" then "homeworld"
+      when "jump" then "jump point"
+      else "space"
+      end
       {
         title: label,
         body: "Sector #{hex['sector']&.titleize}: #{kind.titleize} at #{label}. " \

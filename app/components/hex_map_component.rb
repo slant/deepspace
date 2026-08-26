@@ -58,6 +58,6 @@ class HexMapComponent < ApplicationComponent
 
   def icon_for(hex)
     return hex["icon"] if hex["icon"].present?
-    return "circle" if hex["trigger"].present? && campaign.hex_active?(hex["q"].to_i, hex["r"].to_i)
+    "circle" if hex["trigger"].present? && campaign.hex_active?(hex["q"].to_i, hex["r"].to_i)
   end
 end
