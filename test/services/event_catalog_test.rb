@@ -100,6 +100,49 @@ class EventCatalogTest < ActiveSupport::TestCase
     end
   end
 
+  # --- threat_die_table (single-roll-then-choose events, e.g. 22-A) ---
+
+  test "for_event with a threat_die_table rolls once and appends the outcome text" do
+    with_die_roll(2) do
+      result = EventCatalog.for_event("22-A")
+      assert_match(/Threat die: 2 — An asteroid hits your cargo bay/, result[:body])
+    end
+  end
+
+  test "threat_die_table outcome merges scrap_delta into every choice" do
+    with_die_roll(2) do
+      result = EventCatalog.for_event("22-A")
+      result[:choices].each do |choice|
+        assert_equal(-5, choice["metadata"]["scrap_delta"])
+      end
+    end
+  end
+
+  test "threat_die_table outcome with no delta (roll 1) adds no metadata keys" do
+    with_die_roll(1) do
+      result = EventCatalog.for_event("22-A")
+      result[:choices].each do |choice|
+        assert_not choice["metadata"].key?("scrap_delta")
+        assert_not choice["metadata"].key?("fuel_delta")
+      end
+    end
+  end
+
+  test "threat_die_table outcome (roll 5) merges both scrap and fuel deltas" do
+    with_die_roll(5) do
+      result = EventCatalog.for_event("22-A")
+      result[:choices].each do |choice|
+        assert_equal(-5, choice["metadata"]["scrap_delta"])
+        assert_equal(-1, choice["metadata"]["fuel_delta"])
+      end
+    end
+  end
+
+  test "events without a threat_die_table are unaffected" do
+    result = EventCatalog.for_event("10-A")
+    assert_no_match(/Threat die:/, result[:body])
+  end
+
   private
 
   # EventCatalog.roll_die wraps Kernel#rand(1..6) for exactly this purpose —

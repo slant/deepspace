@@ -537,14 +537,15 @@
 "22-A":
   title: "Asteroid Field"
   body: |
-    The asteroids appear to push off each other with tremendous force. Roll the threat die:
-    1 — The asteroids graze your ship but cause no significant damage.
-    2 — An asteroid hits your cargo bay area. Lose 5 scrap.
-    3 — An asteroid hits your fuel tanks. Lose 2 fuel.
-    4 — An asteroid hits your fuel tanks. Lose 2 fuel.
-    5 — Several asteroids make impact. Lose 5 scrap and 1 fuel.
-    6 — Small asteroids crumble into valuable ore. Gain 5 scrap.
+    The asteroids appear to push off each other with tremendous force.
     In all the mayhem, your scanners detect a nearby hidden cache.
+  threat_die_table:
+    1: { text: "The asteroids graze your ship but cause no significant damage." }
+    2: { text: "An asteroid hits your cargo bay area. Lose 5 scrap.", scrap_delta: -5 }
+    3: { text: "An asteroid hits your fuel tanks. Lose 2 fuel.", fuel_delta: -2 }
+    4: { text: "An asteroid hits your fuel tanks. Lose 2 fuel.", fuel_delta: -2 }
+    5: { text: "Several asteroids make impact. Lose 5 scrap and 1 fuel.", scrap_delta: -5, fuel_delta: -1 }
+    6: { text: "Small asteroids crumble into valuable ore. Gain 5 scrap.", scrap_delta: 5 }
   choices:
     - label: "Stay in the asteroid field, roll again, and grab the cache → 23-A"
       action: goto

@@ -77,13 +77,36 @@ class EventCatalog
 
     private
 
+    # Generic support for a single-roll-then-choose event shape (e.g. 22-A):
+    # roll a plain threat die once, append the rolled outcome's text to the
+    # body, and merge its scrap_delta/fuel_delta into every choice (so
+    # whichever path the player picks afterward still carries the roll's
+    # consequence). Declared in events.yml as a `threat_die_table` hash of
+    # roll (1-6) => { "text" =>, "scrap_delta" =>, "fuel_delta" => }.
     def normalize(data)
+      body = data["body"].to_s.strip
+      choices = (data["choices"] || []).map { |c| c.slice("label", "action", "metadata") }
+
+      if data["threat_die_table"].present?
+        roll = roll_die
+        outcome = data["threat_die_table"][roll] || {}
+        body = [ body, "Threat die: #{roll} — #{outcome['text']}" ].reject(&:blank?).join("\n\n")
+        choices = choices.map { |choice| apply_die_outcome(choice, outcome) }
+      end
+
       {
         title: data["title"],
-        body: data["body"].to_s.strip,
-        choices: (data["choices"] || []).map { |c| c.slice("label", "action", "metadata") },
+        body: body,
+        choices: choices,
         resolvable: data.fetch("resolvable", true)
       }
+    end
+
+    def apply_die_outcome(choice, outcome)
+      metadata = (choice["metadata"] || {}).dup
+      metadata["scrap_delta"] = metadata.fetch("scrap_delta", 0).to_i + outcome["scrap_delta"].to_i if outcome["scrap_delta"]
+      metadata["fuel_delta"] = metadata.fetch("fuel_delta", 0).to_i + outcome["fuel_delta"].to_i if outcome["fuel_delta"]
+      choice.merge("metadata" => metadata)
     end
 
     def roll_die
