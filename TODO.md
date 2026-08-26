@@ -35,9 +35,9 @@ Items are grouped by game system. Checked items are already implemented.
 - [x] Sector discovery: d12 rolled the correct number of times per sector, trigger hexes activated
 - [x] Hex icon types: home, start, circle (planet), square (store), beacon_store, jump
 - [x] Planet sprites from spritesheet, deterministic per hex
-- [ ] **Jump points**: jump hex type exists on the map but the mechanic is not implemented — clicking a jump point should offer travel to another point on the map (see jump point events in events.yml)
-- [ ] **Engine Repair upgrade effect**: when unlocked, allow moving 2 spaces per turn instead of 1
-- [ ] **Jump Drive** (requires Engine Repair upgrade): activated by rolling crew dice and assigning 3 Engineering results, costs 1 fuel. Has two use contexts once unlocked:
+- [ ] **BLOCKED — Jump points**: checked `config/map.yml` and `config/events.yml` directly — neither has any hex or event referencing "jump" at all, despite the `jump` icon type existing in `HexIconComponent`/`CLAUDE.md`'s documented icon list. Can't build "travel between two points" without knowing which hexes are jump points and which pairs connect — that's real starmap data from the PDF we don't have, and per `CLAUDE.md` this shouldn't be derived analytically from PDF text extraction. Needs the user to provide the jump point hex coordinates and their pairings.
+- [ ] **Engine Repair upgrade effect**: when unlocked, allow moving 2 spaces per turn instead of 1. Blocked on R&D (below) existing as a way to ever unlock it.
+- [ ] **BLOCKED — Jump Drive** (requires Engine Repair upgrade): activated by rolling crew dice and assigning 3 Engineering results, costs 1 fuel. Blocked on in-event dice rolls (below) and R&D. Has two use contexts once unlocked:
   - *Map navigation*: return to previous hex. Needs a HUD button, and campaign must track the last position.
   - *Combat escape*: flee a combat encounter as a station action. Does NOT trigger an Open Space encounter on return.
 
@@ -66,7 +66,7 @@ Items are grouped by game system. Checked items are already implemented.
 - [x] **Fuel depot — buy fuel for scrap**: wired for 20-A (1 fuel/4 scrap), 20-B (1 fuel/6 scrap), 20-C (1 fuel/5 scrap), all repeatable `stay_open` choices. **Known simplification**: the "limit 5" per-visit caps on 20-A/20-C are not enforced (repeatable indefinitely, limited only by available scrap) — enforcing a true per-visit limit would need a way to reset a counter each time the player returns to the store, which isn't obviously well-defined for a hex you can revisit anytime; flagged in the event body text and left as a judgment call.
 - [x] **Store — buy items for scrap**: 20-A sells `[SYS-PUMP]` for 5 scrap (`stay_open` choice, gated `requires: { excludes_item: "SYS-PUMP" }` so it locks itself out once bought — one-time purchase for free). 20-C's Luxury Food mission (lose `[Lux Food]`, gain 15 scrap) works the same way via its own `requires: { item: "Lux Food" }`.
 - [ ] **Expansion content flag**: events tagged `expansion: endless` in `events.yml` (currently 16-A, 17-A) carry the rulebook's "EE" icon and per pages 2 & 5 should be ignored entirely for players without the Endless Expansion — not shown, not resolved, treated as if the hex/roll did nothing. Also applies to Open Space combat rolls 2–6 in Sector Zeta (see Open Space section). Needs a campaign setting ("owns Endless Expansion") and filtering in `EventCatalog`/`HexEventsController`. We do not have real Endless Expansion card data, so even when a campaign is flagged as owning it, there's currently nothing to actually run — until real card data is supplied, treat all `expansion: endless` content as ignored regardless of the flag. Do not confuse with 44-E, which is unmarked in the rulebook and always resolves against the page-74 demo deck for everyone — see `docs/reference/deep-space-d6-mechanics.md`.
-- [ ] **Dice roll mechanics within events**: several events require rolling dice mid-event and branching on the result. These cannot be handled by simple choice buttons — they need an in-modal dice roll step:
+- [ ] **BLOCKED — Dice roll mechanics within events**: the *threat die* rolls (plain d6, e.g. 22-A) are buildable now — no missing data. But most of the events below need *crew dice* results (skulls, Tactical/Engineering/Science/Medical/Commander icons), and we don't have the base game's crew die face composition (how many of each icon per die) anywhere — the Long Way Home PDF assumes you own the physical dice and never states it, and the BGG mechanics review (`docs/reference/deep-space-d6-mechanics.md`) only describes icon *types*, not face counts. Can't fabricate this without guessing game rules, which `CLAUDE.md` rules out. This also blocks Combat, R&D, and Jump Drive below, all of which depend on crew dice. Needs the user to supply the actual die face layout (from the physical dice or box insert).
   - Event 22-A: Roll threat die → asteroid outcome (1=no damage, 2=lose 5 scrap, 3=lose 1 fuel, 4–6=varying damage)
   - Event 27-B: Roll 3 crew dice (player hand) vs 2 hidden dice (opponent) for card game
   - Event 31-A: Roll threat die +2 → place in RE-ROLLS box; then roll 6 crew dice
@@ -94,6 +94,7 @@ Officers can be permanently modified by events — this needs to be tracked in t
 
 ## Combat
 The app currently has no combat system. Combat is triggered by Open Space encounters and many events.
+**BLOCKED on crew dice face data — see "Dice roll mechanics within events" above.** Real combat needs the crew dice to assign to stations; can't build it without knowing what's actually on those dice.
 - [ ] **Combat UI**: display the active threat cards in the scanner positions (Deep Space D6 board layout)
 - [ ] **Draw deck**: randomly draw the specified number of cards from the main threat deck to form the combat draw deck
 - [ ] **Threat card resolution**: step through the standard Deep Space D6 rules (draw → place → resolve)
@@ -113,6 +114,7 @@ The app currently has no combat system. Combat is triggered by Open Space encoun
 - [ ] **Bio-Manipulator upgrade effect**: return a crew die from infirmary / prevent sending crew to infirmary (track uses)
 
 ## Research & Development
+**BLOCKED on crew dice face data — see "Dice roll mechanics within events" above.** Research assigns crew dice results to upgrade tracks; same missing data.
 - [x] `researched_upgrades` column exists on campaigns table
 - [ ] **R&D UI on character sheet / sidebar**: show all 6 upgrade tracks with their progress boxes
 - [ ] **Research during combat**: assign crew dice to R&D tracks (crew must match the next required icon on the track)
@@ -123,11 +125,11 @@ The app currently has no combat system. Combat is triggered by Open Space encoun
 
 ## Win / Loss Conditions
 - [x] `complete` action sets campaign status to `:completed`
-- [ ] **Victory screen**: after reaching the Home hex and resolving the final event, show a proper end-game summary
-- [ ] **Loss screen**: show when fuel runs out (21-A), ship is destroyed in combat, or a `game_over` event fires
-- [ ] **Completed campaigns gallery**: show finished campaigns with outcome and summary on the campaign list page
+- [x] **Victory screen**: `Campaign#journey_summary` (moves, sectors discovered, items held/lost, sequences marked, officers lost, final position) shown in the existing status banner on the campaign page — expanded from a one-line banner into a small stats panel.
+- [x] **Loss screen**: same summary panel, shown for `failed` campaigns too (fuel-out via 21-A, or any `game_over` event) — same banner, same stats.
+- [x] **Completed campaigns gallery**: campaign list already shows a Victory/Failed badge and "Show Results" (from earlier work); `progress_summary` still just shows fuel/scrap/position for finished campaigns rather than the fuller `journey_summary` stats — could pull those in too, but the per-campaign summary panel covers the "show outcome and summary" ask once you open a campaign.
 
 ## Quality of Life
-- [ ] **Officer details visible during play**: a way to view officer names, titles, and specialties from the main map screen (needed to know which conditional choices apply)
-- [ ] **Freeform journal notes**: let the player write their own narrative notes attached to the current campaign
-- [ ] **Undo last action**: roll back the most recent game state change
+- [x] **Officer details visible during play**: sidebar "Officers" section (see Character Creation section above) — same feature, was tracked in two places.
+- [x] **Freeform journal notes**: small form under the Journal list (active campaigns only) posts to `POST /campaigns/:id/journal_entries` (`JournalEntriesController`), logged as `entry_type: "note"`, live-synced like everything else in the sidebar.
+- [ ] **Undo last action**: roll back the most recent game state change. Deliberately not attempted — would need state snapshotting across Campaign + Officer + JournalEntry, and interacts awkwardly with "everything auto-saved instantly" as a design principle (what does undoing a fuel-cost move even mean once sector generation/journal entries have already happened downstream?). Worth a real design discussion before building, not a quick add.

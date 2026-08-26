@@ -100,6 +100,10 @@ This is a **solo-only** experience.
 - Event 51-A's "[Requires: ASTRONOMER, CHEMIST, DOCTOR, or PILOT]" references a specialty that doesn't exist in the real 23-option list (page 6) — a PDF authoring error, not a bug on our end. It correctly never matches via ASTRONOMER; the other three options in that OR-list still work.
 - **Officer mutations**: choice metadata `gain_random_officer_attribute: "Name"` (+ optional `gain_random_officer_attribute_count: N`, default 1), `gain_all_officers_attribute: "Name"`, `kill_random_officer: true`. Applied via `campaign.add_random_officer_attribute!`/`add_all_officers_attribute!`/`kill_random_officer!`. "Random" selection happens server-side (Campaign is the source of truth for what already happened), and always excludes already-dead officers. These are distinct from an officer's locked creation fields (name/specialty/attribute_a/attribute_b) — see `Officer#bonus_attributes`/`#dead`/`#title_override` and `#all_attributes`/`#effective_title`.
 
+## Blocked: Crew Dice Face Data
+- Combat, Research & Development, Jump Drive, and most in-event dice-roll mechanics (TODO.md) all depend on the base game's physical crew dice — 6 custom dice with icon faces (Tactical/Engineering/Science/Medical/Commander/skull). **We don't know the face composition of these dice** (how many of each icon per die) — it's not in the Long Way Home PDF (assumes ownership of the physical game) and not in `docs/reference/deep-space-d6-mechanics.md` (that doc describes icon *types* from a BGG review, not exact face counts). Do not guess/fabricate this — ask the user for the real die layout (from the physical dice or box insert) before building any of these systems.
+- Threat-die rolls (plain d6, e.g. event 22-A's asteroid outcome) are NOT blocked by this — only crew-dice-dependent mechanics are.
+
 ## PDF Tooling
 - The Read tool's PDF support does not resolve correctly in this environment.
 - Use `pdftotext -f <start> -l <end> "path/to/file.pdf" -` via Bash for all PDF extraction work.
