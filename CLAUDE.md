@@ -33,7 +33,7 @@ This is a **solo-only** experience.
 
 ## Character Creation Rules (from PDF page 6)
 **Captain**: Only name  
-**Ship**: Ship name + one of: `Halcyon`, `Athena Mk. II`, `AG-8`, `Mononoaware`
+**Ship**: Ship name + one of: `Halcyon`, `Athena Mk. II`, `AG-8`, `Mononoaware`, `Project Union`
 
 **Officers** (4 total):
 - Name (free text)

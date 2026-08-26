@@ -27,6 +27,7 @@ module CrewOptions
     "halcyon" => "Halcyon",
     "athena_mk_ii" => "Athena Mk. II",
     "ag_8" => "AG-8",
-    "mononoaware" => "Mononoaware"
+    "mononoaware" => "Mononoaware",
+    "project_union" => "Project Union"
   }.freeze
 end

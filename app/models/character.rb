@@ -5,7 +5,8 @@ class Character < ApplicationRecord
     halcyon: 0,
     athena_mk_ii: 1,
     ag_8: 2,
-    mononoaware: 3
+    mononoaware: 3,
+    project_union: 4
   }.freeze
 
   has_many :officers, -> { order(:position) }, dependent: :destroy
