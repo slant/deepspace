@@ -13,11 +13,18 @@ export default class extends Controller {
   }
 
   async jumpDrive() {
-    if (!this.hasJumpDriveUrlValue) return
-    const response = await fetch(this.jumpDriveUrlValue, {
-      method: "PATCH",
-      headers: { Accept: "application/json", "X-CSRF-Token": this.csrfToken }
-    })
+    if (!this.hasJumpDriveUrlValue || this.jumpDriveBusy) return
+    this.jumpDriveBusy = true
+
+    let response
+    try {
+      response = await fetch(this.jumpDriveUrlValue, {
+        method: "PATCH",
+        headers: { Accept: "application/json", "X-CSRF-Token": this.csrfToken }
+      })
+    } finally {
+      this.jumpDriveBusy = false
+    }
     if (!response.ok) return
 
     window.dispatchEvent(new CustomEvent("campaign:updated"))

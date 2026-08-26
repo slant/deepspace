@@ -10,6 +10,7 @@ export default class extends Controller {
     this.currentHex = null
     this.currentEventLabel = null
     this.gameOver = false
+    this.busy = false
   }
 
   disconnect() {
@@ -83,6 +84,9 @@ export default class extends Controller {
   }
 
   async rollDice(hex, diceRoll, choices) {
+    if (this.busy) return
+    this.busy = true
+
     const url = `/campaigns/${this.campaignIdValue}/hex/${hex.q}/${hex.r}`
     let response
 
@@ -103,11 +107,13 @@ export default class extends Controller {
       })
     } catch {
       this.bodyTarget.innerHTML += "<p>Connection error. Please try again.</p>"
+      this.busy = false
       return
     }
 
     if (!response.ok) {
       this.bodyTarget.innerHTML += "<p>Something went wrong. Please try again.</p>"
+      this.busy = false
       return
     }
 
@@ -116,9 +122,17 @@ export default class extends Controller {
 
     this.bodyTarget.innerHTML += `<p class="text-cyan-300">${this.escape(data.dice_result)}</p>`
     this.renderChoices(hex, data.choices || choices)
+    this.busy = false
   }
 
+  // Guarded against double-fire (rapid double-click, or a slow response
+  // tempting a second click): without this, a resource/item/officer effect
+  // in choice.metadata could be applied twice server-side. Found during the
+  // pre-publish regression pass after the same bug in the R&D panel.
   async choose(hex, choice) {
+    if (this.busy) return
+    this.busy = true
+
     const url = `/campaigns/${this.campaignIdValue}/hex/${hex.q}/${hex.r}`
     let response, data
 
@@ -151,11 +165,13 @@ export default class extends Controller {
       })
     } catch {
       this.bodyTarget.innerHTML = "<p>Connection error. Please try again.</p>"
+      this.busy = false
       return
     }
 
     if (!response.ok) {
       this.bodyTarget.innerHTML = "<p>Something went wrong. Please try again.</p>"
+      this.busy = false
       return
     }
 
@@ -165,17 +181,21 @@ export default class extends Controller {
 
     if (data.game_over) {
       this.showGameOver(data)
+      this.busy = false
     } else if (data.next_event) {
       this.currentEventLabel = choice.metadata?.goto || null
       this.show(data.next_event)
+      this.busy = false
     } else if (choice.metadata?.stay_open) {
       // Store-style actions (buy fuel, buy an item, complete a mission):
       // apply, then re-fetch so locked/limit states refresh, but keep the
       // modal open so the player can perform more actions in this visit.
       await this.refresh(hex)
+      this.busy = false
     } else {
       Turbo.visit(window.location.href, { frame: "campaign_map" })
       this.close()
+      this.busy = false
     }
   }
 
