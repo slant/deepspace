@@ -62,8 +62,15 @@ an optional add-on to the *base* game's own Threat deck. Either shuffled into
 the deck (arrives as a surprise) or set aside to appear once the deck is
 exhausted (arrives as the guaranteed final fight). Has defensive components
 that must be cleared before its 4-Health Core can be destroyed; destroying
-the Core removes the whole thing. **Not referenced anywhere in the 170
-Long Way Home events** — irrelevant to this app.
+the Core removes the whole thing.
+
+Correction: an earlier version of this doc claimed the Ouroboros is never
+referenced in the Long Way Home events — that was wrong. Event **63-C**
+("Ouroboros Defeated") is post-battle narration ("The Ouroboros lies in
+wreckage...") that awards item `[DATALOG-9]`. No Long Way Home event actually
+*runs* an Ouroboros fight (no event references its cards or Core mechanic),
+but the narrative does assume the player fought and beat it at some point
+off-page. Worth keeping in mind if/when the combat system is built.
 
 ## The Endless Expansion
 
