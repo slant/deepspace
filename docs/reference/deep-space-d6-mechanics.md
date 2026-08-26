@@ -1,16 +1,24 @@
-# Deep Space D-6 — Base Game & Endless Expansion Mechanics Reference
+# Deep Space D-6 — Base Game Reference (narrative-relevant facts only)
 
-Background notes on the base *Deep Space D-6* board game and its *Endless*
-expansion, for context when building this app's combat system (TODO priority
-#10) and the game's "Endless"-themed encounters (44-E, 16-A, 17-A, and Sector
-Zeta's Open Space rolls). Source: a detailed BGG review
-(https://boardgamegeek.com/thread/2127056/deep-space-d-6-a-detailed-review by
-Neil Thomson, "Destination Geek"), summarized/paraphrased in our own words —
-not reproduced verbatim, and no game components (card text, art, full rules)
-are copied here. This app does not reimplement the base game; it only tracks
-narrative campaign state (fuel, scrap, cargo, choices) per `CLAUDE.md`. This
-doc exists purely so future combat-system work has real mechanical grounding
-instead of guessing.
+**This app does not reimplement, simulate, or track the base game's combat
+system in any form.** No ship boards, station abilities, threat decks, dice
+rolls, or hull/shield tracking are modeled in code. When an event's body
+text says `COMBAT: N threats, draw deck of M`, the player resolves that
+combat on their own physical copy of the game and the app only needs to
+know the *narrative* outcome (which branch/choice applies), exactly like
+any other event — see the "Events YAML" sections of `CLAUDE.md` and
+`docs/reference/events-yaml-pdf-deviations.md`'s 34-B/58-C entry for the
+"defeat with no stated consequence → game_over" default. Per `CLAUDE.md`'s
+"Dice Roll Scope": full combat and R&D dice are rolled on the player's
+physical dice; the app never rolls them and never re-simulates the fight.
+
+This doc keeps only the background facts that actually inform *narrative*
+decisions (which events to show/gate, what "crew dice" means elsewhere in
+the app). Source for anything not directly user-supplied: a detailed BGG
+review (https://boardgamegeek.com/thread/2127056/deep-space-d-6-a-detailed-review
+by Neil Thomson, "Destination Geek"), summarized/paraphrased in our own
+words — not reproduced verbatim, and no game components (card text, art,
+full rules) are copied here.
 
 ## Crew dice (confirmed — user-supplied photo of the physical dice, 2026-08-26)
 
@@ -18,6 +26,9 @@ The 6 crew dice are identical: each die has one of each of these 6 faces
 (uniform 1/6 per face per die). This is real, confirmed data — not from the
 PDF (which assumes ownership of the physical dice and never states it) or
 the BGG review (which only described icon *types*, not the exact face set).
+Used narratively by `app/services/crew_dice.rb` for the app's own simple
+story-check rolls (fatigue checks, 22-A's threat-die table) — unrelated to
+base-game combat.
 
 | Color | Face |
 |---|---|
@@ -32,35 +43,6 @@ the BGG review (which only described icon *types*, not the exact face set).
 "skull" for an icon `pdftotext` couldn't extract as text — a previous
 session guessed at it without visual confirmation. Corrected to "Threat
 Detected" throughout; see `docs/reference/events-yaml-pdf-deviations.md`.
-Implemented in `app/services/crew_dice.rb`.
-
-## Core round structure (base game)
-
-1. **Roll crew dice** — 6 custom icon dice (Tactical/weapons, Engineering/hull
-   repair, Science/shields, Medical, Commander) represent available crew.
-2. **Scan for threats** — a subset of results lock into "Scanner" slots. When
-   all scanner slots fill, a new Threat card is drawn immediately (possibly
-   more than one per roll).
-3. **Assign crew** — remaining dice are placed on ship stations or on Threat
-   cards to activate abilities / deal with threats. This is the core
-   worker-placement decision each round.
-4. **Deal damage** — Tactical results damage External Threats, tracked via a
-   Damage Track with strength slots (1–4); a Threat at 1 health that takes
-   damage is destroyed.
-5. **Draw a new threat** — always happens *after* crew assignment, so a fresh
-   threat can't be dealt with for at least one full round.
-6. **Threat phase** — roll a plain d6; any Threat card whose listed value
-   matches activates its effect. Multiple threats can share a value and all
-   trigger off one roll.
-7. **Shields/Hull** — damage hits Shields first, then Hull.
-8. **Gather crew** — free dice return to the pool. Dice stay locked if
-   they're mid-scan, in the Infirmary, or attached to an unresolved Threat.
-
-**Win**: Hull > 0, Threat deck empty, and all External Threats destroyed.
-**Lose**: Hull hits 0, or all dice become permanently unavailable.
-
-If the Threat deck runs out before win/lose and a full scan completes, the
-ship takes 1 damage instead of drawing a card (there's nothing left to draw).
 
 ## Engine Repair / Jump Drive (corrected 2026-08-26)
 
@@ -72,8 +54,9 @@ per the user directly quoting rulebook page 4: **Engine Repair** is an R&D
 upgrade (see the character sheet's R&D tracks) that, once complete, lets
 the player move 2 spaces per turn instead of 1. **Jump Drive** requires
 Engine Repair and has two separate uses, both costing 1 fuel:
-- *In combat*: leave a combat encounter by assigning 3 Engineering crew as
-  a station action. No Open Space encounter triggers on return.
+- *In combat*: leave a combat encounter (resolved physically, per the
+  no-simulation note above) by assigning 3 Engineering crew. No Open Space
+  encounter triggers on return.
 - *On the starmap*: "Return to the previous point" — i.e. undo your last
   move, not travel to a special map location. Needs the campaign to track
   its immediately-previous hex position.
@@ -84,65 +67,24 @@ zoomed into the R&D section of the character sheet (page 6) and could read
 gear-icon counts per box, but didn't want to build on an error-prone visual
 pixel-count without confirmation.
 
-## Ship classes (4, matching `CLAUDE.md`'s character-creation options)
+## The Ouroboros (base game, optional) — narrative reference only
 
-Each class has different Hull/Shield stats and turns the 5 crew icons into
-different abilities. Rough shape, for future reference (not exhaustive —
-consult a rules copy before implementing combat):
+A base-game final-boss encounter, referenced in the narrative but never run
+by any Long Way Home event's mechanics. Event **63-C** ("Ouroboros
+Defeated") is post-battle narration ("The Ouroboros lies in wreckage...")
+that awards item `[DATALOG-9]`. No Long Way Home event actually *runs* an
+Ouroboros fight — the narrative assumes the player fought and beat it at
+some point off-page, resolved entirely on the physical game, same as every
+other `COMBAT:` line.
 
-- **Halcyon** ("Old Reliable") — Hull 8 / Shield 4. Lasers can split damage
-  across multiple targets; has a Stasis Beam to nullify a threat for a round.
-- **Athena Mk. II** ("The Enforcer") — Hull 5 / Shield 6. Rockets hit a single
-  target hard; Quantum Cannon can return a threat to the deck and reshuffle.
-- **AG-8** ("The Tin Can") — Hull 10 / Shield 2. Fights via reprogrammable
-  Drones instead of direct crew actions; can't lose while a Drone is active.
-- **Mononoaware** ("Roswell") — Hull 5 / Shield 5. Flexible alien weapon tech;
-  can swap Shield/Hull values at a critical moment (Ablative Armor).
-
-## The Ouroboros (base game, optional)
-
-A 6-card mega-ship final boss, **not part of the Endless Expansion** — it's
-an optional add-on to the *base* game's own Threat deck. Either shuffled into
-the deck (arrives as a surprise) or set aside to appear once the deck is
-exhausted (arrives as the guaranteed final fight). Has defensive components
-that must be cleared before its 4-Health Core can be destroyed; destroying
-the Core removes the whole thing.
-
-Correction: an earlier version of this doc claimed the Ouroboros is never
-referenced in the Long Way Home events — that was wrong. Event **63-C**
-("Ouroboros Defeated") is post-battle narration ("The Ouroboros lies in
-wreckage...") that awards item `[DATALOG-9]`. No Long Way Home event actually
-*runs* an Ouroboros fight (no event references its cards or Core mechanic),
-but the narrative does assume the player fought and beat it at some point
-off-page. Worth keeping in mind if/when the combat system is built.
-
-## The Endless Expansion
-
-Three additions on top of the base game:
-1. A full replacement Threat deck (different enemies, not mixed with the base
-   deck).
-2. Research/Upgrade tracks — crew must be assigned to upgrade tracks in a
-   specific required order to unlock permanent ship upgrades. This lines up
-   with the `researched_upgrades` column and the upgrade list already in
-   `CLAUDE.md` (Engine Repair, Promotion, Kinetic Recycler, LR Scanners,
-   Bio-Manipulator, Cloaking Device).
-3. **The Apex** — the expansion's final boss, a *different* 6-card encounter
-   from the Ouroboros. Its 6 cards are placed 2 each on the 4/3/2 Damage
-   Track spots; the card art is illustrated so adjacent cards visually
-   "connect," and a Threat-die roll can trigger chained/combo attacks across
-   connected cards. As it takes damage, cards shift position on the track,
-   changing which cards are connected — a genuinely clever mutating-boss
-   mechanic. It can't be attacked until every other External Threat is
-   destroyed, and only enters play once the (expansion) Threat deck is
-   exhausted.
-
-## What this actually means for our events — two distinct categories
+## The Endless Expansion — what it means for event gating
 
 The rulebook marks expansion content with a printed "EE" icon — a small
-rasterized graphic that `pdftotext` silently drops, so a text-only extraction
-of the PDF misses it entirely. Confirmed by rendering the actual pages as
-images. There are two unrelated categories of Endless-related combat content
-in the 170 Long Way Home events, and they behave completely differently:
+rasterized graphic that `pdftotext` silently drops, so a text-only
+extraction of the PDF misses it entirely. Confirmed by rendering the actual
+pages as images. There are two unrelated categories of Endless-related
+content in the 170 Long Way Home events, and they behave completely
+differently for gating purposes:
 
 ### Category 1 — unmarked, always resolvable: event 44-E only
 
@@ -153,8 +95,7 @@ placed + 6 in the draw deck = 9 cards) matches the page-74 demo deck's 9
 cards exactly (4× Spore: Attack, 2× Swarmling, Spore: Guard, Mothership,
 Infecter — captioned "Use only if you do not have The Endless Expansion
 available"). 44-E is fully, correctly resolvable with just the page-74 set,
-for every player, expansion-owned or not. No gating, no toggle, no Apex data
-needed for this event.
+for every player, expansion-owned or not. No gating needed for this event.
 
 ### Category 2 — EE-marked, gated: events 16-A and 17-A, and Zeta Open Space rolls 2–6
 
@@ -169,16 +110,10 @@ Space")** has the EE icon on all 5 of its combat rows (rolls 2–6); only roll
 Zeta — both its two numbered story events and its Open Space rolls — is
 expansion-gated, not just flavor-themed.
 
-These do **not** use the page-74 demo deck (that's captioned specifically as
-a fallback the rulebook offers for 44-E, not a general-purpose substitute)
-and do **not** use the Apex (that's a completely separate mechanic tied to
-exhausting the *expansion's own* Threat deck during full base-game play, not
-referenced anywhere in the Long Way Home narrative content). We have no real
-Endless Expansion card data. Until we do, the correct behavior for
-Category 2 content is to ignore it outright — treat it as if the encounter
-never happened — regardless of whether a future "owns the expansion" toggle
-exists, since there's nothing to actually run for an owner either without
-the real cards. See `config/events.yml`'s `expansion: endless` field and
+We have no need for real Endless Expansion card data (see the top of this
+doc — the app never runs combat). The correct behavior for Category 2
+content is to ignore it outright — treat it as if the encounter never
+happened. See `config/events.yml`'s `expansion: endless` field and
 TODO.md's "Expansion content flag" item.
 
 ## Licensing note
@@ -188,7 +123,12 @@ product, not covered by the CC BY-SA license that applies only to the *Long
 Way Home* narrative supplement text (per `CLAUDE.md`). This app should keep
 reflecting only campaign/narrative state — fuel, scrap, cargo, choices,
 journal — not reimplement or redistribute the base game's own rules,
-components, or card text. Any base-game PDF (e.g. a rules quick-reference)
-should not be committed under `public/` or anywhere web-servable, since that
-would make copyrighted content directly downloadable regardless of whether a
-visitor owns the game.
+components, or card text.
+
+`public/docs/DSD6v061.pdf` and `public/ships/*.jpeg` are base-game physical
+component references (Threat deck, Quick Rules, ship boards) the user
+photographed/collected — not used as engine source data (the app doesn't
+have a combat engine), just kept for the user's own reference. The user has
+explicitly decided (2026-08-26) to keep these in `public/` despite being
+web-servable, on the basis that this content is already publicly
+distributed by the game's publisher. Do not re-flag this.

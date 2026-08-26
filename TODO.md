@@ -13,8 +13,8 @@ Items are grouped by game system. Checked items are already implemented.
 7. Store UI (multi-action hub events 20-A/B/C)
 8. In-event dice rolls (mid-event branching on roll results)
 9. Research & Development (upgrade tracks + effects)
-10. Combat system (core mechanics)
-11. Special combat variants (Dreadship, The Shadow, Endless, etc.)
+10. ~~Combat system (core mechanics)~~ — done; app never simulates combat, see Combat section
+11. ~~Special combat variants (Dreadship, The Shadow, Endless, etc.)~~ — done, see Combat section
 12. Starmap extras (jump points, Jump Drive, engine repair movement bonus)
 13. Win/loss screens (end-game presentation)
 14. Expansion content flag (Endless Expansion gating)
@@ -94,25 +94,32 @@ Officers can be permanently modified by events — this needs to be tracked in t
 - [x] ~~**Skill exchange at tavern**~~ — this item described a mechanic that doesn't exist. Checked the actual PDF text for event 51-A directly: it's "exchange your skillset for anything else useful" flavor text for the same `[Requires: SMUGGLER, PSYCHIC, or CHARMING]`-style OR-list gating pattern already implemented (see Events & Choices above) — no specialty-swap UI is described anywhere in the source. Removing as a stale/incorrect note from an earlier session.
 
 ## Combat
-The app currently has no combat system. Combat is triggered by Open Space encounters and many events.
-**Crew dice face data is now known** (see CLAUDE.md "Crew Dice"), but combat also needs the base game's actual Threat Card deck contents (which enemies exist, their Health/damage values, special rules) — we only have the Endless demo substitute deck (page 74, used by 44-E) and the Ouroboros/Apex mega-boss descriptions, not the ordinary Threat deck used by every other "Combat: X+Y" instance in the game. Still a real data gap, just a narrower one than before.
-- [ ] **Combat UI**: display the active threat cards in the scanner positions (Deep Space D6 board layout)
-- [ ] **Draw deck**: randomly draw the specified number of cards from the main threat deck to form the combat draw deck
-- [ ] **Threat card resolution**: step through the standard Deep Space D6 rules (draw → place → resolve)
-- [ ] **Hull & shield tracking during combat**: show current hull and shield values, update as damage is taken
-- [ ] **Crew dice assignment**: let player assign crew dice to ship stations and R&D tracks during step 3
-- [ ] **No cards remaining rule**: if draw deck is empty, take 1 hull damage (shields first) until all external threats resolved
-- [ ] **End of combat**: fully repair ship (hull + shields), return threat cards to deck, shuffle
-- [ ] **Combat game over**: if ship destroyed, end campaign as a loss (unless event says otherwise)
-- [ ] **Special combat — event 44-E (Endless)**: `Combat: 3+6` (9 cards total), always resolvable — uses the rulebook's own page-74 9-card demo deck (4× Spore: Attack, 2× Swarmling, Spore: Guard, Mothership, Infecter) for every player, expansion-owned or not. Not gated (no "EE" icon on this event). See `docs/reference/deep-space-d6-mechanics.md`.
-- [ ] **Special combat — events 16-A / 17-A (Endless, expansion-gated)**: `Combat: 2+15` and `Combat: 1+10`. Both carry the rulebook's "EE" icon (`expansion: endless` in `events.yml`) — see "Expansion content flag" above. These are separate from 44-E and do not use the page-74 demo deck.
-- [ ] **Special combat — event 67-A (Dreadship)**: scanner dice are placed on the Dreadship board, not the player's ship. Requires a different combat layout.
-- [ ] **Special combat — event 57-A (The Shadow)**: 1-on-1 duel with special rules; if you lose, game over; if you win, he lets you go.
-- [ ] **Special combat — event 58-C**: April gives a special weapon that modifies combat for this encounter.
-- [ ] **Kinetic Recycler upgrade effect**: if 4+ hull lost in one round, gain 1 scrap
-- [ ] **Promotion upgrade effect**: re-roll all available crew before step 3 (track uses)
-- [ ] **Cloaking Device upgrade effect**: re-roll the threat die during step 5 (track uses; only available after discovered in an event)
-- [ ] **Bio-Manipulator upgrade effect**: return a crew die from infirmary / prevent sending crew to infirmary (track uses)
+**Corrected scope (2026-08-26): this app does not reimplement or simulate combat at all.** An
+earlier version of this TODO (and `docs/reference/deep-space-d6-mechanics.md`) wrongly framed
+Combat as a subsystem to build — a ship board, threat deck, dice engine, hull/shield tracking,
+per-ship station abilities, drone economies, etc. The user corrected this directly: the player
+resolves `COMBAT: N threats, draw deck of M` on their own physical copy of the game; the app's
+only job is the same thing it already does for every other event — show the narrative
+instruction (already just body text) and let the player's choice of outcome (Victory/Defeat)
+drive `goto`/`game_over`/`scrap_delta`/`fuel_delta` exactly like any other branching event. See
+`docs/reference/deep-space-d6-mechanics.md`'s top note and CLAUDE.md's "Dice Roll Scope".
+- [x] **Standard combat events wired**: checked all ~24 `COMBAT:` events in `events.yml` against
+  their body text. 51-C, 69-A, 16-A, 25-A were already correctly wired. Fixed 15-A and 44-E
+  (body stated an explicit defeat consequence that wasn't wired as a choice) and added a missing
+  "Game Over" defeat choice to 34-B, 58-C, and 67-A (body stated no defeat consequence at all —
+  user-confirmed default: silent-on-defeat combat events end the campaign). See
+  `docs/reference/events-yaml-pdf-deviations.md`.
+- [x] **Special combat — event 57-A (The Shadow)**: already correctly wired (Victory → 58-A,
+  Defeat → game_over).
+- [x] **Special combat — event 67-A (Dreadship)**: fixed, see above — no combat-layout UI needed,
+  it's narrative body text like every other combat event.
+- [x] **Special combat — event 58-C**: fixed, see above.
+- [x] **Special combat — events 44-E / 16-A / 17-A (Endless)**: 44-E fixed above; 16-A already
+  wired; 17-A is EE-gated and ignored outright per "Expansion content flag" below, so its
+  single-choice state doesn't matter until real expansion data exists.
+- Kinetic Recycler / Promotion / Cloaking Device / Bio-Manipulator "track uses" effects
+  (see R&D below) happen entirely during physical combat the app never sees — not app-tracked,
+  same as hull/shield. Nothing to build here.
 
 ## Research & Development
 Unblocked — the user supplied the exact per-track box requirements (see `Campaign::RND_TRACKS`). Per the dice-roll scope rule (CLAUDE.md "Crew Dice"), R&D dice are rolled physically during combat/Duty Phase — the app never rolls them. It only tracks progress: a collapsible "Upgrades" tab (`upgrades-panel` Stimulus controller) sits above the map, showing all 6 tracks as rows of tap-to-mark boxes. A box with more than one requirement (Bio-Manipulator's 3rd box) is a single box, marked as one unit, per the user's note that simultaneous requirements are paid together.
@@ -120,7 +127,7 @@ Unblocked — the user supplied the exact per-track box requirements (see `Campa
 - [x] **R&D UI**: collapsible "Upgrades" tab above the map (not the character sheet/sidebar as originally scoped — moved there deliberately to keep the sidebar uncluttered), all 6 tracks with tap-to-mark progress boxes.
 - [x] **Research during combat** / **Research at store locations**: no context-specific flow was built — the Upgrades tab is available everywhere, at any time, and marking is the same self-reported tap regardless of when the dice were actually rolled. Treat these two TODO items as covered by that single always-available UI rather than as separate flows.
 - [x] **Unlock upgrades**: `Campaign#toggle_upgrade_box!`/`#complete_upgrade!` — a zero-cost track (Promotion, Kinetic Recycler, LR Scanners, Bio-Manipulator) auto-completes the instant its last box is marked; a track with a scrap cost (Engine Repair: 10, Cloaking Device: 25) requires an explicit "Complete" button click once all boxes are marked (deliberately not automatic, since it's a resource spend). `Campaign::RND_TRACKS` is the single source of truth for box labels/costs, serialized into the panel's data attributes.
-- [ ] **Track uses**: Promotion (6 uses), LR Scanners (4 uses), Bio-Manipulator (5 uses), Cloaking Device (6 uses) — this is about spending a *use* of a completed upgrade's effect during combat, not researching it; still blocked on the combat system (priority #10) existing at all.
+- [ ] ~~**Track uses**~~ — not applicable. Spending a *use* of a completed upgrade's effect happens entirely during physical combat the app never sees (see Combat section above) — nothing for the app to track here, same as hull/shield.
 - [x] **Engine Repair cost**: 10 scrap, paid via the same explicit "Complete" button flow as Cloaking Device.
 
 ## Win / Loss Conditions

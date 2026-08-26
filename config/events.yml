@@ -288,8 +288,12 @@
     COMBAT: 10 threats, draw deck of 0 (no draw deck — use only the starting threats).
     If you survive, gain 8 scrap. If you are destroyed, lose 2 fuel.
   choices:
-    - label: "Return to Orbit"
+    - label: "Survived — Return to Orbit"
       action: orbit
+      metadata: { scrap_delta: 8 }
+    - label: "Destroyed — Return to Orbit"
+      action: orbit
+      metadata: { fuel_delta: -2 }
   resolvable: true
 
 "15-B":
@@ -909,7 +913,9 @@
   choices:
     - label: "Victory → 35-B"
       action: goto
-      metadata: { goto: "35-B" }
+      metadata: { goto: "35-B", scrap_delta: 30 }
+    - label: "Game Over"
+      action: game_over
   resolvable: true
 
 "34-C":
@@ -1308,8 +1314,12 @@
     If defeated, you narrowly escape — lose 3 fuel.
     If victorious, gain 6 scrap.
   choices:
-    - label: "Return to Orbit"
+    - label: "Victorious — Return to Orbit"
       action: orbit
+      metadata: { scrap_delta: 6 }
+    - label: "Defeated — narrowly escape, Return to Orbit"
+      action: orbit
+      metadata: { fuel_delta: -3 }
   resolvable: true
 
 "45-A":
@@ -1871,6 +1881,8 @@
     - label: "Victory → 59-C"
       action: goto
       metadata: { goto: "59-C" }
+    - label: "Game Over"
+      action: game_over
   resolvable: true
 
 "59-A":
@@ -2198,6 +2210,8 @@
     - label: "Victory — gain 10 scrap, Return to Orbit"
       action: orbit
       metadata: { scrap_delta: 10 }
+    - label: "Game Over"
+      action: game_over
   resolvable: true
 
 "68-A":
