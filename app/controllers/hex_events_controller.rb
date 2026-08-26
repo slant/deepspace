@@ -7,6 +7,14 @@ class HexEventsController < ApplicationController
     hex = MapLoader.hex_at(params[:q].to_i, params[:r].to_i)
     return head :not_found unless hex
 
+    if !@campaign.at_hex?(hex["q"], hex["r"]) && @campaign.adjacent_to?(hex["q"], hex["r"]) && @campaign.fuel <= 0
+      adrift = EventCatalog.for_event("21-A")
+      return render json: adrift.merge(
+        hex: hex.slice("q", "r", "label", "icon", "note", "sector"),
+        campaign: { ship_q: @campaign.ship_q, ship_r: @campaign.ship_r, fuel: @campaign.fuel, scrap: @campaign.scrap, resolved: false }
+      )
+    end
+
     unless @campaign.at_hex?(hex["q"], hex["r"]) || @campaign.can_move_to?(hex["q"], hex["r"])
       return render json: { error: "Cannot interact with this hex" }, status: :forbidden
     end

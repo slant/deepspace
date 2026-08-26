@@ -80,6 +80,43 @@ class HexEventsControllerTest < ActionDispatch::IntegrationTest
     assert_equal 5, @campaign.reload.scrap
   end
 
+  # --- fuel depletion → Adrift ---
+
+  test "GET adjacent hex with zero fuel returns Adrift event" do
+    @campaign.update_columns(fuel: 0)
+
+    get campaign_hex_event_path(campaign_id: @campaign.public_id, q: 1, r: 0),
+      as: :json
+
+    assert_response :ok
+    json = response.parsed_body
+    assert_equal "Adrift", json["title"]
+    assert_equal 1, json["choices"].size
+    assert_equal "game_over", json["choices"].first["action"]
+  end
+
+  test "GET adjacent hex with zero fuel does not move the ship" do
+    @campaign.update_columns(fuel: 0)
+
+    get campaign_hex_event_path(campaign_id: @campaign.public_id, q: 1, r: 0),
+      as: :json
+
+    @campaign.reload
+    assert_equal 0, @campaign.fuel
+    assert_equal 1, @campaign.ship_q
+    assert_equal 1, @campaign.ship_r
+  end
+
+  test "GET non-adjacent hex with zero fuel still returns forbidden" do
+    @campaign.update_columns(fuel: 0)
+
+    # (3,3) is not adjacent to ship at (1,1)
+    get campaign_hex_event_path(campaign_id: @campaign.public_id, q: 3, r: 3),
+      as: :json
+
+    assert_response :forbidden
+  end
+
   # --- orbit with resource delta ---
 
   test "PATCH with orbit and scrap_delta updates scrap" do
