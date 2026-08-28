@@ -1,6 +1,6 @@
-# Deep Space D6: The Long Way Home (Digital Companion)
+# Deep Space D-6: The Long Way Home (Digital Companion)
 
-Solo RPG companion web app for **Deep Space D6: The Long Way Home** v1.43.
+Solo RPG companion web app for **Deep Space D-6: The Long Way Home** v1.43.
 
 ## Stack
 

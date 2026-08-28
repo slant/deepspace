@@ -1,7 +1,7 @@
-# CLAUDE.md - Deep Space D6: The Long Way Home
+# CLAUDE.md - Deep Space D-6: The Long Way Home
 
 ## Project Overview
-A full digital companion web application for the solo RPG **Deep Space D6 - The Long Way Home**. The goal is to provide an immersive, high-quality digital experience that faithfully recreates and enhances the original PDF adventure while adding modern conveniences (persistent saves, interactive map, clean UI, etc.).
+A full digital companion web application for the solo RPG **Deep Space D-6 - The Long Way Home**. The goal is to provide an immersive, high-quality digital experience that faithfully recreates and enhances the original PDF adventure while adding modern conveniences (persistent saves, interactive map, clean UI, etc.).
 
 This is a **solo-only** experience.
 

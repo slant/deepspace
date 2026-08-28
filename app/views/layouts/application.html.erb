@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" class="h-full">
   <head>
-    <title><%= content_for(:title) || "Deep Space D6: The Long Way Home" %></title>
+    <title><%= content_for(:title) || "Deep Space D-6: The Long Way Home" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
@@ -29,7 +29,7 @@
       <header class="border-b border-space-800/80 bg-space-950/90 backdrop-blur sticky top-0 z-40">
         <div class="flex items-center justify-between px-4 py-3 sm:px-6">
           <%= link_to root_path, class: "font-display text-lg font-semibold tracking-wide text-cyan-300" do %>
-            Deep Space D6
+            Deep Space D-6
           <% end %>
           <div class="flex items-center gap-4 text-sm">
             <%= link_to "Campaigns", campaigns_path, class: "text-space-400 hover:text-cyan-300 transition" %>

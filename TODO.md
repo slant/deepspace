@@ -1,4 +1,4 @@
-# Deep Space D6 — TODO
+# Deep Space D-6 — TODO
 
 Items are grouped by game system. Checked items are already implemented.
 
